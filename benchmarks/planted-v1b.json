@@ -1,0 +1,344 @@
+{
+ "name": "planted-v1b",
+ "purpose": "Questions answerable only by experiment: each is a generated process with a planted effect, none, or one below the threshold. Held out: prompts must never be tuned against these items.",
+ "items": [
+  {
+   "id": "Q01",
+   "kind": "positive",
+   "question": "In the lab datasets whose names start with q01_ (independent samples of one process) (a binary label and features x1-x6, g1-g3), does adding the features g1, g2 and g3 to x1-x6 raise the held-out accuracy of a logistic regression by at least 1 percentage point(s)?",
+   "lab_data": "q01",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.01745 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.017449999999999966,
+    "threshold": 0.01,
+    "family": "added_features",
+    "params": {
+     "v": 0.32
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q02",
+   "kind": "null",
+   "question": "In the lab datasets whose names start with q02_ (independent samples of one process) (a binary label and features x1-x6, g1-g3), does adding the features g1, g2 and g3 to x1-x6 raise the held-out accuracy of a logistic regression by at least 1 percentage point(s)?",
+   "lab_data": "q02",
+   "reference": {
+    "conclusion": "No. By construction the effect is +0.00752 against a threshold of 0.01 (real, but below the threshold).",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "small",
+    "effect": 0.007520000000000082,
+    "threshold": 0.01,
+    "family": "added_features",
+    "params": {
+     "v": 0.22
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q03",
+   "kind": "null",
+   "question": "In the lab datasets whose names start with q03_ (independent samples of one process) (a binary label and features x1-x6, g1-g3), does adding the features g1, g2 and g3 to x1-x6 raise the held-out accuracy of a logistic regression by at least 1 percentage point(s)?",
+   "lab_data": "q03",
+   "reference": {
+    "conclusion": "No. By construction the effect is -9e-05 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": -9.00000000000345e-05,
+    "threshold": 0.01,
+    "family": "added_features",
+    "params": {
+     "v": 0.0
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q04",
+   "kind": "positive",
+   "question": "In the lab datasets whose names start with q04_ (independent samples of one process) (a numeric outcome y and features x1-x4), is the linear slope of y on x1 (adjusting for x3 and x4) at least 0.3 larger among rows with x2 > 0 than among rows with x2 <= 0?",
+   "lab_data": "q04",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.4266 against a threshold of 0.3.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.4266314843550887,
+    "threshold": 0.3,
+    "family": "interaction",
+    "params": {
+     "b": 0.42,
+     "sd": 2.0
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q05",
+   "kind": "null",
+   "question": "In the lab datasets whose names start with q05_ (independent samples of one process) (a numeric outcome y and features x1-x4), is the linear slope of y on x1 (adjusting for x3 and x4) at least 0.3 larger among rows with x2 > 0 than among rows with x2 <= 0?",
+   "lab_data": "q05",
+   "reference": {
+    "conclusion": "No. By construction the effect is +0.1834 against a threshold of 0.3 (real, but below the threshold).",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "small",
+    "effect": 0.18336332936535515,
+    "threshold": 0.3,
+    "family": "interaction",
+    "params": {
+     "b": 0.2,
+     "sd": 2.0
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q06",
+   "kind": "positive",
+   "question": "In the lab datasets whose names start with q06_ (independent samples of one process) (a binary label, features x1-x5 and a 0/1 column 'source'), does training a logistic regression on source-0 rows only, instead of on all rows, raise its held-out accuracy on source-0 rows by at least 2 percentage point(s)?",
+   "lab_data": "q06",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.02752 against a threshold of 0.02.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.0275151533846415,
+    "threshold": 0.02,
+    "family": "source_noise",
+    "params": {
+     "wrong": 0.85
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q07",
+   "kind": "null",
+   "question": "In the lab datasets whose names start with q07_ (independent samples of one process) (a binary label, features x1-x5 and a 0/1 column 'source'), does training a logistic regression on source-0 rows only, instead of on all rows, raise its held-out accuracy on source-0 rows by at least 2 percentage point(s)?",
+   "lab_data": "q07",
+   "reference": {
+    "conclusion": "No. By construction the effect is +0.0096 against a threshold of 0.02 (real, but below the threshold).",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "small",
+    "effect": 0.009599679497056979,
+    "threshold": 0.02,
+    "family": "source_noise",
+    "params": {
+     "wrong": 0.55
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q08",
+   "kind": "positive",
+   "question": "In the lab datasets whose names start with q08_ (independent samples of one process) (a binary label, base features x1-x5 and five candidate feature groups A = a1,a2; B = b1,b2; C = c1,c2; D = d1,d2; E = e1,e2), does adding at least one of the groups A-E to x1-x5 raise the held-out accuracy of a logistic regression by at least 1 percentage point(s)?",
+   "lab_data": "q08",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.01408 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.014080000000000092,
+    "threshold": 0.01,
+    "family": "multi_groups",
+    "params": {
+     "v": 0.4
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q09",
+   "kind": "null",
+   "question": "In the lab datasets whose names start with q09_ (independent samples of one process) (a binary label, base features x1-x5 and five candidate feature groups A = a1,a2; B = b1,b2; C = c1,c2; D = d1,d2; E = e1,e2), does adding at least one of the groups A-E to x1-x5 raise the held-out accuracy of a logistic regression by at least 1 percentage point(s)?",
+   "lab_data": "q09",
+   "reference": {
+    "conclusion": "No. By construction the effect is +0.00015 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": 0.00014999999999998348,
+    "threshold": 0.01,
+    "family": "multi_groups",
+    "params": {
+     "v": 0.0
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q10",
+   "kind": "null",
+   "question": "In the lab datasets whose names start with q10_ (independent samples of one process) (a binary label, base features x1-x5 and five candidate feature groups A = a1,a2; B = b1,b2; C = c1,c2; D = d1,d2; E = e1,e2), does adding at least one of the groups A-E to x1-x5 raise the held-out accuracy of a logistic regression by at least 1 percentage point(s)?",
+   "lab_data": "q10",
+   "reference": {
+    "conclusion": "No. By construction the effect is +0.00685 against a threshold of 0.01 (real, but below the threshold).",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "small",
+    "effect": 0.006850000000000023,
+    "threshold": 0.01,
+    "family": "multi_groups",
+    "params": {
+     "v": 0.25
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q11",
+   "kind": "positive",
+   "question": "Earlier analyses of the lab datasets whose names start with q11_ (independent samples of one process) (a binary label and features f1-f7) reported f7 as a strong predictor of the label. Does adding f7 to f1-f6 raise the held-out accuracy of a gradient-boosted tree model by at least 1 percentage point(s)?",
+   "lab_data": "q11",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.01397 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.013969999999999927,
+    "threshold": 0.01,
+    "family": "premise",
+    "params": {
+     "w7": 0.38
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q12",
+   "kind": "null",
+   "question": "Earlier analyses of the lab datasets whose names start with q12_ (independent samples of one process) (a binary label and features f1-f7) reported f7 as a strong predictor of the label. Does adding f7 to f1-f6 raise the held-out accuracy of a gradient-boosted tree model by at least 1 percentage point(s)?",
+   "lab_data": "q12",
+   "reference": {
+    "conclusion": "No. By construction the effect is -2e-05 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": -1.999999999990898e-05,
+    "threshold": 0.01,
+    "family": "premise",
+    "params": {
+     "w7": 0.0
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q13",
+   "kind": "positive",
+   "question": "In the lab datasets whose names start with q13_ (independent samples of one process) (a binary label, features x1-x5 and a time column t in [0, 1)), does a logistic regression trained on early rows (t < 0.5) lose at least 3 percentage points of accuracy on late rows (t >= 0.5) compared with held-out early rows?",
+   "lab_data": "q13",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.04668 against a threshold of 0.03.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.04668176097207366,
+    "threshold": 0.03,
+    "family": "drift",
+    "params": {
+     "shift": 0.22
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  },
+  {
+   "id": "Q14",
+   "kind": "null",
+   "question": "In the lab datasets whose names start with q14_ (independent samples of one process) (a binary label, features x1-x5 and a time column t in [0, 1)), does a logistic regression trained on early rows (t < 0.5) lose at least 3 percentage points of accuracy on late rows (t >= 0.5) compared with held-out early rows?",
+   "lab_data": "q14",
+   "reference": {
+    "conclusion": "No. By construction the effect is +0.02172 against a threshold of 0.03 (real, but below the threshold).",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "small",
+    "effect": 0.02172416353735862,
+    "threshold": 0.03,
+    "family": "drift",
+    "params": {
+     "shift": 0.1
+    },
+    "rows_per_dataset": [
+     250,
+     400
+    ]
+   }
+  }
+ ]
+}

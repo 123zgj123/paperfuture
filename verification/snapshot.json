@@ -1,0 +1,10 @@
+{
+  "copied_files": 263,
+  "hash_mismatches": [],
+  "external_farfield_imports": [],
+  "remote_status": "frames_returned",
+  "corpus": "attn-concepts-s1",
+  "frames_returned": 3,
+  "model_calls": 0,
+  "scope": "copy_integrity_and_offline_import_smoke_not_scientific_evaluation"
+}

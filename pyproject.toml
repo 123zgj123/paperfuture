@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paperfuture"
+version = "0.1.0"
+description = "Research trajectory and remote exploration code extracted from FarField"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dependencies = []
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["farfield*"]

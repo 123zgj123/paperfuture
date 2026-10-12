@@ -1,0 +1,48 @@
+{
+  "missing_registered_assets": [
+    {
+      "snapshot": "ds-arxiv-concepts",
+      "missing": [
+        "graph",
+        "full_graph"
+      ]
+    },
+    {
+      "snapshot": "cl-arxiv-concepts",
+      "missing": [
+        "graph",
+        "full_graph"
+      ]
+    },
+    {
+      "snapshot": "ds-arxiv-concepts-v2",
+      "missing": [
+        "graph",
+        "full_graph"
+      ]
+    },
+    {
+      "snapshot": "cl-arxiv-concepts-v2",
+      "missing": [
+        "graph",
+        "full_graph"
+      ]
+    },
+    {
+      "snapshot": "ds-arxiv-concepts-2026",
+      "missing": [
+        "graph",
+        "full_graph"
+      ]
+    },
+    {
+      "snapshot": "cs-mixed-arxiv-concepts-2026",
+      "missing": [
+        "graph",
+        "full_graph",
+        "heldout"
+      ]
+    }
+  ],
+  "scope": "assets_already_missing_in_source_not_copy_failure"
+}

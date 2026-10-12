@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+title: FarField
+message: If you use this software, please cite it as below.
+type: software
+authors:
+  - family-names: Zhang
+    given-names: Guijia
+    website: https://123zgj123.github.io
+repository-code: https://github.com/123zgj123/FarField
+url: https://github.com/123zgj123/FarField
+abstract: >-
+  FarField is an experimental local research runtime driven by explicit
+  ScientificState. A single controller coordinates literature retrieval,
+  trajectory-conditioned hypothesis exploration, registered experiments,
+  verification, and synthesis through existing research workers.
+  Scientific events preserve evidence provenance and support state replay.
+  Models propose claims and scripts; trusted admission checks constrain
+  world identity, reproduction, and the scope of conclusions. Generated
+  data cannot corroborate a claim about the target world. Research-policy
+  changes require separate trusted heldout evaluation. The system does
+  not establish autonomous discovery or demonstrated live self-improvement.
+keywords:
+  - scientific discovery
+  - automated research
+  - reproducibility
+  - hypothesis testing
+  - experimental design
+  - evidence
+  - research protocol
+license: MIT
+version: 0.1.0
+date-released: "2026-08-27"

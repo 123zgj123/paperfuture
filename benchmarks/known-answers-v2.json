@@ -1,0 +1,213 @@
+{
+ "name": "known-answers-v2",
+ "purpose": "Questions whose answers are established in the literature, to measure whether the system reaches the right conclusion and whether it asserts anything wrong. Held out: prompts must never be tuned against these items. v2 adds 18 items (12 positive, 3 null/negative, 3 out of reach) written 2026-09-28 before any run on them.",
+ "items": [
+  {
+   "id": "B1",
+   "kind": "positive",
+   "question": "Does bagging reduce the test error of fully grown decision trees more than it reduces the test error of logistic regression?",
+   "reference": {
+    "conclusion": "Yes. Bagging reduces variance; unstable high-variance learners such as fully grown trees gain substantially, stable learners such as logistic regression gain little or nothing.",
+    "source": "Breiman (1996), Bagging predictors, Machine Learning 24(2)"
+   }
+  },
+  {
+   "id": "B2",
+   "kind": "positive",
+   "question": "Do irrelevant, pure-noise input features hurt k-nearest-neighbour classification more than they hurt L1-regularised logistic regression?",
+   "reference": {
+    "conclusion": "Yes. Irrelevant features dilute the distances kNN relies on, while an L1 penalty drives their weights to zero, so kNN degrades much faster as noise features are added.",
+    "source": "Hastie, Tibshirani & Friedman, The Elements of Statistical Learning, 2nd ed., sec. 13.3; Ng (2004), Feature selection, L1 vs. L2 regularization"
+   }
+  },
+  {
+   "id": "B3",
+   "kind": "null",
+   "question": "Does increasing the number of trees in a random forest from 200 to 1000 improve test accuracy by more than half a percentage point on typical tabular classification datasets?",
+   "reference": {
+    "conclusion": "No. Random-forest accuracy plateaus well before a few hundred trees; going from 200 to 1000 trees changes accuracy by far less than half a point on typical datasets.",
+    "source": "Oshiro, Perez & Baranauskas (2012), How many trees in a random forest?; Probst & Boulesteix (2017), To tune or not to tune the number of trees in random forest"
+   }
+  },
+  {
+   "id": "B4",
+   "kind": "positive",
+   "question": "Does training-label noise reduce the test accuracy of a 1-nearest-neighbour classifier more than that of a 15-nearest-neighbour classifier?",
+   "reference": {
+    "conclusion": "Yes. 1-NN reproduces every mislabelled training point in its neighbourhood, while a larger k votes over many neighbours and averages random label errors out, so accuracy falls much faster with noise for k = 1.",
+    "source": "Wilson (1972), Asymptotic properties of nearest neighbor rules using edited data; Frenay & Verleysen (2014), Classification in the presence of label noise: a survey, IEEE TNNLS"
+   }
+  },
+  {
+   "id": "B5",
+   "kind": "out_of_reach",
+   "question": "Does instruction tuning improve the zero-shot accuracy of a 7-billion-parameter language model on the MMLU benchmark?",
+   "reference": {
+    "conclusion": "Out of reach for this lab: answering it needs GPUs, the model weights, instruction-tuning data and the benchmark, none of which a CPU-only sandbox without network access has. The right response is to say so rather than substitute a toy.",
+    "source": "lab capabilities"
+   }
+  },
+  {
+   "id": "K01",
+   "kind": "positive",
+   "question": "Does training-label noise hurt AdaBoost with decision trees more than it hurts bagging of the same trees?",
+   "reference": {
+    "conclusion": "Yes. Boosting concentrates weight on mislabelled examples and overfits them; bagging is robust to label noise, so boosting's advantage disappears or reverses as noise grows.",
+    "source": "Dietterich (2000), An experimental comparison of three methods for constructing ensembles of decision trees, Machine Learning 40(2)"
+   }
+  },
+  {
+   "id": "K02",
+   "kind": "positive",
+   "question": "Is a random forest's test error lower than that of a single fully grown decision tree on typical tabular classification datasets?",
+   "reference": {
+    "conclusion": "Yes. Averaging many decorrelated trees reduces variance; random forests are consistently more accurate than a single unpruned tree.",
+    "source": "Breiman (2001), Random forests, Machine Learning 45(1)"
+   }
+  },
+  {
+   "id": "K03",
+   "kind": "positive",
+   "question": "Does naive Bayes reach its best test error with fewer training examples than logistic regression, while logistic regression ends with lower error when training data are plentiful?",
+   "reference": {
+    "conclusion": "Yes. The generative classifier approaches its (higher) asymptotic error faster; the discriminative one has lower asymptotic error.",
+    "source": "Ng & Jordan (2002), On discriminative vs. generative classifiers, NeurIPS"
+   }
+  },
+  {
+   "id": "K04",
+   "kind": "positive",
+   "question": "Does standardising input features improve the test accuracy of k-nearest-neighbour and RBF-kernel SVM classifiers more than it improves the accuracy of decision trees?",
+   "reference": {
+    "conclusion": "Yes. Distance- and kernel-based methods depend on feature scales; trees split on thresholds and are invariant to monotone rescaling.",
+    "source": "Hsu, Chang & Lin (2003), A practical guide to support vector classification; Hastie, Tibshirani & Friedman, ESL 2nd ed."
+   }
+  },
+  {
+   "id": "K05",
+   "kind": "positive",
+   "question": "In gradient boosting, does a small learning rate (shrinkage) with correspondingly more trees give lower test error than a large learning rate with few trees?",
+   "reference": {
+    "conclusion": "Yes. Shrinkage below about 0.1 with more iterations improves generalisation over no shrinkage.",
+    "source": "Friedman (2001), Greedy function approximation: a gradient boosting machine, Annals of Statistics 29(5)"
+   }
+  },
+  {
+   "id": "K06",
+   "kind": "positive",
+   "question": "Does performing feature selection on the full dataset before cross-validation make the cross-validated accuracy optimistically biased, even when features and labels are unrelated?",
+   "reference": {
+    "conclusion": "Yes. Selection bias: on pure-noise data the external estimate is near chance while the selection-before-CV estimate is well above it.",
+    "source": "Ambroise & McLachlan (2002), Selection bias in gene extraction on the basis of microarray gene-expression data, PNAS 99(10)"
+   }
+  },
+  {
+   "id": "K07",
+   "kind": "positive",
+   "question": "When the best of many candidate models is chosen by its validation score, is that validation score an optimistic estimate of the chosen model's test performance?",
+   "reference": {
+    "conclusion": "Yes. Selecting on a noisy validation estimate introduces optimistic bias that grows with the number of candidates compared.",
+    "source": "Cawley & Talbot (2010), On over-fitting in model selection and subsequent selection bias in performance evaluation, JMLR 11"
+   }
+  },
+  {
+   "id": "K08",
+   "kind": "positive",
+   "question": "Does ridge (L2) regularisation reduce the test error of linear regression more when the number of training examples is small relative to the number of features than when it is large?",
+   "reference": {
+    "conclusion": "Yes. Shrinkage trades a little bias for a large variance reduction, which matters most when n is small relative to p.",
+    "source": "Hoerl & Kennard (1970), Ridge regression, Technometrics 12(1); Hastie, Tibshirani & Friedman, ESL sec. 3.4"
+   }
+  },
+  {
+   "id": "K09",
+   "kind": "positive",
+   "question": "Do scale-free (Barabási–Albert) networks keep their largest connected component under random node removal better than under removal of the highest-degree nodes?",
+   "reference": {
+    "conclusion": "Yes. Scale-free networks are robust to random failures but fragile to targeted attacks on hubs.",
+    "source": "Albert, Jeong & Barabási (2000), Error and attack tolerance of complex networks, Nature 406"
+   }
+  },
+  {
+   "id": "K10",
+   "kind": "positive",
+   "question": "In the Watts–Strogatz model, does a small rewiring probability reduce the average shortest path length proportionally much more than it reduces the clustering coefficient?",
+   "reference": {
+    "conclusion": "Yes. A few shortcuts collapse path length while clustering stays near the lattice value: the small-world regime.",
+    "source": "Watts & Strogatz (1998), Collective dynamics of small-world networks, Nature 393"
+   }
+  },
+  {
+   "id": "K11",
+   "kind": "positive",
+   "question": "In Erdős–Rényi random graphs, does the fraction of nodes in the largest connected component jump from near zero to a substantial fraction as the average degree crosses 1?",
+   "reference": {
+    "conclusion": "Yes. A giant component emerges at mean degree 1; below it the largest component is a vanishing fraction.",
+    "source": "Erdős & Rényi (1960), On the evolution of random graphs; Bollobás, Random Graphs"
+   }
+  },
+  {
+   "id": "K12",
+   "kind": "positive",
+   "question": "Does class-weighted training raise the balanced accuracy of logistic regression on strongly imbalanced binary classification data compared with unweighted training?",
+   "reference": {
+    "conclusion": "Yes. Unweighted training favours the majority class; reweighting improves minority-class recall and balanced accuracy.",
+    "source": "He & Garcia (2009), Learning from imbalanced data, IEEE TKDE 21(9)"
+   }
+  },
+  {
+   "id": "K13",
+   "kind": "null",
+   "question": "Does bagging reduce the test error of k-nearest-neighbour classifiers by more than one percentage point on typical tabular datasets?",
+   "reference": {
+    "conclusion": "No. Nearest-neighbour classifiers are stable learners; bagging leaves their error essentially unchanged.",
+    "source": "Breiman (1996), Bagging predictors, Machine Learning 24(2)"
+   }
+  },
+  {
+   "id": "K14",
+   "kind": "null",
+   "question": "Does choosing entropy instead of the Gini index as the split criterion change a decision tree's test accuracy by more than one percentage point on typical datasets?",
+   "reference": {
+    "conclusion": "No. The two criteria disagree on only a small share of splits and give practically the same accuracy.",
+    "source": "Raileanu & Stoffel (2004), Theoretical comparison between the Gini index and information gain criteria, Annals of Mathematics and AI 41"
+   }
+  },
+  {
+   "id": "K15",
+   "kind": "null",
+   "question": "Does a random forest's out-of-bag error estimate differ from its error on a held-out test set by more than one percentage point on average?",
+   "reference": {
+    "conclusion": "No. The out-of-bag estimate is close to unbiased for the forest's test error when the forest has enough trees.",
+    "source": "Breiman (2001), Random forests, Machine Learning 45(1); Breiman (1996), Out-of-bag estimation"
+   }
+  },
+  {
+   "id": "K16",
+   "kind": "out_of_reach",
+   "question": "Does reinforcement learning from human feedback reduce the rate of toxic completions of a 70-billion-parameter chat model?",
+   "reference": {
+    "conclusion": "Out of reach: needs the model, GPUs, human preference data and network access.",
+    "source": "lab capabilities"
+   }
+  },
+  {
+   "id": "K17",
+   "kind": "out_of_reach",
+   "question": "Does pre-training a vision transformer on ImageNet-21k improve its ImageNet-1k top-1 accuracy over training from scratch?",
+   "reference": {
+    "conclusion": "Out of reach: needs GPUs and the ImageNet datasets, which this CPU-only, offline lab does not have.",
+    "source": "lab capabilities"
+   }
+  },
+  {
+   "id": "K18",
+   "kind": "out_of_reach",
+   "question": "Does a daily low dose of aspirin reduce the rate of first heart attacks in adults over 70?",
+   "reference": {
+    "conclusion": "Out of reach: a clinical question that needs human-subject trial data, not a computational experiment.",
+    "source": "lab capabilities"
+   }
+  }
+ ]
+}

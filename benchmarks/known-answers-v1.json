@@ -1,0 +1,26 @@
+{
+ "name": "known-answers-v1",
+ "purpose": "Questions whose answers are established in the literature, to measure whether the system reaches the right conclusion and whether it asserts anything wrong. Held out: prompts must never be tuned against these items.",
+ "items": [
+  {"id": "B1", "kind": "positive",
+   "question": "Does bagging reduce the test error of fully grown decision trees more than it reduces the test error of logistic regression?",
+   "reference": {"conclusion": "Yes. Bagging reduces variance; unstable high-variance learners such as fully grown trees gain substantially, stable learners such as logistic regression gain little or nothing.",
+                 "source": "Breiman (1996), Bagging predictors, Machine Learning 24(2)"}},
+  {"id": "B2", "kind": "positive",
+   "question": "Do irrelevant, pure-noise input features hurt k-nearest-neighbour classification more than they hurt L1-regularised logistic regression?",
+   "reference": {"conclusion": "Yes. Irrelevant features dilute the distances kNN relies on, while an L1 penalty drives their weights to zero, so kNN degrades much faster as noise features are added.",
+                 "source": "Hastie, Tibshirani & Friedman, The Elements of Statistical Learning, 2nd ed., sec. 13.3; Ng (2004), Feature selection, L1 vs. L2 regularization"}},
+  {"id": "B3", "kind": "null",
+   "question": "Does increasing the number of trees in a random forest from 200 to 1000 improve test accuracy by more than half a percentage point on typical tabular classification datasets?",
+   "reference": {"conclusion": "No. Random-forest accuracy plateaus well before a few hundred trees; going from 200 to 1000 trees changes accuracy by far less than half a point on typical datasets.",
+                 "source": "Oshiro, Perez & Baranauskas (2012), How many trees in a random forest?; Probst & Boulesteix (2017), To tune or not to tune the number of trees in random forest"}},
+  {"id": "B4", "kind": "positive",
+   "question": "Does training-label noise reduce the test accuracy of a 1-nearest-neighbour classifier more than that of a 15-nearest-neighbour classifier?",
+   "reference": {"conclusion": "Yes. 1-NN reproduces every mislabelled training point in its neighbourhood, while a larger k votes over many neighbours and averages random label errors out, so accuracy falls much faster with noise for k = 1.",
+                 "source": "Wilson (1972), Asymptotic properties of nearest neighbor rules using edited data; Frenay & Verleysen (2014), Classification in the presence of label noise: a survey, IEEE TNNLS"}},
+  {"id": "B5", "kind": "out_of_reach",
+   "question": "Does instruction tuning improve the zero-shot accuracy of a 7-billion-parameter language model on the MMLU benchmark?",
+   "reference": {"conclusion": "Out of reach for this lab: answering it needs GPUs, the model weights, instruction-tuning data and the benchmark, none of which a CPU-only sandbox without network access has. The right response is to say so rather than substitute a toy.",
+                 "source": "lab capabilities"}}
+ ]
+}

@@ -1,0 +1,47 @@
+{
+  "run": 189,
+  "passed": 180,
+  "skipped": 9,
+  "failures": 0,
+  "skip_details": [
+    {
+      "test": "test_inquiry_recorded_research.RecordedFullTextRouting.test_both_production_readers_receive_the_saved_full_text_without_evidence_promotion",
+      "reason": "requires preserved real full-text source documents"
+    },
+    {
+      "test": "test_inquiry_recorded_research.RecordedFullTextRouting.test_saved_excerpts_are_bounded_and_wrong_document_identity_cannot_supply_text",
+      "reason": "requires preserved real full-text source documents"
+    },
+    {
+      "test": "test_inquiry_recorded_research.RecordedResearch.test_action_cannot_replace_the_recorded_inquiry_question",
+      "reason": "requires preserved real AgentIdeaBench-topic run"
+    },
+    {
+      "test": "test_inquiry_recorded_research.RecordedResearch.test_attempted_survey_is_not_rebought_after_replay",
+      "reason": "requires preserved real AgentIdeaBench-topic run"
+    },
+    {
+      "test": "test_inquiry_recorded_research.RecordedResearch.test_current_literature_projections_preserve_recorded_source_text",
+      "reason": "requires preserved real AgentIdeaBench-topic run"
+    },
+    {
+      "test": "test_inquiry_recorded_research.RecordedResearch.test_low_budget_retains_the_idea_as_under_assessed",
+      "reason": "requires preserved real AgentIdeaBench-topic run"
+    },
+    {
+      "test": "test_inquiry_recorded_research.RecordedResearch.test_real_idea_gets_a_bounded_schedulable_inquiry",
+      "reason": "requires preserved real AgentIdeaBench-topic run"
+    },
+    {
+      "test": "test_inquiry_recorded_research.RecordedSourceCalls.test_actual_model_responses_replay_through_production_validator",
+      "reason": "requires real SciFact pilot records"
+    },
+    {
+      "test": "test_inquiry_recorded_research.RecordedSourceCalls.test_frontier_maps_replay_without_promoting_missing_chronology",
+      "reason": "requires real SciFact pilot records"
+    }
+  ],
+  "model_calls": 0,
+  "copied_sources_changed": false,
+  "standalone_credential_pattern_files": []
+}

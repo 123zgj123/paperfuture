@@ -1,0 +1,410 @@
+{
+ "name": "planted-v1",
+ "purpose": "Questions answerable only by experiment: each is a generated process with a planted effect, none, or one below the threshold. Held out: prompts must never be tuned against these items.",
+ "items": [
+  {
+   "id": "P01",
+   "kind": "positive",
+   "question": "In the lab datasets named p01_d01 to p01_d14 (a binary label and features x1-x6, g1-g3), does adding the features g1, g2 and g3 to x1-x6 raise the held-out accuracy of a logistic regression by at least 1 percentage point(s)?",
+   "lab_data": "p01",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.09526 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.09526000000000001,
+    "threshold": 0.01,
+    "family": "added_features",
+    "params": {
+     "v": 0.9
+    }
+   }
+  },
+  {
+   "id": "P02",
+   "kind": "null",
+   "question": "In the lab datasets named p02_d01 to p02_d14 (a binary label and features x1-x6, g1-g3), does adding the features g1, g2 and g3 to x1-x6 raise the held-out accuracy of a logistic regression by at least 1 percentage point(s)?",
+   "lab_data": "p02",
+   "reference": {
+    "conclusion": "No. By construction the effect is +0.00017 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": 0.00017000000000000348,
+    "threshold": 0.01,
+    "family": "added_features",
+    "params": {
+     "v": 0.0
+    }
+   }
+  },
+  {
+   "id": "P03",
+   "kind": "null",
+   "question": "In the lab datasets named p03_d01 to p03_d14 (a binary label and features x1-x6, g1-g3), does adding the features g1, g2 and g3 to x1-x6 raise the held-out accuracy of a logistic regression by at least 1 percentage point(s)?",
+   "lab_data": "p03",
+   "reference": {
+    "conclusion": "No. By construction the effect is +0.0032 against a threshold of 0.01 (real, but below the threshold).",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "small",
+    "effect": 0.0032000000000000917,
+    "threshold": 0.01,
+    "family": "added_features",
+    "params": {
+     "v": 0.12
+    }
+   }
+  },
+  {
+   "id": "P04",
+   "kind": "positive",
+   "question": "In the lab datasets named p04_d01 to p04_d14 (a binary label and six features), does a random forest reach a held-out accuracy at least 2 percentage points higher than a logistic regression?",
+   "lab_data": "p04",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.452 against a threshold of 0.02.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.45199,
+    "threshold": 0.02,
+    "family": "rf_vs_lr",
+    "params": {
+     "shape": "xor",
+     "noise": 0.1
+    }
+   }
+  },
+  {
+   "id": "P05",
+   "kind": "positive",
+   "question": "In the lab datasets named p05_d01 to p05_d14 (a binary label and six features), does a random forest reach a held-out accuracy at least 2 percentage points higher than a logistic regression?",
+   "lab_data": "p05",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.3839 against a threshold of 0.02.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.3838999999999999,
+    "threshold": 0.02,
+    "family": "rf_vs_lr",
+    "params": {
+     "shape": "ring",
+     "noise": 0.1
+    }
+   }
+  },
+  {
+   "id": "P06",
+   "kind": "null",
+   "question": "In the lab datasets named p06_d01 to p06_d14 (a binary label and six features), does a random forest reach a held-out accuracy at least 2 percentage points higher than a logistic regression?",
+   "lab_data": "p06",
+   "reference": {
+    "conclusion": "No. By construction the effect is -0.01136 against a threshold of 0.02.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": -0.011360000000000037,
+    "threshold": 0.02,
+    "family": "rf_vs_lr",
+    "params": {
+     "shape": "linear",
+     "noise": 0.1
+    }
+   }
+  },
+  {
+   "id": "P07",
+   "kind": "null",
+   "question": "In the lab datasets named p07_d01 to p07_d14 (a binary label and six features), does a random forest reach a held-out accuracy at least 2 percentage points higher than a logistic regression?",
+   "lab_data": "p07",
+   "reference": {
+    "conclusion": "No. By construction the effect is -0.01187 against a threshold of 0.02.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": -0.011869999999999936,
+    "threshold": 0.02,
+    "family": "rf_vs_lr",
+    "params": {
+     "shape": "linear",
+     "noise": 0.25
+    }
+   }
+  },
+  {
+   "id": "P08",
+   "kind": "positive",
+   "question": "In the lab datasets named p08_d01 to p08_d14 (a numeric outcome y and features x1-x4), is the linear slope of y on x1 (adjusting for x3 and x4) at least 0.3 larger among rows with x2 > 0 than among rows with x2 <= 0?",
+   "lab_data": "p08",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +1 against a threshold of 0.3.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 1.0002780719986373,
+    "threshold": 0.3,
+    "family": "interaction",
+    "params": {
+     "b": 1.0
+    }
+   }
+  },
+  {
+   "id": "P09",
+   "kind": "null",
+   "question": "In the lab datasets named p09_d01 to p09_d14 (a numeric outcome y and features x1-x4), is the linear slope of y on x1 (adjusting for x3 and x4) at least 0.3 larger among rows with x2 > 0 than among rows with x2 <= 0?",
+   "lab_data": "p09",
+   "reference": {
+    "conclusion": "No. By construction the effect is -9.412e-05 against a threshold of 0.3.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": -9.411864979613771e-05,
+    "threshold": 0.3,
+    "family": "interaction",
+    "params": {
+     "b": 0.0
+    }
+   }
+  },
+  {
+   "id": "P10",
+   "kind": "null",
+   "question": "In the lab datasets named p10_d01 to p10_d14 (a numeric outcome y and features x1-x4), is the linear slope of y on x1 (adjusting for x3 and x4) at least 0.3 larger among rows with x2 > 0 than among rows with x2 <= 0?",
+   "lab_data": "p10",
+   "reference": {
+    "conclusion": "No. By construction the effect is +0.1075 against a threshold of 0.3 (real, but below the threshold).",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "small",
+    "effect": 0.1075006317281163,
+    "threshold": 0.3,
+    "family": "interaction",
+    "params": {
+     "b": 0.1
+    }
+   }
+  },
+  {
+   "id": "P11",
+   "kind": "positive",
+   "question": "In the lab datasets named p11_d01 to p11_d14 (a binary label, features x1-x5 and a 0/1 column 'source'), does training a logistic regression on source-0 rows only, instead of on all rows, raise its held-out accuracy on source-0 rows by at least 1 percentage point(s)?",
+   "lab_data": "p11",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.03808 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.03808470776129491,
+    "threshold": 0.01,
+    "family": "source_noise",
+    "params": {
+     "wrong": 1.0
+    }
+   }
+  },
+  {
+   "id": "P12",
+   "kind": "null",
+   "question": "In the lab datasets named p12_d01 to p12_d14 (a binary label, features x1-x5 and a 0/1 column 'source'), does training a logistic regression on source-0 rows only, instead of on all rows, raise its held-out accuracy on source-0 rows by at least 1 percentage point(s)?",
+   "lab_data": "p12",
+   "reference": {
+    "conclusion": "No. By construction the effect is -0.0003232 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": -0.0003231763619574446,
+    "threshold": 0.01,
+    "family": "source_noise",
+    "params": {
+     "wrong": 0.0
+    }
+   }
+  },
+  {
+   "id": "P13",
+   "kind": "null",
+   "question": "In the lab datasets named p13_d01 to p13_d14 (a binary label, features x1-x5 and a 0/1 column 'source'), does training a logistic regression on source-0 rows only, instead of on all rows, raise its held-out accuracy on source-0 rows by at least 1 percentage point(s)?",
+   "lab_data": "p13",
+   "reference": {
+    "conclusion": "No. By construction the effect is +0.003883 against a threshold of 0.01 (real, but below the threshold).",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "small",
+    "effect": 0.003883495145631022,
+    "threshold": 0.01,
+    "family": "source_noise",
+    "params": {
+     "wrong": 0.4
+    }
+   }
+  },
+  {
+   "id": "P14",
+   "kind": "positive",
+   "question": "Earlier analyses of the lab datasets named p14_d01 to p14_d14 (a binary label and features f1-f7) reported f7 as a strong predictor of the label. Does adding f7 to f1-f6 raise the held-out accuracy of a gradient-boosted tree model by at least 1 percentage point(s)?",
+   "lab_data": "p14",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.07772 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.0777199999999999,
+    "threshold": 0.01,
+    "family": "premise",
+    "params": {
+     "w7": 1.2
+    }
+   }
+  },
+  {
+   "id": "P15",
+   "kind": "null",
+   "question": "Earlier analyses of the lab datasets named p15_d01 to p15_d14 (a binary label and features f1-f7) reported f7 as a strong predictor of the label. Does adding f7 to f1-f6 raise the held-out accuracy of a gradient-boosted tree model by at least 1 percentage point(s)?",
+   "lab_data": "p15",
+   "reference": {
+    "conclusion": "No. By construction the effect is +8e-05 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": 8.000000000008001e-05,
+    "threshold": 0.01,
+    "family": "premise",
+    "params": {
+     "w7": 0.0
+    }
+   }
+  },
+  {
+   "id": "P16",
+   "kind": "null",
+   "question": "Earlier analyses of the lab datasets named p16_d01 to p16_d14 (a binary label and features f1-f7) reported f7 as a strong predictor of the label. Does adding f7 to f1-f6 raise the held-out accuracy of a gradient-boosted tree model by at least 1 percentage point(s)?",
+   "lab_data": "p16",
+   "reference": {
+    "conclusion": "No. By construction the effect is -0.00028 against a threshold of 0.01.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": -0.00027999999999994696,
+    "threshold": 0.01,
+    "family": "premise",
+    "params": {
+     "w7": 0.0
+    }
+   }
+  },
+  {
+   "id": "P17",
+   "kind": "positive",
+   "question": "In the lab datasets named p17_d01 to p17_d14 (a binary label, features x1-x5 and a time column t in [0, 1)), does a logistic regression trained on early rows (t < 0.5) lose at least 3 percentage points of accuracy on late rows (t >= 0.5) compared with held-out early rows?",
+   "lab_data": "p17",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.2794 against a threshold of 0.03.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.27939396740945815,
+    "threshold": 0.03,
+    "family": "drift",
+    "params": {
+     "shift": 1.0
+    }
+   }
+  },
+  {
+   "id": "P18",
+   "kind": "positive",
+   "question": "In the lab datasets named p18_d01 to p18_d14 (a binary label, features x1-x5 and a time column t in [0, 1)), does a logistic regression trained on early rows (t < 0.5) lose at least 3 percentage points of accuracy on late rows (t >= 0.5) compared with held-out early rows?",
+   "lab_data": "p18",
+   "reference": {
+    "conclusion": "Yes. By construction the effect is +0.222 against a threshold of 0.03.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "yes",
+    "class": "yes",
+    "effect": 0.2220160371522505,
+    "threshold": 0.03,
+    "family": "drift",
+    "params": {
+     "shift": 0.8
+    }
+   }
+  },
+  {
+   "id": "P19",
+   "kind": "null",
+   "question": "In the lab datasets named p19_d01 to p19_d14 (a binary label, features x1-x5 and a time column t in [0, 1)), does a logistic regression trained on early rows (t < 0.5) lose at least 3 percentage points of accuracy on late rows (t >= 0.5) compared with held-out early rows?",
+   "lab_data": "p19",
+   "reference": {
+    "conclusion": "No. By construction the effect is -0.004005 against a threshold of 0.03.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": -0.004005460711931086,
+    "threshold": 0.03,
+    "family": "drift",
+    "params": {
+     "shift": 0.0
+    }
+   }
+  },
+  {
+   "id": "P20",
+   "kind": "null",
+   "question": "In the lab datasets named p20_d01 to p20_d14 (a binary label, features x1-x5 and a time column t in [0, 1)), does a logistic regression trained on early rows (t < 0.5) lose at least 3 percentage points of accuracy on late rows (t >= 0.5) compared with held-out early rows?",
+   "lab_data": "p20",
+   "reference": {
+    "conclusion": "No. By construction the effect is -0.001475 against a threshold of 0.03.",
+    "source": "planted: generated data, truth computed on 200,000 rows"
+   },
+   "truth": {
+    "answer": "no",
+    "class": "no",
+    "effect": -0.001475439277007884,
+    "threshold": 0.03,
+    "family": "drift",
+    "params": {
+     "shift": 0.0
+    }
+   }
+  }
+ ]
+}

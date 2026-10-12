@@ -1,0 +1,1648 @@
+{
+  "snapshot_date": "2026-10-10",
+  "source_root": "/home/ec2-user/zhangguijia/FarField",
+  "source_revision": "3594d1789c484557f4a52adcfe579de069e62c76",
+  "source_has_uncommitted_changes": true,
+  "copy_semantics": "regular_files_byte_identical_no_symlinks_or_source_edits",
+  "remote_modules": [
+    "farfield.extras.researchspace",
+    "farfield.extras.farspace",
+    "farfield.extras.explore",
+    "farfield.extras.openworld.remote",
+    "farfield.extras.openworld.discovery",
+    "farfield.extras.openworld.ideation",
+    "farfield.extras.openworld.inquiry",
+    "farfield.extras.openworld.understanding",
+    "farfield.extras.openworld.sourcecheck",
+    "farfield.extras.openworld.memory",
+    "farfield.extras.openworld.response",
+    "farfield.extras.openworld.dependencies",
+    "farfield.extras.openworld.runtime"
+  ],
+  "data_modules": [
+    "farfield.extras.arxiv",
+    "farfield.extras.concepts",
+    "farfield.extras.corpus",
+    "farfield.extras.embed",
+    "farfield.extras.livefeed",
+    "farfield.extras.wiki",
+    "farfield.extras.prior",
+    "farfield.extras.citations",
+    "farfield.extras.harvest",
+    "farfield.extras.freeze",
+    "farfield.extras.histories",
+    "farfield.services.knowledge",
+    "farfield.services.localindex",
+    "farfield.services.sources",
+    "farfield.services.snapshot",
+    "farfield.services.verifypapers",
+    "farfield.services.workid",
+    "farfield.services.livefeed",
+    "farfield.services.prior"
+  ],
+  "test_modules": [
+    "test_concepts",
+    "test_corpus",
+    "test_discovery_runtime",
+    "test_exploration_allocation",
+    "test_farspace",
+    "test_harvest",
+    "test_inquiry_recorded_research",
+    "test_livefeed",
+    "test_openworld_workers",
+    "test_remote_search_contract",
+    "test_research_trajectory",
+    "test_researchspace"
+  ],
+  "source_modules": 128,
+  "files": [
+    {
+      "path": "CITATION.cff",
+      "role": "upstream_attribution",
+      "size": 1258,
+      "sha256": "4b51dbd32ed439981bc318e4b35f891b39a6a1792af2163b0d063d80a53f61b2"
+    },
+    {
+      "path": "LICENSE",
+      "role": "upstream_attribution",
+      "size": 1078,
+      "sha256": "40652ac043cede8347492fd9b2da6cf115e81731b4b2c6930ed1b83e6789d23e"
+    },
+    {
+      "path": "benchmarks/known-answers-v1.json",
+      "role": "dependency_fixture",
+      "size": 3083,
+      "sha256": "3e39f6bd0b1142496f8fa332472047c5d842a56176e3d7cb5f9d0b96a065c78c"
+    },
+    {
+      "path": "benchmarks/known-answers-v2.json",
+      "role": "dependency_fixture",
+      "size": 11785,
+      "sha256": "8c21682ab3e6846ddff1ba392c7dd82c1543c807012bb74526f1da18624d8a32"
+    },
+    {
+      "path": "benchmarks/planted-v1.json",
+      "role": "dependency_fixture",
+      "size": 14364,
+      "sha256": "a3ef8af5bbad82e4043787fdfb224827112cad25421139d842770a0cc48b01e7"
+    },
+    {
+      "path": "benchmarks/planted-v1b.json",
+      "role": "dependency_fixture",
+      "size": 11815,
+      "sha256": "cda6be833f4572888efa4cc0e3182b7a3f0ff27e46891275d0408ddeb07b923e"
+    },
+    {
+      "path": "concepts/README.md",
+      "role": "corpus_snapshot",
+      "size": 1194,
+      "sha256": "d5b99ada4f67a3672371407737c22761e3edbfd5ae2ec4116ec839bccd451b58"
+    },
+    {
+      "path": "concepts/arxiv_registry.json",
+      "role": "corpus_snapshot",
+      "size": 8753,
+      "sha256": "ca5215763029529657ea3560347e377d8fe2506a7593b6311778b6ced2b0b0ae"
+    },
+    {
+      "path": "concepts/attn-concepts-s1/G_full.json",
+      "role": "corpus_snapshot",
+      "size": 7878530,
+      "sha256": "f9752712937eca916241309b80c594c0eaa1fd386cb258b5d0bdb0d38159c0c5"
+    },
+    {
+      "path": "concepts/attn-concepts-s1/G_le_T.json",
+      "role": "corpus_snapshot",
+      "size": 5733344,
+      "sha256": "bad0d4a357950ed61ff23dbf797a12649997db70926cb6252b80269ab2abfb8f"
+    },
+    {
+      "path": "concepts/attn-concepts-s1/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 2979,
+      "sha256": "91bf941fc6e97184be7107fc21ae9fdf76858639baa12916f6fb78cab56fdcc9"
+    },
+    {
+      "path": "concepts/attn-concepts-s1/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 7408,
+      "sha256": "1bd702d07982f1ef926d76190a015ac4c449e77ea9088af282759476fbd0eef7"
+    },
+    {
+      "path": "concepts/cl-arxiv-concepts-v2/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 56082,
+      "sha256": "eee2b8e8fb1164218c0fed77e12688b75b8a7469ba5ce79e8ce007eaf91f0330"
+    },
+    {
+      "path": "concepts/cl-arxiv-concepts-v2/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 34171,
+      "sha256": "9c449746fc263b264982b4a82025174802ad308a823b6961109f0aab6f536fcd"
+    },
+    {
+      "path": "concepts/cl-arxiv-concepts/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 69611,
+      "sha256": "5ca0a25f4756d2e55a7289d0ed026fa04464d97db9224a0c09d8d6a6fa54b39d"
+    },
+    {
+      "path": "concepts/cl-arxiv-concepts/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 33948,
+      "sha256": "f571dca05cb2d17cc48a106e74b1c428a396c06a1328d0a009efd9cbc9829260"
+    },
+    {
+      "path": "concepts/ds-arxiv-concepts-2026/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 307,
+      "sha256": "f726b3a9d0e19a3c4b114e863ce7a910750f800eba438cb13aa9c37eb7e67481"
+    },
+    {
+      "path": "concepts/ds-arxiv-concepts-2026/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 11658,
+      "sha256": "7bff372feeb5df378489d225f8f38d3586715ed8c075579550a9e7c6484c54c4"
+    },
+    {
+      "path": "concepts/ds-arxiv-concepts-v2/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 2016,
+      "sha256": "aa2276998847255ea0be3af6b2307bcc59098f07937d475014e74b8534f1f922"
+    },
+    {
+      "path": "concepts/ds-arxiv-concepts-v2/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 11637,
+      "sha256": "81552d7fda71f9e5d96783e31207d570e843240589b659871faaeb6c6792a899"
+    },
+    {
+      "path": "concepts/ds-arxiv-concepts/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 2081,
+      "sha256": "c4a1115c80fa9346fa527b4469bbdf505fe10e7b247b14ac27234242092d4d0a"
+    },
+    {
+      "path": "concepts/ds-arxiv-concepts/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 11406,
+      "sha256": "c96ef3db64422812c90168865354439b7b9a6d93ec2b6faebbcc0b3e74ecdf3c"
+    },
+    {
+      "path": "contracts/CAPABILITIES.md",
+      "role": "dependency_fixture",
+      "size": 3416,
+      "sha256": "58cc160385986b49c05a4dc74443418df9dbe841b832a7764c29b9115fc8f474"
+    },
+    {
+      "path": "contracts/README.md",
+      "role": "dependency_fixture",
+      "size": 924,
+      "sha256": "36f46b88982f6b0bbf657ac04cc3c2588f2297969a5d0f3b19e54580e21470f8"
+    },
+    {
+      "path": "corpora/README.md",
+      "role": "corpus_snapshot",
+      "size": 893,
+      "sha256": "1cfff054eacb461de8d37475267c832d5f591ab8b4759d400ea0d5fa51698616"
+    },
+    {
+      "path": "corpora/attn-2017-p2/G_full.json",
+      "role": "corpus_snapshot",
+      "size": 320708,
+      "sha256": "ea0b2195d45f5e651bc04ecd81ebca4eba509cac983f10ce198a2f5fcd71497a"
+    },
+    {
+      "path": "corpora/attn-2017-p2/G_le_T.json",
+      "role": "corpus_snapshot",
+      "size": 128179,
+      "sha256": "eeea1ce1e01ffdd4b3c6486328321a802a5b93be67965606ed0af90e7facfa00"
+    },
+    {
+      "path": "corpora/attn-2017-p2/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 904,
+      "sha256": "0f8c096630dc56a02816a9da1583c2a9fce95c8e1cabdaae2117f232f95e90b9"
+    },
+    {
+      "path": "corpora/attn-2017-p2/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 3656,
+      "sha256": "6bc723a881ea7ef82c1d4119fe27c732ff5da8a923ad81341154292b286a063c"
+    },
+    {
+      "path": "corpora/attn-2017/G_full.json",
+      "role": "corpus_snapshot",
+      "size": 323391,
+      "sha256": "11d51f8e04a631dc0a267fd1547db4d4cc7ad530da8dd15df2388725d1b4b1d5"
+    },
+    {
+      "path": "corpora/attn-2017/G_le_T.json",
+      "role": "corpus_snapshot",
+      "size": 130859,
+      "sha256": "f0f3315367aa5b6e30e8597ad770d7c0cdf9d09676d84e4df1beaa911eef91fd"
+    },
+    {
+      "path": "corpora/attn-2017/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 904,
+      "sha256": "0f8c096630dc56a02816a9da1583c2a9fce95c8e1cabdaae2117f232f95e90b9"
+    },
+    {
+      "path": "corpora/attn-2017/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 3449,
+      "sha256": "07b58df553b4963e41a3486f9eae22ff8f9246f6070a67f7e261ad9455bb5ead"
+    },
+    {
+      "path": "corpora/cacheob-2017-p2/G_full.json",
+      "role": "corpus_snapshot",
+      "size": 252945,
+      "sha256": "d29c624fabbe814740ee2b373cd27046093d157f529ac57e80805c391d6c40d3"
+    },
+    {
+      "path": "corpora/cacheob-2017-p2/G_le_T.json",
+      "role": "corpus_snapshot",
+      "size": 183131,
+      "sha256": "b478731af17af5f963169cec7dc6c634d276313a36ec01bb317fb5b23126592a"
+    },
+    {
+      "path": "corpora/cacheob-2017-p2/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 260,
+      "sha256": "ca498e898d208f1a7b721b3df1083ec017cee53ff6f40e2e23c106e5b5b7ab53"
+    },
+    {
+      "path": "corpora/cacheob-2017-p2/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 3658,
+      "sha256": "72673ecef3057253cffda17e46ff04757b1627f3c99563464a9936ccd31da609"
+    },
+    {
+      "path": "corpora/cacheob-2017/G_full.json",
+      "role": "corpus_snapshot",
+      "size": 256140,
+      "sha256": "0b08b02efffbfb1f4d2db56b1a3099e7c4433d5afed3f9fc30adb45d6ef3be27"
+    },
+    {
+      "path": "corpora/cacheob-2017/G_le_T.json",
+      "role": "corpus_snapshot",
+      "size": 186323,
+      "sha256": "f949d1ba7a176ee3624e101f89bc839be654d838e026fe8da0e338efddb9bc74"
+    },
+    {
+      "path": "corpora/cacheob-2017/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 260,
+      "sha256": "ca498e898d208f1a7b721b3df1083ec017cee53ff6f40e2e23c106e5b5b7ab53"
+    },
+    {
+      "path": "corpora/cacheob-2017/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 3450,
+      "sha256": "eefb7d51dbc5bb20dc52846d65bab0f5145cd697f4c4be9ea94fdf7b7a9715dc"
+    },
+    {
+      "path": "corpora/registry.json",
+      "role": "corpus_snapshot",
+      "size": 3869,
+      "sha256": "93954d2a5c34967ac4537b7b14e5b052c4631e12280934446ee211fa6ec84833"
+    },
+    {
+      "path": "corpora/sparse-2017-p2/G_full.json",
+      "role": "corpus_snapshot",
+      "size": 299714,
+      "sha256": "9d0e9a3fd3ed291123f035cbf2966bf08773da7b1b301b8020eb2040f8e44657"
+    },
+    {
+      "path": "corpora/sparse-2017-p2/G_le_T.json",
+      "role": "corpus_snapshot",
+      "size": 167658,
+      "sha256": "0eb3f08835f8aa060b4779526ff0a66bfb6020adf2253a4a72e2258ccd41d32d"
+    },
+    {
+      "path": "corpora/sparse-2017-p2/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 540,
+      "sha256": "f1de656372e06d001d8ac46c66c0e3dd061f9d3ce958a970d2623a4d9a600837"
+    },
+    {
+      "path": "corpora/sparse-2017-p2/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 3680,
+      "sha256": "964b01f8c7bfa37ca269a662bac338596140e9f0d11ba064808929f5eeaf1238"
+    },
+    {
+      "path": "corpora/sparse-2017/G_full.json",
+      "role": "corpus_snapshot",
+      "size": 302005,
+      "sha256": "9b1eb76acca4852bdf8f464731f68e15e0a0333635036246cfe4c212713cb741"
+    },
+    {
+      "path": "corpora/sparse-2017/G_le_T.json",
+      "role": "corpus_snapshot",
+      "size": 169946,
+      "sha256": "e46ab80951ace915b3e16f4027f4c27aa3ac90d4cc08971191204633e1ba3023"
+    },
+    {
+      "path": "corpora/sparse-2017/heldout_post_T.json",
+      "role": "corpus_snapshot",
+      "size": 540,
+      "sha256": "f1de656372e06d001d8ac46c66c0e3dd061f9d3ce958a970d2623a4d9a600837"
+    },
+    {
+      "path": "corpora/sparse-2017/manifest.json",
+      "role": "corpus_snapshot",
+      "size": 3471,
+      "sha256": "48078f5be81bf6aa7a36d8cfa90c42e0ae0d07f5361c70989d755fb061161e9a"
+    },
+    {
+      "path": "reports/FEEDBACK_COMPLETION_EVAL_VALIDITY.zh-CN.md",
+      "role": "design_reference",
+      "size": 16410,
+      "sha256": "5f8050aebae5caf4de57e6bdd8dbbb529ffc83568fcdcf4efd73dd5f2508d0a1"
+    },
+    {
+      "path": "reports/RESEARCH_TRAJECTORY_REFACTOR_AND_PAPER_PLAN.zh-CN.md",
+      "role": "design_reference",
+      "size": 20382,
+      "sha256": "c06a706d58fb6afef5c4d6d98bb02392b9f519f9c49af975edda36d928edb718"
+    },
+    {
+      "path": "reports/SYSTEM_FEASIBILITY_AND_MODULE_EVALUATION.zh-CN.md",
+      "role": "design_reference",
+      "size": 19084,
+      "sha256": "88dec9e6c5865a658c5db9b120dd486deec51e41117bc7c6781f1b4ce924da30"
+    },
+    {
+      "path": "scripts/build_concepts.py",
+      "role": "data_script",
+      "size": 9319,
+      "sha256": "cb0165c3bd4cd8f9cd2654e77598968c4e787bbed139bba8913a61926150b385"
+    },
+    {
+      "path": "scripts/build_corpora.py",
+      "role": "data_script",
+      "size": 3789,
+      "sha256": "5597be2bd1acb9ad46914c655bbf878af01a8a15a49d2e9384e6dd4e9a0f494d"
+    },
+    {
+      "path": "scripts/fetch_lab_data.py",
+      "role": "data_script",
+      "size": 4670,
+      "sha256": "c6b8c2b78af1fda5b1bbdc858a44e540df040a0b01f60f6fa86d1168c7e930c5"
+    },
+    {
+      "path": "scripts/literature/eval_retrieval.py",
+      "role": "data_script",
+      "size": 6735,
+      "sha256": "e65422f00bbf9d5fab062df524fb4a54cf284cf50191afe20481ff221093d43f"
+    },
+    {
+      "path": "scripts/literature/harvest_arxiv.py",
+      "role": "data_script",
+      "size": 6401,
+      "sha256": "0a3cdaf2d5098006cd243094fdf4d1e9f6596461d6552f603304cbf014fb2223"
+    },
+    {
+      "path": "scripts/literature/serve_index.py",
+      "role": "data_script",
+      "size": 6591,
+      "sha256": "04bac07cdebd1dc0edb6cc43637955c616dda8fb4f4c574b8a0dbd16afd23196"
+    },
+    {
+      "path": "src/farfield/__init__.py",
+      "role": "runtime_dependency",
+      "size": 592,
+      "sha256": "f7b653b1d1cdcf0707a8fb980f434aa308128ecffa6bb0417bb159adb341cb52"
+    },
+    {
+      "path": "src/farfield/extras/__init__.py",
+      "role": "runtime_dependency",
+      "size": 107,
+      "sha256": "6c25609fa092e17958b0500958e77ac0115856c37d8e17b16b8e10bb7196335d"
+    },
+    {
+      "path": "src/farfield/extras/archive.py",
+      "role": "runtime_dependency",
+      "size": 12845,
+      "sha256": "527d21a546e5e05f840f4a662ca31d447a86ab35c8d6321cd4b4cc9a863826fd"
+    },
+    {
+      "path": "src/farfield/extras/arxiv.py",
+      "role": "data_pipeline",
+      "size": 23266,
+      "sha256": "714e0427ea54a8872d6f8b08fa614ccf628ebb874ca95b99f3e82f0ede9d41df"
+    },
+    {
+      "path": "src/farfield/extras/brief.py",
+      "role": "runtime_dependency",
+      "size": 15614,
+      "sha256": "dcd291b2236476c0bd8fd25e1c92937f74bfd767b95efe1f6d1a21f65cf297b6"
+    },
+    {
+      "path": "src/farfield/extras/chain.py",
+      "role": "runtime_dependency",
+      "size": 10986,
+      "sha256": "945bc6cbba5e11f005fce892333c7883949351211bfe8c6623f0c30d3434efa8"
+    },
+    {
+      "path": "src/farfield/extras/citations.py",
+      "role": "data_pipeline",
+      "size": 33233,
+      "sha256": "e5d3e247f89198e68b64a409844ea9fb0bb315a1c91911376183acb41dfacceb"
+    },
+    {
+      "path": "src/farfield/extras/claimspec.py",
+      "role": "runtime_dependency",
+      "size": 35629,
+      "sha256": "7581618566ab084ea49ce7eb7959958dd6012bee2f817703d321939212be122d"
+    },
+    {
+      "path": "src/farfield/extras/concepts.py",
+      "role": "data_pipeline",
+      "size": 30318,
+      "sha256": "12d3558b563b60fa8fbbbed8908682a2b48c799bbe11eb2c5adfc67144428669"
+    },
+    {
+      "path": "src/farfield/extras/corpus.py",
+      "role": "data_pipeline",
+      "size": 20061,
+      "sha256": "09aef95db2199f4f4d235d7059a97905011ffbd45f4c9689f5a2247ba989456d"
+    },
+    {
+      "path": "src/farfield/extras/derive.py",
+      "role": "runtime_dependency",
+      "size": 8108,
+      "sha256": "2e3337c0e4ab7121c079a0f3c2833ba352ed91cc0eb355f4008f55da9cb8302b"
+    },
+    {
+      "path": "src/farfield/extras/diagnose.py",
+      "role": "runtime_dependency",
+      "size": 41921,
+      "sha256": "1f15bd6c1ee9e1732f1236e92b065bbe71f679f81c349b7cba8b313121efee96"
+    },
+    {
+      "path": "src/farfield/extras/domain.py",
+      "role": "runtime_dependency",
+      "size": 16014,
+      "sha256": "35e10a00dd51ded58311033150b0924d276064c4cb183f57243264ec6d7635c4"
+    },
+    {
+      "path": "src/farfield/extras/dvsanity.py",
+      "role": "runtime_dependency",
+      "size": 5777,
+      "sha256": "550d917983065ab40bc3d37f06092938d482cacf1bc010d363eb8d525d08118a"
+    },
+    {
+      "path": "src/farfield/extras/dynworld.py",
+      "role": "runtime_dependency",
+      "size": 77370,
+      "sha256": "d70d7a52d84046694628e79ae931b9cad8f574e6241067aec128d0ddcf630211"
+    },
+    {
+      "path": "src/farfield/extras/embed.py",
+      "role": "data_pipeline",
+      "size": 6547,
+      "sha256": "85442e1ff399bb7847c55090d08c0f139d75e60a6221da5353841e6fbca52f42"
+    },
+    {
+      "path": "src/farfield/extras/evidence.py",
+      "role": "runtime_dependency",
+      "size": 23941,
+      "sha256": "7411d824f225635fe197762341822806fed760eb4f3393467dc8a31abae2d92f"
+    },
+    {
+      "path": "src/farfield/extras/exploratory.py",
+      "role": "runtime_dependency",
+      "size": 13650,
+      "sha256": "5b503cbd3cb3bb98ca4d2125a6e7595a0b355596b36b3a3cf0a81f00c608fda4"
+    },
+    {
+      "path": "src/farfield/extras/explore.py",
+      "role": "remote_core",
+      "size": 70818,
+      "sha256": "618ad1734014a4b4d7d23b14a1673874488aa225a435594eb49ff90d9a963010"
+    },
+    {
+      "path": "src/farfield/extras/farcompile.py",
+      "role": "runtime_dependency",
+      "size": 17774,
+      "sha256": "c16d94c9bc7e92fb5544fd3217e4b66480ee3bb930c54f95170273f92d267ebc"
+    },
+    {
+      "path": "src/farfield/extras/farspace.py",
+      "role": "remote_core",
+      "size": 5788,
+      "sha256": "8870c8115274a4084cb1f4676ac5992702782bba3fa2cad7cd96b419c8fb6023"
+    },
+    {
+      "path": "src/farfield/extras/filelock.py",
+      "role": "runtime_dependency",
+      "size": 897,
+      "sha256": "0e7b0cd93ddbe50b31829487689c4b8588139d6d7332d8b69bc66e3a740c53e3"
+    },
+    {
+      "path": "src/farfield/extras/freeze.py",
+      "role": "data_pipeline",
+      "size": 50906,
+      "sha256": "0646dd54ead4f9aeeeec40f7c4d341a6ecd0e448933e4fd0ae86b1bb8b30cb37"
+    },
+    {
+      "path": "src/farfield/extras/generate.py",
+      "role": "runtime_dependency",
+      "size": 59942,
+      "sha256": "4304b822d7c5a36c5d5ec378384e3110d94f760ff4be528aebbe7b48f72b99fc"
+    },
+    {
+      "path": "src/farfield/extras/genworld.py",
+      "role": "runtime_dependency",
+      "size": 40321,
+      "sha256": "8ed913d114e0c12935063d5ed04a8792b904c1c3acaf15266061c993721beef7"
+    },
+    {
+      "path": "src/farfield/extras/harness.py",
+      "role": "runtime_dependency",
+      "size": 6550,
+      "sha256": "c8b17121106ffdeda088b712b5ece509bccf985975e86be517f62c0a3eaaf7b2"
+    },
+    {
+      "path": "src/farfield/extras/harvest.py",
+      "role": "data_pipeline",
+      "size": 13743,
+      "sha256": "688592c81abc2472ca1aab1a74a7baccc221da8067c36aa8a21cd07f4a80ec74"
+    },
+    {
+      "path": "src/farfield/extras/histories.py",
+      "role": "data_pipeline",
+      "size": 14328,
+      "sha256": "842cf53b3cbbbc9fbe5d550ba5d16ed6b80d9c8a37c006096318f8e6e31f4e16"
+    },
+    {
+      "path": "src/farfield/extras/hostexp.py",
+      "role": "runtime_dependency",
+      "size": 15176,
+      "sha256": "58721a8fa73da6018fbfabd44cab8ea5c8d8c7fc563e4fe4cf9b00bc0cea0018"
+    },
+    {
+      "path": "src/farfield/extras/ideakind.py",
+      "role": "runtime_dependency",
+      "size": 5296,
+      "sha256": "567240785f8efe246f20489f33ff9128ccaff9c2a013b8ef4669684991a251f9"
+    },
+    {
+      "path": "src/farfield/extras/iterate.py",
+      "role": "runtime_dependency",
+      "size": 10188,
+      "sha256": "b9d4070f4dea98988667153c425e600ff90c0a3e5eb71c6c35b26e1ecef4da9a"
+    },
+    {
+      "path": "src/farfield/extras/knowledge.py",
+      "role": "runtime_dependency",
+      "size": 5605,
+      "sha256": "a8d757ba4b62999f06c5f28ad7e95808c442b3d0a4b2e06097c62375a752dddb"
+    },
+    {
+      "path": "src/farfield/extras/lifecycle.py",
+      "role": "runtime_dependency",
+      "size": 50672,
+      "sha256": "990edda63a4c3c336458a539abb5d1c97a1141bbbd53c6c9c40a986b0fbe18be"
+    },
+    {
+      "path": "src/farfield/extras/livefeed.py",
+      "role": "data_pipeline",
+      "size": 22205,
+      "sha256": "a11c3d058de1a5e8649078ab0ac9b3ef8aa4124129d1a3bf17d01a8ff8238dd6"
+    },
+    {
+      "path": "src/farfield/extras/llm.py",
+      "role": "runtime_dependency",
+      "size": 27807,
+      "sha256": "d343fc8aa69dbbd5fa0f00b023e6bdd5910156c886da43048df2e202bd56d3ad"
+    },
+    {
+      "path": "src/farfield/extras/objectprops.py",
+      "role": "runtime_dependency",
+      "size": 6357,
+      "sha256": "7635cf4343b80869883e365958da716edec440a51f2d591fd4b3b337020585f9"
+    },
+    {
+      "path": "src/farfield/extras/openworld/__init__.py",
+      "role": "runtime_dependency",
+      "size": 60069,
+      "sha256": "988aafb52399387daa57d26e085d61bb330a1bd14bdaeec31b62d12fd0983225"
+    },
+    {
+      "path": "src/farfield/extras/openworld/actions.py",
+      "role": "runtime_dependency",
+      "size": 92120,
+      "sha256": "fb362f6c6fd71087c2565032400438ea58438e1b5795cb6e3d4b0ae6080b1df7"
+    },
+    {
+      "path": "src/farfield/extras/openworld/capability.py",
+      "role": "runtime_dependency",
+      "size": 10755,
+      "sha256": "86c0d888e41bcb69c0562386217a9f42a24409a930dcc23ba5a4f35608e218aa"
+    },
+    {
+      "path": "src/farfield/extras/openworld/claim_relations.py",
+      "role": "runtime_dependency",
+      "size": 11260,
+      "sha256": "babe292871adb700ec751eb364066b1bc5b289212c1fadf481d5e5cc02fc37e1"
+    },
+    {
+      "path": "src/farfield/extras/openworld/contract.py",
+      "role": "runtime_dependency",
+      "size": 21028,
+      "sha256": "803ffc19408b2838bf223852c2feb3be36c54f200c332d933cb97dd04d96e6f9"
+    },
+    {
+      "path": "src/farfield/extras/openworld/dependencies.py",
+      "role": "remote_core",
+      "size": 7117,
+      "sha256": "c35e4163589e9ac846fb7af797b59bba92891def598e82a07db02afd8cb9c535"
+    },
+    {
+      "path": "src/farfield/extras/openworld/design.py",
+      "role": "runtime_dependency",
+      "size": 8309,
+      "sha256": "89235c1f20447d05aac5d20605a006a913081491dc9c1be6afca62163b73b191"
+    },
+    {
+      "path": "src/farfield/extras/openworld/discovery.py",
+      "role": "remote_core",
+      "size": 115434,
+      "sha256": "e66dddbb26944a8995caafe6be1293de0bf3f47a92bb91a853402884c7429648"
+    },
+    {
+      "path": "src/farfield/extras/openworld/env.py",
+      "role": "runtime_dependency",
+      "size": 10339,
+      "sha256": "0a434a5a727b5bbdd3d6b5c0857575144bc725842bf0057ae8bd8910db05f797"
+    },
+    {
+      "path": "src/farfield/extras/openworld/events.py",
+      "role": "runtime_dependency",
+      "size": 7776,
+      "sha256": "f9fceb41e3885b0aa633331d8ad9ad197219b1201b5e6527a40175c40b653a4b"
+    },
+    {
+      "path": "src/farfield/extras/openworld/evolve.py",
+      "role": "runtime_dependency",
+      "size": 14374,
+      "sha256": "8e9b60854a025e0b8e46a8803c934ab7fcd715598a46f1d9eb196811d70c869a"
+    },
+    {
+      "path": "src/farfield/extras/openworld/executors.py",
+      "role": "runtime_dependency",
+      "size": 95328,
+      "sha256": "00b817aa1e6892ed7281ad4d93e986b38c8178c7f07acd5494802df526b0be11"
+    },
+    {
+      "path": "src/farfield/extras/openworld/experiment.py",
+      "role": "runtime_dependency",
+      "size": 55116,
+      "sha256": "11404bb2294a740383104d4ce92dd1a927c6a1706679359725c980e905ea58dc"
+    },
+    {
+      "path": "src/farfield/extras/openworld/exploration.py",
+      "role": "runtime_dependency",
+      "size": 32347,
+      "sha256": "ff3402f552a0d5a2be1d115f20564b594b60ce0a0ce0ab008f8220074da0c5fe"
+    },
+    {
+      "path": "src/farfield/extras/openworld/exploratory.py",
+      "role": "runtime_dependency",
+      "size": 16840,
+      "sha256": "81e9e14948bcf643b673f13169e3c78504f5d611e3055bf87908d51a048398e5"
+    },
+    {
+      "path": "src/farfield/extras/openworld/frontier.py",
+      "role": "runtime_dependency",
+      "size": 26324,
+      "sha256": "35e5f1c5a440b4ad5325a6feeb4a12feb229ce18a81755db58f0444775651c5d"
+    },
+    {
+      "path": "src/farfield/extras/openworld/ideation.py",
+      "role": "remote_core",
+      "size": 73369,
+      "sha256": "a108df917521b9ad5b8f739ccc88eb21853d6aaea1c11ec7d1da87942bac80da"
+    },
+    {
+      "path": "src/farfield/extras/openworld/inquiry.py",
+      "role": "remote_core",
+      "size": 10531,
+      "sha256": "7eac94348444cb9685aa7d8a5548c32aeae635e1538ce22360424fab88a21915"
+    },
+    {
+      "path": "src/farfield/extras/openworld/journal.py",
+      "role": "runtime_dependency",
+      "size": 31332,
+      "sha256": "9fe8ef9dd6ee7c052dd3f2c0068b08b504fee80c3b44ab6feb5636721b46fef7"
+    },
+    {
+      "path": "src/farfield/extras/openworld/judgment.py",
+      "role": "runtime_dependency",
+      "size": 27293,
+      "sha256": "c1d61acc53fba5112fb5873168a31266450d80dce9286ef4cc720f5025aebda9"
+    },
+    {
+      "path": "src/farfield/extras/openworld/kernel.py",
+      "role": "runtime_dependency",
+      "size": 12472,
+      "sha256": "43a0a02a21fba123ad7f1f7842e9e434ea4a6783edffdf4f8fac4e33512a72a0"
+    },
+    {
+      "path": "src/farfield/extras/openworld/measurement.py",
+      "role": "runtime_dependency",
+      "size": 7429,
+      "sha256": "a83afa8b59f94aac1f1a9aecceacaa6633e8c484e6461e261b7497d4ea03d998"
+    },
+    {
+      "path": "src/farfield/extras/openworld/memory.py",
+      "role": "remote_core",
+      "size": 9476,
+      "sha256": "6217860a4e7f0c47a95208df69f4dd2b2dd6e6370fd4a4723ea7a598f0fc30ee"
+    },
+    {
+      "path": "src/farfield/extras/openworld/objective.py",
+      "role": "runtime_dependency",
+      "size": 10643,
+      "sha256": "57ec51f7a99ed02cb7e10371b3e0f7243be57593a15109c4c9fc36a1cd37daa3"
+    },
+    {
+      "path": "src/farfield/extras/openworld/progress.py",
+      "role": "runtime_dependency",
+      "size": 33632,
+      "sha256": "7b676b0af5d6430c1898caf1717cb698c1c459dbb734d3bf252813eb71ef2c58"
+    },
+    {
+      "path": "src/farfield/extras/openworld/quality.py",
+      "role": "runtime_dependency",
+      "size": 57410,
+      "sha256": "5f41e8915ba539dad55ee3bc5d051f6770ca5da157d678497f19ef40181f15da"
+    },
+    {
+      "path": "src/farfield/extras/openworld/recipes.py",
+      "role": "runtime_dependency",
+      "size": 7289,
+      "sha256": "47fda5e722e2d37d241e4f8a948f09441120e251b640dcc6c9c35c83786557d6"
+    },
+    {
+      "path": "src/farfield/extras/openworld/recovery.py",
+      "role": "runtime_dependency",
+      "size": 19211,
+      "sha256": "81d7bbdc0e03ed22bf007e6c90c62f2210e40a96e1382f8f6c640a07920cd4f5"
+    },
+    {
+      "path": "src/farfield/extras/openworld/reducer.py",
+      "role": "runtime_dependency",
+      "size": 38052,
+      "sha256": "dad9aec37efaeae1f34a50c40acda5fc3a5a8d06f524b95341ee3df687734699"
+    },
+    {
+      "path": "src/farfield/extras/openworld/remote.py",
+      "role": "remote_core",
+      "size": 14920,
+      "sha256": "97e13622753965bfc614b610c7712316d2ce4f8ee68b35b8aee1fb909e12afd7"
+    },
+    {
+      "path": "src/farfield/extras/openworld/requirement.py",
+      "role": "runtime_dependency",
+      "size": 71762,
+      "sha256": "5b88c677d8a7c605e91b3404ac189620c3f5494f9495e80291f3c048013e11d1"
+    },
+    {
+      "path": "src/farfield/extras/openworld/resources.py",
+      "role": "runtime_dependency",
+      "size": 22804,
+      "sha256": "5a489542e904d6dc15351e7f60e80f1725908ca16ec00700465ad1a9ce113a85"
+    },
+    {
+      "path": "src/farfield/extras/openworld/response.py",
+      "role": "remote_core",
+      "size": 13983,
+      "sha256": "ea3595bcf106b3f453f84b041400193db7486ddc24d13b54a82866b0d68796fd"
+    },
+    {
+      "path": "src/farfield/extras/openworld/restart.py",
+      "role": "runtime_dependency",
+      "size": 6105,
+      "sha256": "dcbe3d6f8ff3c466c241e4fa37603aedaa03f386488dff386f87d2fa103ade28"
+    },
+    {
+      "path": "src/farfield/extras/openworld/runtime.py",
+      "role": "remote_core",
+      "size": 29153,
+      "sha256": "decf34226c128802d621297cab502e18c93fd0e21969c753b1ee9a0d71a98840"
+    },
+    {
+      "path": "src/farfield/extras/openworld/scheduler.py",
+      "role": "runtime_dependency",
+      "size": 35469,
+      "sha256": "d8fe86a8489deda599c47385c4dffdbedc10bd6f97c6217976fc3857d0871aef"
+    },
+    {
+      "path": "src/farfield/extras/openworld/sourcecheck.py",
+      "role": "remote_core",
+      "size": 7582,
+      "sha256": "e768e5779465b940606fa56e6df43ca972d110cd8870ca9cb7fb1cecec523016"
+    },
+    {
+      "path": "src/farfield/extras/openworld/state.py",
+      "role": "runtime_dependency",
+      "size": 31189,
+      "sha256": "aadc306a7706f5ed970b01492ab0ebb5e06a00e509b5bc655632eb05c03702be"
+    },
+    {
+      "path": "src/farfield/extras/openworld/study.py",
+      "role": "runtime_dependency",
+      "size": 12411,
+      "sha256": "ba1d0b5691c2542a2aec75133c5b06ab756e893d1fc705792c76b999438351a2"
+    },
+    {
+      "path": "src/farfield/extras/openworld/termination.py",
+      "role": "runtime_dependency",
+      "size": 18632,
+      "sha256": "c335285c0edbbc5f52e03cb44f70896ade59920bce2be3863d0a5b834c5c5880"
+    },
+    {
+      "path": "src/farfield/extras/openworld/understanding.py",
+      "role": "remote_core",
+      "size": 5447,
+      "sha256": "0fbf4d15001ce3dc0fabfbc9dbc3c9992aa86bcfbf3b1343a49a970a404eb878"
+    },
+    {
+      "path": "src/farfield/extras/openworld/workers.py",
+      "role": "runtime_dependency",
+      "size": 97656,
+      "sha256": "a6bb4c75be78c6787235fbe26ccde0b7012a858f5bb41fd4d3666d25bbd70834"
+    },
+    {
+      "path": "src/farfield/extras/openworld/worldio.py",
+      "role": "runtime_dependency",
+      "size": 6172,
+      "sha256": "a6f674aad32573b720adbd07287553a31e4fa27e02b209c00644759c20e9a7d2"
+    },
+    {
+      "path": "src/farfield/extras/packet.py",
+      "role": "runtime_dependency",
+      "size": 90308,
+      "sha256": "29da35b221c1449bbbb9a93e980b5e10b6f12e711417e383b35bef06a3030d64"
+    },
+    {
+      "path": "src/farfield/extras/packet_copy.py",
+      "role": "runtime_dependency",
+      "size": 36367,
+      "sha256": "5de17e62d045926e4d459eddeadc72eb8f9a1899ba230ea7d8b042ae88cee38f"
+    },
+    {
+      "path": "src/farfield/extras/paperplan.py",
+      "role": "runtime_dependency",
+      "size": 38804,
+      "sha256": "c235b904fbadf3a933cfe9fb16d3ada7692822cb35432f3254c3c50317fb6837"
+    },
+    {
+      "path": "src/farfield/extras/parallel.py",
+      "role": "runtime_dependency",
+      "size": 2021,
+      "sha256": "9bd8f8421c1c27fab27ba781f14ad027bdd623691c2d20dc658783a0c7c0fc44"
+    },
+    {
+      "path": "src/farfield/extras/plugins.py",
+      "role": "runtime_dependency",
+      "size": 16421,
+      "sha256": "89ebef9d4babab7ceda7b646479bcfd3bf1b79409798c7d7f94e2681c4a29d9f"
+    },
+    {
+      "path": "src/farfield/extras/prior.py",
+      "role": "data_pipeline",
+      "size": 9075,
+      "sha256": "ab11962a68496493e79dfd981b920a03126db420af0aa365e042d473df13e3c5"
+    },
+    {
+      "path": "src/farfield/extras/probeexp.py",
+      "role": "runtime_dependency",
+      "size": 35219,
+      "sha256": "9fd411fb8047c4c2214fd3ac187d0308ee3568904439275e36cce1b6c0448df2"
+    },
+    {
+      "path": "src/farfield/extras/program.py",
+      "role": "runtime_dependency",
+      "size": 24013,
+      "sha256": "a184365ab09f070b9f23144b3021f1903a7342eaa5dc054dc795015f3285b821"
+    },
+    {
+      "path": "src/farfield/extras/reframe.py",
+      "role": "runtime_dependency",
+      "size": 17230,
+      "sha256": "4cb23698c07fc098eb8c6dc37b0b4eb8c91e6615430fe7c4d4547742991a2b4c"
+    },
+    {
+      "path": "src/farfield/extras/researchspace.py",
+      "role": "remote_core",
+      "size": 34028,
+      "sha256": "8867f0cd6ef9aa347fa8ecd8a3ba2d1384ebb22013a1a645b55117dc732e0e23"
+    },
+    {
+      "path": "src/farfield/extras/routing.py",
+      "role": "runtime_dependency",
+      "size": 31879,
+      "sha256": "5bd5c59fa875bf7a3c8c5ac16321e3d5e02d854cdee7123556dc2645c520c290"
+    },
+    {
+      "path": "src/farfield/extras/schemas.py",
+      "role": "runtime_dependency",
+      "size": 12718,
+      "sha256": "869883d1ba0b4fe2df3fdfbd3534e63810c4704d4703fc4dcdf76ac3de076188"
+    },
+    {
+      "path": "src/farfield/extras/score.py",
+      "role": "runtime_dependency",
+      "size": 5341,
+      "sha256": "a903266d6e1a5b2e3333b7580f52f9679fb7aca06efa3da92b16948e8b63706c"
+    },
+    {
+      "path": "src/farfield/extras/skills.py",
+      "role": "runtime_dependency",
+      "size": 14492,
+      "sha256": "e0c0f6d5f6ed7a42bb35eb296bfdaee47258ffb193d542882f3f7bee3a0a72d8"
+    },
+    {
+      "path": "src/farfield/extras/snapshot.py",
+      "role": "runtime_dependency",
+      "size": 7471,
+      "sha256": "58477a72d4e27f1694368f15532ae4225991c8d9a1e5f73051a39af849f264c4"
+    },
+    {
+      "path": "src/farfield/extras/sources.py",
+      "role": "runtime_dependency",
+      "size": 19028,
+      "sha256": "ba8a2c803757ee1216cde714a49f4970b8d25633cae189cd25ef158bdc23d2f5"
+    },
+    {
+      "path": "src/farfield/extras/swe_trace.py",
+      "role": "runtime_dependency",
+      "size": 15028,
+      "sha256": "f3e904581d1734eb9e8287c6fdd4d665b74ce10a0ad54af4167a4df9260f0ed7"
+    },
+    {
+      "path": "src/farfield/extras/validity.py",
+      "role": "runtime_dependency",
+      "size": 24642,
+      "sha256": "792c7f3929aff57c8163f410d26fefe64182c0fb85fb2c16913644bec7f57f60"
+    },
+    {
+      "path": "src/farfield/extras/value.py",
+      "role": "runtime_dependency",
+      "size": 9433,
+      "sha256": "3aed03d728012196d2f717454255212df80c6bda22242845e4cf698bbee3cf3a"
+    },
+    {
+      "path": "src/farfield/extras/verifypapers.py",
+      "role": "runtime_dependency",
+      "size": 8385,
+      "sha256": "0211dbf8ed166bd7d2f3dac8fd034fef270b534c5b453977e421a70a6d0af285"
+    },
+    {
+      "path": "src/farfield/extras/wiki.py",
+      "role": "data_pipeline",
+      "size": 29706,
+      "sha256": "fd42a197d601eca9a3045e32e3d254a325c715ec8986127ba1e8585f1b395840"
+    },
+    {
+      "path": "src/farfield/extras/workid.py",
+      "role": "runtime_dependency",
+      "size": 10568,
+      "sha256": "5e0305302fddad4e90f9494faf209cfb8422e07f0254f51c26cc3d98265b403a"
+    },
+    {
+      "path": "src/farfield/extras/workspace.py",
+      "role": "runtime_dependency",
+      "size": 16826,
+      "sha256": "4d3a91228bac95bb8ab4a6e484442201156e9208faea6e1df175c1e9d6b2ba8b"
+    },
+    {
+      "path": "src/farfield/extras/world.py",
+      "role": "runtime_dependency",
+      "size": 41152,
+      "sha256": "4d4515a2c1ff1b20f3597e7cb6c84949fa6b442317655b583925554d46e1f510"
+    },
+    {
+      "path": "src/farfield/extras/worldfields.py",
+      "role": "runtime_dependency",
+      "size": 13486,
+      "sha256": "0066a0d55f1a8e72f613fe7f8c5ad224833c0b6cd5e133e36b2b465731ba68a3"
+    },
+    {
+      "path": "src/farfield/extras/worldsim.py",
+      "role": "runtime_dependency",
+      "size": 41153,
+      "sha256": "e1bb3cf975b6da7e5dff1f773c63ea7b9e197da1f6eef463feaa9617546c2356"
+    },
+    {
+      "path": "src/farfield/extras/writeup.py",
+      "role": "runtime_dependency",
+      "size": 10959,
+      "sha256": "231d384f17f3f483778bfd01e4e3088c541cefaefac8ef4a727e5fd57d804b67"
+    },
+    {
+      "path": "src/farfield/graph.py",
+      "role": "runtime_dependency",
+      "size": 5052,
+      "sha256": "683e7a76aa2928ae92cc1861231d9bc95a3435729cf0b147c771d609193a9b8a"
+    },
+    {
+      "path": "src/farfield/ledger.py",
+      "role": "runtime_dependency",
+      "size": 6913,
+      "sha256": "41e895decec548e1158180abc461286016154aba712be36a23c86c024f1c0bc9"
+    },
+    {
+      "path": "src/farfield/models.py",
+      "role": "runtime_dependency",
+      "size": 14564,
+      "sha256": "f77cce9a55614e0f190e671a5306ed585bc28e0bc543955b263d9259d093a9ed"
+    },
+    {
+      "path": "src/farfield/policy.py",
+      "role": "runtime_dependency",
+      "size": 4005,
+      "sha256": "96c13a92aab659fd45dadd96f67292b27cbfa24dbe4d5a194ef72ca24273cd71"
+    },
+    {
+      "path": "src/farfield/runtime.py",
+      "role": "runtime_dependency",
+      "size": 60558,
+      "sha256": "54ff9406f19666873b1bdb6c67ae7d2166e16ec14f15ec83cb281a2eea6ff3e5"
+    },
+    {
+      "path": "src/farfield/scientist/__init__.py",
+      "role": "runtime_dependency",
+      "size": 2426,
+      "sha256": "69a0558653b2479dcf4bd0f5c2ae1352a9ebb97e4967b6957c9618a1187a4ea5"
+    },
+    {
+      "path": "src/farfield/scientist/lab.py",
+      "role": "runtime_dependency",
+      "size": 24263,
+      "sha256": "66ca9762210163a4c24ce7f9019d4f737d6f35c191cab34093d653025f17834f"
+    },
+    {
+      "path": "src/farfield/services/__init__.py",
+      "role": "runtime_dependency",
+      "size": 105,
+      "sha256": "79455a07831b5d87142673ba148716c72ae140f2ab7bf43915f63993f4a329f6"
+    },
+    {
+      "path": "src/farfield/services/experiments.py",
+      "role": "runtime_dependency",
+      "size": 5823,
+      "sha256": "651ec1e387cf2582d031252dd1092235e24024a8a4f4e3e86d62dba07377640a"
+    },
+    {
+      "path": "src/farfield/services/knowledge.py",
+      "role": "data_pipeline",
+      "size": 5605,
+      "sha256": "a8d757ba4b62999f06c5f28ad7e95808c442b3d0a4b2e06097c62375a752dddb"
+    },
+    {
+      "path": "src/farfield/services/livefeed.py",
+      "role": "data_pipeline",
+      "size": 22205,
+      "sha256": "a11c3d058de1a5e8649078ab0ac9b3ef8aa4124129d1a3bf17d01a8ff8238dd6"
+    },
+    {
+      "path": "src/farfield/services/llm.py",
+      "role": "runtime_dependency",
+      "size": 28609,
+      "sha256": "6138d717adce5a8bc05c84aeee3f8734c5437678d66c586b56b0cb8a4fe9e113"
+    },
+    {
+      "path": "src/farfield/services/localindex.py",
+      "role": "data_pipeline",
+      "size": 8045,
+      "sha256": "53f326b7743db14d2f7a035faf11d3744d9773119699fd6073be4900939cf27e"
+    },
+    {
+      "path": "src/farfield/services/native_evaluation.py",
+      "role": "runtime_dependency",
+      "size": 16299,
+      "sha256": "60f88636f91f257db4dae597f3297b8b310bf5ed82b3259ad56351db868aca2a"
+    },
+    {
+      "path": "src/farfield/services/parallel.py",
+      "role": "runtime_dependency",
+      "size": 2021,
+      "sha256": "9bd8f8421c1c27fab27ba781f14ad027bdd623691c2d20dc658783a0c7c0fc44"
+    },
+    {
+      "path": "src/farfield/services/prior.py",
+      "role": "data_pipeline",
+      "size": 9075,
+      "sha256": "ab11962a68496493e79dfd981b920a03126db420af0aa365e042d473df13e3c5"
+    },
+    {
+      "path": "src/farfield/services/snapshot.py",
+      "role": "data_pipeline",
+      "size": 7425,
+      "sha256": "75a78f891c986c12929b1ac69c0dd03278c4bea961f6f9738d45cbec267618dd"
+    },
+    {
+      "path": "src/farfield/services/sources.py",
+      "role": "data_pipeline",
+      "size": 19384,
+      "sha256": "48c9533465334dfe4f13b14881c2fe1ed23bb860d28fc255e9571e8677c9aab1"
+    },
+    {
+      "path": "src/farfield/services/verifypapers.py",
+      "role": "data_pipeline",
+      "size": 8385,
+      "sha256": "0211dbf8ed166bd7d2f3dac8fd034fef270b534c5b453977e421a70a6d0af285"
+    },
+    {
+      "path": "src/farfield/services/workid.py",
+      "role": "data_pipeline",
+      "size": 10568,
+      "sha256": "5e0305302fddad4e90f9494faf209cfb8422e07f0254f51c26cc3d98265b403a"
+    },
+    {
+      "path": "src/farfield/services/workspace.py",
+      "role": "runtime_dependency",
+      "size": 2185,
+      "sha256": "60e607c4cadd6677afb131c09732e5caa2b15d9a8883d57d4380e662026800cd"
+    },
+    {
+      "path": "src/farfield/timeslice.py",
+      "role": "runtime_dependency",
+      "size": 9365,
+      "sha256": "ab0a2f22870cf538384ec67890ed769a1c99049403426fdaade7326b48214990"
+    },
+    {
+      "path": "tests/fixtures/G_full.json",
+      "role": "dependency_fixture",
+      "size": 1110,
+      "sha256": "57cd5022db67354d2a2739b778514acc3325fdbb30e3288c039ee054643a1b6e"
+    },
+    {
+      "path": "tests/fixtures/G_full_mixed.json",
+      "role": "dependency_fixture",
+      "size": 1132,
+      "sha256": "e9c570e0da9d7001c27a0271322e1e0f1c146f67e674b8509532f4faa5725202"
+    },
+    {
+      "path": "tests/fixtures/G_full_near.json",
+      "role": "dependency_fixture",
+      "size": 1132,
+      "sha256": "004378ff823253689edc4c89813143da77a17a9a54ad5684622e46199d6d9347"
+    },
+    {
+      "path": "tests/fixtures/G_le_T.json",
+      "role": "dependency_fixture",
+      "size": 879,
+      "sha256": "7ae3922efd9ebd1e36eb1a16448bc29178ad006934c10175847d0a1346ec3d01"
+    },
+    {
+      "path": "tests/fixtures/G_le_T_mixed.json",
+      "role": "dependency_fixture",
+      "size": 906,
+      "sha256": "def4b573021323765ea823fb8d090b5553cc0a5e37f3f526b3cf6d0f26fef8ff"
+    },
+    {
+      "path": "tests/fixtures/G_le_T_near.json",
+      "role": "dependency_fixture",
+      "size": 906,
+      "sha256": "193a4150d2bb1c555720a2f06edf302f00e4306b2e89707cc4f2c6b194f75aec"
+    },
+    {
+      "path": "tests/fixtures/arxiv_atom.xml",
+      "role": "dependency_fixture",
+      "size": 1114,
+      "sha256": "42a8e9f3dcf70a4b3e847d28a22cbd77b1e8708c9630bd7f85994e94a6c13ff9"
+    },
+    {
+      "path": "tests/fixtures/citation_graph.json",
+      "role": "dependency_fixture",
+      "size": 821,
+      "sha256": "75bd3d921da31285934f7746c39ded97c6e86a95c68cfb2307c4dc189b71e58c"
+    },
+    {
+      "path": "tests/fixtures/e0_registry.json",
+      "role": "dependency_fixture",
+      "size": 1980,
+      "sha256": "bf26ad05a690cef89fdd08d24d9358cfc396f3a142a17e7e6cd1fdb29e0d5ad1"
+    },
+    {
+      "path": "tests/fixtures/heldout_post_T.json",
+      "role": "dependency_fixture",
+      "size": 69,
+      "sha256": "5442cfd771ef7135d872b0e254eaba598b9958cf32b8453bec0f6cad40321b38"
+    },
+    {
+      "path": "tests/fixtures/heldout_post_T_mixed.json",
+      "role": "dependency_fixture",
+      "size": 71,
+      "sha256": "7aad5ca71df6712eaf458d0bc52bc3b4142573c6f7e3b482f1db8e4715d7a724"
+    },
+    {
+      "path": "tests/fixtures/heldout_post_T_near.json",
+      "role": "dependency_fixture",
+      "size": 71,
+      "sha256": "112c0e0eb28d00840b0b538a5b85625013343d45bc5b22e0d4bc7ce4a6a06260"
+    },
+    {
+      "path": "tests/fixtures/mle_low.txt",
+      "role": "dependency_fixture",
+      "size": 892,
+      "sha256": "7e6ae7bfd65de3f69dbaf3e990a6bf98b517de35057865a11885720450b12a5d"
+    },
+    {
+      "path": "tests/test_concepts.py",
+      "role": "regression_test",
+      "size": 22657,
+      "sha256": "bb8c85572229119a23a0797004eb370aea3e685ef5c3f35a83f0c52e693a401b"
+    },
+    {
+      "path": "tests/test_corpus.py",
+      "role": "regression_test",
+      "size": 8716,
+      "sha256": "ba17e745d775a456fcc6680557569b76d4154a47761b2d66cef8965d4230f963"
+    },
+    {
+      "path": "tests/test_discovery_runtime.py",
+      "role": "regression_test",
+      "size": 45987,
+      "sha256": "4f14f603a4867148566971884363e991ff364685a954380085025b046d50862b"
+    },
+    {
+      "path": "tests/test_exploration_allocation.py",
+      "role": "regression_test",
+      "size": 8098,
+      "sha256": "ecd70849de9f89269f8099040a9486a5b9df5340df702e4d15ce18aa8d46e1b8"
+    },
+    {
+      "path": "tests/test_farspace.py",
+      "role": "regression_test",
+      "size": 7676,
+      "sha256": "9c116e663878cfb5a369e692d78081c6104ae936fef8de3f6998765bd250b883"
+    },
+    {
+      "path": "tests/test_harvest.py",
+      "role": "regression_test",
+      "size": 31632,
+      "sha256": "4150999d866a670262d7b6e1c23e1716c7650a8b1be170e7c419db7fc1229947"
+    },
+    {
+      "path": "tests/test_inquiry_recorded_research.py",
+      "role": "regression_test",
+      "size": 12250,
+      "sha256": "5e7b1f2e240635bfaac349f5c9fad4dcdc4f78f4694c8f46ac4b45cb683d628f"
+    },
+    {
+      "path": "tests/test_livefeed.py",
+      "role": "regression_test",
+      "size": 4800,
+      "sha256": "b6690498cd2e156ae3dd4d07ec22f3ca40b2a24f4ad963ba9244ff9710674e0a"
+    },
+    {
+      "path": "tests/test_openworld_workers.py",
+      "role": "regression_test",
+      "size": 17778,
+      "sha256": "d904260704af75212f30a2136dabc41831c5faa5ebba8ad8350bca9a5f13ce8a"
+    },
+    {
+      "path": "tests/test_remote_search_contract.py",
+      "role": "regression_test",
+      "size": 5600,
+      "sha256": "68601e66d0d126147665030590dd1b7a75f102ccfd1d23ec7a4c9e5a805d36be"
+    },
+    {
+      "path": "tests/test_research_trajectory.py",
+      "role": "regression_test",
+      "size": 11083,
+      "sha256": "ddb755c7a308bb730669e92e63c367d56d25a08ad2865fd7bd64e2fd43e76a00"
+    },
+    {
+      "path": "tests/test_researchspace.py",
+      "role": "regression_test",
+      "size": 12949,
+      "sha256": "86ac3b812632f562fc342332403bd613a25d7e0aa0612de7ad28a3f022ce687c"
+    },
+    {
+      "path": "worlds/README.md",
+      "role": "dependency_fixture",
+      "size": 5782,
+      "sha256": "2013fe87c7650aef80c6175cdb36931aacafd0fef02bf9cef09232c6e5f0ef14"
+    },
+    {
+      "path": "worlds/a2a-task-lifecycle/manifest.json",
+      "role": "dependency_fixture",
+      "size": 1121,
+      "sha256": "d8406d3806e42e2b554c85a525d4dbbfaa3a736ef7c033513e907f7653c6a4cd"
+    },
+    {
+      "path": "worlds/a2a-task-lifecycle/origin.json",
+      "role": "dependency_fixture",
+      "size": 488,
+      "sha256": "6d4d0fb86550333e158a2a343c4a9a9ef6129accf2256f6e37470f33bf74561f"
+    },
+    {
+      "path": "worlds/a2a-task-lifecycle/world.json",
+      "role": "dependency_fixture",
+      "size": 1722,
+      "sha256": "dbf04f31344bc9d52d5337addb3ac829190d13058877119e6dcabbc511420f00"
+    },
+    {
+      "path": "worlds/daojo-matrix-pd-v1/manifest.json",
+      "role": "dependency_fixture",
+      "size": 1026,
+      "sha256": "fbdb966d8ae935cdc999bb53d37409912bd2a7e90ce3956d4dad0d133f2e6ebe"
+    },
+    {
+      "path": "worlds/daojo-matrix-pd-v1/origin.json",
+      "role": "dependency_fixture",
+      "size": 562,
+      "sha256": "a6df787a22c21ffddc4eaacd185e676c5049eac557136aab4d09d2924bd6b634"
+    },
+    {
+      "path": "worlds/daojo-matrix-pd-v1/world.json",
+      "role": "dependency_fixture",
+      "size": 41376,
+      "sha256": "6189459d2dec52f837bd2d003e3e92905fbd67131715ec60dd3b3bebf81e503b"
+    },
+    {
+      "path": "worlds/fisher-iris/iris.json",
+      "role": "dependency_fixture",
+      "size": 14758,
+      "sha256": "c132abfc26f15b69435bae32a35b339358bb4de32b9771450843faf8c75fd640"
+    },
+    {
+      "path": "worlds/fisher-iris/manifest.json",
+      "role": "dependency_fixture",
+      "size": 755,
+      "sha256": "96c051e5bfc709824e99177e0776d68d7017979107a29c22e45cdf3b984d0291"
+    },
+    {
+      "path": "worlds/florentine-families/graph.json",
+      "role": "dependency_fixture",
+      "size": 1318,
+      "sha256": "4c679981b38a01a84674cbf02f5e3241f49c3903ed76a09e5384311d21946eb3"
+    },
+    {
+      "path": "worlds/florentine-families/manifest.json",
+      "role": "dependency_fixture",
+      "size": 756,
+      "sha256": "85216fdd218737a2b3447ef2f98173dc454212b56cd56983ba4116954499718d"
+    },
+    {
+      "path": "worlds/gutenberg-alice/alice.txt",
+      "role": "dependency_fixture",
+      "size": 9053,
+      "sha256": "69449a83b0006610a6037915bcba1e2eee5d033749e7d8f8284294aa078d15f7"
+    },
+    {
+      "path": "worlds/gutenberg-alice/keys.json",
+      "role": "dependency_fixture",
+      "size": 3366,
+      "sha256": "1ba6bbdee9336cbefccd7c34772a114391893b3deddab86d3cc412f17570233e"
+    },
+    {
+      "path": "worlds/gutenberg-alice/manifest.json",
+      "role": "dependency_fixture",
+      "size": 816,
+      "sha256": "b2cd86bd0a75b0c28466183da7b270ba348d5cc6cf0a381acb842a59e3958f7e"
+    },
+    {
+      "path": "worlds/gutenberg-alice/stream.json",
+      "role": "dependency_fixture",
+      "size": 11659,
+      "sha256": "b0ae26919f28dc6a9114565a305e00ff7e84d00ba7cfc5b2a1d1e3b91d7cdd2a"
+    },
+    {
+      "path": "worlds/gutenberg-pride/keys.json",
+      "role": "dependency_fixture",
+      "size": 91116,
+      "sha256": "6df522ab7f244c688a8f36965e40575523794a116bd4af8f039db0cb8015f5d3"
+    },
+    {
+      "path": "worlds/gutenberg-pride/manifest.json",
+      "role": "dependency_fixture",
+      "size": 1114,
+      "sha256": "cc35508809c86a1e0950abb9077426ba67825ae59b62caf9d1da74696ab314a2"
+    },
+    {
+      "path": "worlds/gutenberg-pride/origin.json",
+      "role": "dependency_fixture",
+      "size": 498,
+      "sha256": "2d76f089c534b7d9d72f916d36d4d85d6aa7972e0d3af723c766b37d2bc1a83d"
+    },
+    {
+      "path": "worlds/gutenberg-pride/stream.json",
+      "role": "dependency_fixture",
+      "size": 387520,
+      "sha256": "8331dd90fed452509123f47ecd602354a22b8579700fd33d88c1644187d1e843"
+    },
+    {
+      "path": "worlds/gutenberg-pride/text.txt",
+      "role": "dependency_fixture",
+      "size": 287452,
+      "sha256": "eb027814e669ba29cb4008af259a2cd2f2f81172738d08968d362a764115b364"
+    },
+    {
+      "path": "worlds/les-miserables/graph.json",
+      "role": "dependency_fixture",
+      "size": 13820,
+      "sha256": "4395b8732e602ca6b7de3682bd302b433e4079eae4931b576eafe518c7201120"
+    },
+    {
+      "path": "worlds/les-miserables/manifest.json",
+      "role": "dependency_fixture",
+      "size": 698,
+      "sha256": "2ebaf41bc62635cbbd0e5268f61c85a432a2026229e132cec87abdb9173be60c"
+    },
+    {
+      "path": "worlds/live-swe-agent-selfmod-v1/manifest.json",
+      "role": "dependency_fixture",
+      "size": 1581,
+      "sha256": "c15e15f4a0782b15d57d29d52b9b5af0c44339f74f279f62c8f2272786bb6090"
+    },
+    {
+      "path": "worlds/live-swe-agent-selfmod-v1/origin.json",
+      "role": "dependency_fixture",
+      "size": 887,
+      "sha256": "8b00a9d373c67b6f377ded7ecf9a4876d09b421ac02233298701b18dd2fc64e5"
+    },
+    {
+      "path": "worlds/live-swe-agent-selfmod-v1/world.json",
+      "role": "dependency_fixture",
+      "size": 648953,
+      "sha256": "7099e12c4d014e8fb184f01a7c592cc651d66ea45e960e47b4d96357bc0f9341"
+    },
+    {
+      "path": "worlds/lusseau-dolphins/graph.json",
+      "role": "dependency_fixture",
+      "size": 2296,
+      "sha256": "6bb31b0ea0b7d7d07f5c516c15b27d71719867d4823d4216eef128d115d8b800"
+    },
+    {
+      "path": "worlds/lusseau-dolphins/manifest.json",
+      "role": "dependency_fixture",
+      "size": 839,
+      "sha256": "06e5cb74105eccf080325257c2057a62a2e185edce84de3801ef5ec7a2899322"
+    },
+    {
+      "path": "worlds/lusseau-dolphins/source.txt",
+      "role": "dependency_fixture",
+      "size": 781,
+      "sha256": "b472b71ffaef9698b1165bd2d0e88899432dfe4aad8ba53e3f0e938075581a91"
+    },
+    {
+      "path": "worlds/openevolve-fnmin-s11/manifest.json",
+      "role": "dependency_fixture",
+      "size": 1608,
+      "sha256": "16192069eef447afccce1b7560fcfe6bffb552a2641d5dda49a853062119246a"
+    },
+    {
+      "path": "worlds/openevolve-fnmin-s11/origin.json",
+      "role": "dependency_fixture",
+      "size": 3613,
+      "sha256": "a09161d338ab4669b804d860833ea55f0c7c8fc0137a85d8995a90d564d091b8"
+    },
+    {
+      "path": "worlds/openevolve-fnmin-s11/world.json",
+      "role": "dependency_fixture",
+      "size": 11234,
+      "sha256": "831c1387eaa3383f85a8a4bb5b09329654880f8c636b0132bb4b148b80f77947"
+    },
+    {
+      "path": "worlds/path-trace/manifest.json",
+      "role": "dependency_fixture",
+      "size": 555,
+      "sha256": "535f4b7659aa00324137146247966f54e479c734b7973cc2416eeef61f6636f0"
+    },
+    {
+      "path": "worlds/path-trace/path.json",
+      "role": "dependency_fixture",
+      "size": 36,
+      "sha256": "257d1ae8e7bfbe3386dd070a517d4d62bd3a3e4a3c3e80b7d7463ebb352c39cd"
+    },
+    {
+      "path": "worlds/phage-lambda/manifest.json",
+      "role": "dependency_fixture",
+      "size": 1072,
+      "sha256": "e6c27a69379b5d683910518080d30c078447c272e71d8f88c67a7ee960febf85"
+    },
+    {
+      "path": "worlds/phage-lambda/meta.json",
+      "role": "dependency_fixture",
+      "size": 201,
+      "sha256": "b9e5ac4eecc4280fcc8a26d490ab80392dcc527753c8e25e430949d3d64793ef"
+    },
+    {
+      "path": "worlds/phage-lambda/origin.json",
+      "role": "dependency_fixture",
+      "size": 561,
+      "sha256": "0bcf6c8ca51c1a4563881d3b1ffa1cc42af417feb91bdf1a419e3d56fbc5bf2a"
+    },
+    {
+      "path": "worlds/phage-lambda/sequence.fasta",
+      "role": "dependency_fixture",
+      "size": 49266,
+      "sha256": "9a4022536cb4c17f885692c4ff844934cc013211a55cf263cc394299370cf77f"
+    },
+    {
+      "path": "worlds/phix174/manifest.json",
+      "role": "dependency_fixture",
+      "size": 668,
+      "sha256": "cf5f5115404066c5346e8d3db5e36a225bf84c20a92b65ff689c5c82281ed8a9"
+    },
+    {
+      "path": "worlds/phix174/meta.json",
+      "role": "dependency_fixture",
+      "size": 91,
+      "sha256": "097df11db96e82235f1e3a966dbe0c04555d4f850529f602d6f0f75b7eebf6c3"
+    },
+    {
+      "path": "worlds/phix174/phix174.fasta",
+      "role": "dependency_fixture",
+      "size": 5519,
+      "sha256": "a0d9bfd990c62c0908392b962bb65b574466ad9fba3777681e40f7fb3debf3a2"
+    },
+    {
+      "path": "worlds/snap-ca-grqc/graph.json",
+      "role": "dependency_fixture",
+      "size": 155555,
+      "sha256": "34ed5f13ef4ca5d35310ef811267f9f0056ea73e3923aba69323af70fd5dcf71"
+    },
+    {
+      "path": "worlds/snap-ca-grqc/manifest.json",
+      "role": "dependency_fixture",
+      "size": 1171,
+      "sha256": "9f9cc4bb612eecafc7a6c3c802c5b925bdee2dd3c586d1f4ae913314af01c254"
+    },
+    {
+      "path": "worlds/snap-ca-grqc/origin.json",
+      "role": "dependency_fixture",
+      "size": 503,
+      "sha256": "8da7c20eb88efc9cff81970fc903071de7961e1e18215480c1c955f3eb77b0cc"
+    },
+    {
+      "path": "worlds/tcp-linux-server/manifest.json",
+      "role": "dependency_fixture",
+      "size": 1127,
+      "sha256": "1f2db67b0c80ad855e2c9c110bb66a712995bfbd663e829d735d36a1a4d743e8"
+    },
+    {
+      "path": "worlds/tcp-linux-server/origin.json",
+      "role": "dependency_fixture",
+      "size": 513,
+      "sha256": "7d3a39b2d0ae97b323ec1cb6974a40f64a4d5215d1cf9a13fa5c52f454022476"
+    },
+    {
+      "path": "worlds/tcp-linux-server/world.json",
+      "role": "dependency_fixture",
+      "size": 49585,
+      "sha256": "279da00bb750339359c560b1196e1b05bf598209c11a6b96707bedd99fcdbec8"
+    },
+    {
+      "path": "worlds/uci-letters/manifest.json",
+      "role": "dependency_fixture",
+      "size": 984,
+      "sha256": "e3c99a7ecf2706cdcc71afb6ea3bf228966b2b4348a038bb95dc781cede04ee0"
+    },
+    {
+      "path": "worlds/uci-letters/origin.json",
+      "role": "dependency_fixture",
+      "size": 498,
+      "sha256": "326aa0724cc93ddb51a9ab4304c697c22aa38d34a604841a61ad161871765676"
+    },
+    {
+      "path": "worlds/uci-letters/table.json",
+      "role": "dependency_fixture",
+      "size": 1346416,
+      "sha256": "95550d9cf1e55afd7dd05008b7cca21524dc259d3dac8e857a8f4599da52760d"
+    },
+    {
+      "path": "worlds/zachary-karate/graph.json",
+      "role": "dependency_fixture",
+      "size": 742,
+      "sha256": "1438560633427f0511a3cb7fbd50ea4f6c2ddc5804f50deff32cecf8b9dacc85"
+    },
+    {
+      "path": "worlds/zachary-karate/manifest.json",
+      "role": "dependency_fixture",
+      "size": 714,
+      "sha256": "4f44650319e1805db3c9430d8d40a73ba787793ec4fad25ad5eeed2bf6b62214"
+    }
+  ],
+  "exclusions": [
+    ".git",
+    "credentials",
+    "var",
+    "webui",
+    "API traces",
+    "external benchmark repositories",
+    "unavailable large concept graphs"
+  ],
+  "runtime_dependency_note": "Transitive imports retained under farfield namespace; independent module extraction is future work."
+}
