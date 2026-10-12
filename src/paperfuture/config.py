@@ -29,12 +29,18 @@ DOMAINS = {
         "facets": ["RTL generation", "functional verification", "synthesis constraints", "PPA optimization", "design generalization"],
     },
 }
-ROLES = ("extract", "rerank", "graph", "propose", "simulate", "critique", "assess")
+ROLES = ("extract", "rerank", "graph", "graph_stages", "graph_merge", "graph_edges", "graph_review", "propose",
+         "simulate", "simulate_secondary", "critique", "critique_secondary", "discuss", "assess")
 DEFAULTS = {
     "mode": "prospective", "max_rounds": 4, "replicate_id": "1", "api_mode": "live",
-    "retrieval": {"method": "hybrid", "recall_k": 80, "candidate_limit": 80, "selected_limit": 30,
-                  "min_relevance": 2, "min_quality": 1, "rrf_k": 60, "rerank_batch": 12,
-                  "coverage_weight": 0.3, "redundancy_weight": 0.2},
+    "retrieval": {"method": "hybrid", "recall_k": 160, "candidate_limit": 100, "selected_limit": 40,
+                  "min_relevance": 2, "min_quality": 2, "rrf_k": 60, "rerank_batch": 12,
+                  "coverage_weight": 0.3, "redundancy_weight": 0.2, "recent_years": 2,
+                  "recent_fraction": 0.65, "extraction_chars": 22000, "round_papers": 8,
+                  "round_evidence_chars": 26000, "hydrate_candidates": 30},
+    "graph": {"stage_batch": 8, "predecessors": 4, "edge_batch": 1, "review_batch": 1, "concurrent_calls": 3},
+    "world_model": {"simulators": ["simulate", "simulate_secondary"], "critics": ["critique"],
+                    "discussion": True, "min_distinct_models": 2},
     "policy": {"critic_weight": 0.2, "sufficient_utility": 0.75, "min_novelty": 3,
                "min_importance": 3, "hard_conflict_severity": 0.8, "stagnation_epsilon": 0.02},
     "api": {"max_calls": 500, "max_tokens": 2000000, "max_output_tokens": 6000,
@@ -76,7 +82,7 @@ def normalize(raw: dict) -> dict:
     if set(raw) - allowed:
         raise ValueError(f"unknown configuration keys: {sorted(set(raw)-allowed)}")
     for key, value in raw.items():
-        if key in ("retrieval", "policy", "api"):
+        if key in ("retrieval", "policy", "api", "graph", "world_model"):
             if set(value) - set(config[key]):
                 raise ValueError(f"unknown {key} configuration")
             config[key].update(value)
@@ -107,6 +113,18 @@ def normalize(raw: dict) -> dict:
     for key in ("recall_k", "candidate_limit", "selected_limit", "rrf_k", "rerank_batch"):
         if type(config["retrieval"][key]) is not int or config["retrieval"][key] < 1:
             raise ValueError(f"retrieval.{key} must be a positive integer")
+    for key in ("recent_years", "extraction_chars", "round_papers", "round_evidence_chars"):
+        if type(config["retrieval"][key]) is not int or config["retrieval"][key] < 1:
+            raise ValueError(f"retrieval.{key} must be positive")
+    if type(config["retrieval"]["hydrate_candidates"]) is not int or config["retrieval"]["hydrate_candidates"] < 0:
+        raise ValueError("hydrate_candidates must be a nonnegative integer")
+    if not 0 <= config["retrieval"]["recent_fraction"] <= 1:
+        raise ValueError("recent_fraction must be in [0, 1]")
+    for key, value in config["graph"].items():
+        if type(value) is not int or value < 1:
+            raise ValueError(f"graph.{key} must be positive")
+    if config["graph"]["concurrent_calls"] > 8:
+        raise ValueError("graph.concurrent_calls cannot exceed 8")
     for key, value in config["api"].items():
         if type(value) is not int or value < 1:
             raise ValueError(f"api.{key} must be a positive integer")
@@ -118,6 +136,9 @@ def normalize(raw: dict) -> dict:
         if source.get("type") == "jsonl":
             if set(source) != {"type", "path"}:
                 raise ValueError("jsonl source expects only type and path")
+        elif source.get("type") == "arxiv_dataset":
+            if set(source)-{"type","data_root","historical_limit","recent_limit","fulltext_limit"} or not source.get("data_root"):
+                raise ValueError("arxiv_dataset requires a data_root and optional acquisition limits")
         elif source.get("type") == "arxiv":
             if set(source) - {"type", "queries", "ids", "max_results", "page_size", "start_date", "version_policy", "full_text", "require_full_text"}:
                 raise ValueError("unknown arxiv source option")
@@ -149,6 +170,19 @@ def normalize(raw: dict) -> dict:
         model["base_url"] = model["base_url"].rstrip("/")
         if not model.get("api_key_env") and not model.get("api_key_file"):
             raise ValueError(f"models.{role}: api_key_env or api_key_file is required")
+    panel = config["world_model"]
+    for key in ("simulators", "critics"):
+        values = panel[key]
+        if not isinstance(values, list) or not values or len(values) > 3 or len(set(values)) != len(values):
+            raise ValueError(f"world_model.{key} must name one to three distinct model roles")
+        if any(role not in ROLES for role in values):
+            raise ValueError("unknown world-model role")
+    if type(panel["discussion"]) is not bool or type(panel["min_distinct_models"]) is not int or panel["min_distinct_models"] < 1:
+        raise ValueError("invalid world-model discussion/diversity configuration")
+    identities = {(models.get(role, models["default"])["base_url"], models.get(role, models["default"])["model"])
+                  for role in panel["simulators"] + panel["critics"]}
+    if len(identities) < panel["min_distinct_models"]:
+        raise ValueError("world-model panel requires distinct configured model IDs; repeated roles are not distinct models")
     return config
 
 

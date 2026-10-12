@@ -1,5 +1,5 @@
 {
-  "run_id": "agent_security-pilot-01",
+  "run_id": "agent_security-v03-01",
   "domain": "agent_security",
   "subfield": "How can tool-using agents resist adaptive indirect prompt injection while preserving legitimate task utility?",
   "question": "How can tool-using agents resist adaptive indirect prompt injection while preserving legitimate task utility?",
@@ -8,18 +8,21 @@
   "max_rounds": 4,
   "sources": [
     {
-      "type": "arxiv",
-      "max_results": 300,
-      "page_size": 100,
-      "version_policy": "v1",
-      "full_text": "none"
+      "type": "arxiv_dataset",
+      "data_root": "${PAPERFUTURE_DATA_ROOT}",
+      "historical_limit": 400,
+      "recent_limit": 1600,
+      "fulltext_limit": 100
     }
   ],
   "retrieval": {
     "method": "hybrid",
-    "recall_k": 80,
-    "candidate_limit": 40,
-    "selected_limit": 20
+    "recall_k": 160,
+    "candidate_limit": 60,
+    "selected_limit": 36,
+    "recent_fraction": 0.65,
+    "hydrate_candidates": 40,
+    "min_quality": 2
   },
   "models": {
     "default": {
@@ -31,14 +34,40 @@
       "base_url": "${PAPERFUTURE_EMBEDDING_BASE_URL}",
       "model": "${PAPERFUTURE_EMBEDDING_MODEL}",
       "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "simulate": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "simulate_secondary": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_SECONDARY_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "critique": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_CRITIC_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "graph_review": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_CRITIC_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "assess": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_CRITIC_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
     }
   },
   "api": {
-    "max_calls": 150,
-    "max_tokens": 2000000,
-    "max_output_tokens": 16000,
+    "max_calls": 800,
+    "max_tokens": 8000000,
+    "max_output_tokens": 16384,
     "timeout_seconds": 180,
-    "json_attempts": 2
+    "json_attempts": 3,
+    "max_context_chars": 600000
   },
   "policy": {
     "critic_weight": 0.2,
@@ -46,5 +75,21 @@
     "min_novelty": 3,
     "min_importance": 3
   },
-  "model_vintage_evidence": []
+  "model_vintage_evidence": [],
+  "world_model": {
+    "simulators": [
+      "simulate",
+      "simulate_secondary"
+    ],
+    "critics": [
+      "critique"
+    ],
+    "discussion": true,
+    "min_distinct_models": 3
+  },
+  "graph": {
+    "edge_batch": 1,
+    "review_batch": 1,
+    "concurrent_calls": 3
+  }
 }

@@ -7,9 +7,9 @@ from pathlib import Path
 
 from .api import ModelGateway
 from .config import normalize, public_config
-from .exploration import assess, critique, decide, propose, score_assessment, simulate, sufficient
+from .exploration import assess, critique_panel, decide, discuss_panel, experiences_from_rounds, propose, score_assessment, simulate_panel, sufficient
 from .graph import build_graph, graph_context
-from .literature import LiteratureStore, Snapshot, collect, select_corpus
+from .literature import LiteratureStore, Snapshot, collect, hydrate_snapshot, round_context, select_corpus
 from .storage import IntegrityError, atomic_json, atomic_text, digest, exclusive, now, read_json, seal, unseal
 
 
@@ -42,6 +42,10 @@ def render_final(directory, state, config, context, gateway):
                 row["assessment"]["feasibility"] != "substantive_obstacle",
                 score["utility"] if score["utility"] is not None else -2, -row["number"])
     best = max(completed, key=rank) if completed else None
+    if best:
+        evidence_context=directory/"rounds"/f"{best['number']:02}"/"evidence_context.json"
+        if evidence_context.exists():
+            context=unseal(evidence_context)
     if state["status"] == "interrupted":
         recommendation = "incomplete"
     elif best is None:
@@ -61,7 +65,10 @@ def render_final(directory, state, config, context, gateway):
              "research_validity": {"model_vintage_evidence": config["model_vintage_evidence"],
                  "claim": "evidence_constrained_generation; model knowledge leakage has not been ruled out",
                  "simulation_is_empirical_evidence": False, "scores_are_calibrated_probabilities": False,
-                 "historical_graph_human_verified": False},
+                 "historical_graph_human_verified": False,
+                 "graph_semantic_review":"independent_LLM_review",
+                 "world_model_roles":config["world_model"],
+                 "declared_model_ids":{role:model["model"] for role,model in config["models"].items()}},
              "error": state.get("error")}
     atomic_json(directory / "final_idea.json", final)
     atomic_json(directory / "usage.json", final["usage"])
@@ -75,13 +82,15 @@ def render_final(directory, state, config, context, gateway):
                   f"**核心机制**：{idea['mechanism']}", "", f"**与已有工作的区别**：{idea['difference']}", "",
                   f"**最小验证实验**：{idea['minimal_test']}", "",
                   f"**跃迁依据**：{best['proposal']['historical_pattern']}", "",
-                  f"**方向与幅度**：{best['proposal']['operation']}；目标等级 {best['proposal']['target_weight']} / 4。{best['proposal']['magnitude_reason']}", "",
+                  f"**方向与幅度**：{best['proposal']['operation']}；LLM 目标评分 {best['proposal']['target_weight']} / 100，区间 {best['proposal']['target_interval']}。{best['proposal']['magnitude_reason']}", "",
                   "## 价值与可行性", "", "|维度|等级（0–4）|依据|", "|---|---|---|"]
         for name, label in (("novelty", "新颖性"), ("importance", "重要性"), ("potential_gain", "潜在增益")):
             item = best["assessment"][name]
             reason = item["reason"].replace("|", "\\|").replace("\n", " ")
             lines.append(f"|{label}|{item['score'] if item['score'] is not None else '未知'}|{reason}|")
         lines += ["", f"综合效用：{best['scores']['utility']}；讨论惩罚：{best['scores']['critic_penalty']} × {best['scores']['critic_weight']}。",
+                  f"机制审查：{best['assessment']['mechanism_audit']['kind']}。{best['assessment']['mechanism_audit']['reason']}",
+                  f"评分约束：{'; '.join(best['scores']['quality_limits']) or '无额外上限'}。",
                   f"可行性：{best['assessment']['feasibility']}。{best['assessment']['feasibility_reason']}", "",
                   "## 假设与未决问题", ""]
         lines += [f"- [{a['origin']}] {a['statement']}" for a in best["proposal"]["assumptions"]]
@@ -91,6 +100,11 @@ def render_final(directory, state, config, context, gateway):
         for objection in best["critique"]["objections"]:
             resolution = resolutions[objection["id"]]
             lines += [f"- {objection['claim']}（{objection['kind']}，{resolution['disposition']}）：{resolution['reason']}"]
+        lines += ["", "## 多模型模拟与逐轮经验", ""]
+        for member in best["simulation"]["members"]:
+            lines += [f"- 模拟模型：{member['model_id']}（{member['model_role']}），成功／部分成功／失败均为条件预测。"]
+        for lesson in best["proposal"]["learning_trace"]:
+            lines += [f"- 使用经验 `{lesson['experience_id']}`：{lesson['implication']}；本轮改变：{lesson['change_in_this_proposal']}"]
         lines += ["", "## 文献证据", ""]
         papers = {p["key"]: p for p in context.get("papers", [])}
         for ref in best["proposal"]["evidence_ids"]:
@@ -115,7 +129,8 @@ def graph_mermaid(graph):
         label = stage["label"].replace('"', "'").replace("\n", " ").replace("[", "(").replace("]", ")")
         lines.append(f'  {indices[stage["id"]]}["{label}"]')
     for edge in graph["edges"]:
-        lines.append(f'  {indices[edge["source"]]} -->|{edge["relation"]}: {edge["weight"] or "unknown"}| {indices[edge["target"]]}')
+        weight=edge["weight"] if edge["weight"] is not None else "unknown"
+        lines.append(f'  {indices[edge["source"]]} -->|{edge["relation"]}: {weight}/100| {indices[edge["target"]]}')
     return "\n".join(lines) + "\n"
 
 
@@ -147,6 +162,9 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                 try:
                     keys = collect(config, store, workspace / "collection_cache")
                     snapshot = store.freeze(keys, config["cutoff"])
+                    report("1/6 archiving full-text evidence for temporally balanced retrieval candidates")
+                    snapshot, failures=hydrate_snapshot(snapshot,config,workspace/"cache"/"arxiv")
+                    atomic_json(directory/"fulltext_acquisition.json",{"failures":failures})
                 finally:
                     store.close()
                 seal(snapshot_path, snapshot.payload)
@@ -166,13 +184,16 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                 report("2/6 building and validating the weighted directed development graph")
                 seal(graph_path, build_graph(snapshot, selected, config, gateway))
             graph = unseal(graph_path)
+            if graph.get("graph_status")=="insufficient_supported_transitions":
+                raise ValueError("no development edges survived independent evidence review; expand or improve the trajectory corpus")
             context = graph_context(graph, snapshot, selected)
             seal(directory / "graph_context.json", context)
             atomic_text(directory / "trajectory.mmd", graph_mermaid(graph))
             review_path = directory / "trajectory_review.json"
             if not review_path.exists():
                 atomic_json(review_path, {"graph_id": graph["graph_id"],
-                    "human_review_status": "pending", "checks_passed": ["evidence_membership", "strict_temporal_witnesses", "acyclicity", "selected_paper_coverage"],
+                    "human_review_status": "pending", "semantic_review_status":"independent_LLM_review_completed",
+                    "checks_passed": ["evidence_membership", "strict_temporal_witnesses", "acyclicity", "selected_paper_coverage", "per_edge_entailment_review", "dimension_score_evidence"],
                     "coverage_gaps": graph["coverage_gaps"], "edges_requiring_semantic_review": [e["id"] for e in graph["edges"]]})
             terminal_decisions = [r["decision"] for r in state["rounds"] if (r.get("decision") or {}).get("terminal")]
             if terminal_decisions:
@@ -204,6 +225,12 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                     break
                 number = slot["number"]
                 round_dir = directory / "rounds" / f"{number:02}"
+                previous = [unseal(directory / "rounds" / f"{r['number']:02}" / "evaluated.json")
+                            for r in state["rounds"] if r["number"] < number]
+                experience=experiences_from_rounds(previous)
+                seal(round_dir/"experience_memory.json",experience)
+                current_context=round_context(context,snapshot,config,slot["input_feedback"],experience)
+                seal(round_dir/"evidence_context.json",current_context)
                 seal(round_dir / "context.json", {"graph_id": graph["graph_id"], "snapshot_id": snapshot.id,
                      "feedback": slot["input_feedback"], "question": config["question"]})
                 def step(name, function):
@@ -213,12 +240,11 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                         seal(path, function())
                     return unseal(path)
                 row = {"number": number}
-                row["proposal"] = step("proposal", lambda: propose(gateway, context, config, number, slot["input_feedback"]))
-                row["simulation"] = step("simulation", lambda: simulate(gateway, context, row["proposal"], number))
-                row["critique"] = step("critique", lambda: critique(gateway, context, row["proposal"], number))
-                previous = [unseal(directory / "rounds" / f"{r['number']:02}" / "evaluated.json")
-                            for r in state["rounds"] if r["number"] < number]
-                row["assessment"] = step("assessment", lambda: assess(gateway, context, row, previous))
+                row["proposal"] = step("proposal", lambda: propose(gateway, current_context, config, number, slot["input_feedback"],previous))
+                row["simulation"] = step("simulation", lambda: simulate_panel(gateway, current_context, row["proposal"], number,config))
+                row["critique"] = step("critique", lambda: critique_panel(gateway, current_context, row["proposal"], number,config))
+                row["discussion"] = step("discussion", lambda: discuss_panel(gateway,current_context,row,config))
+                row["assessment"] = step("assessment", lambda: assess(gateway, current_context, row, previous))
                 row["scores"] = score_assessment(row["assessment"], row["critique"], config["policy"])
                 seal(round_dir / "evaluated.json", row)
                 decision = decide(previous + [row], config)
@@ -234,10 +260,10 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                     break
             report("6/6 rendering an already evaluated idea and its value judgment")
             return render_final(directory, state, config, context, gateway)
-        except Exception as exc:
+        except (Exception, KeyboardInterrupt) as exc:
             # Do not include raw HTTP bodies or credential values in user artifacts.
             from urllib.error import HTTPError, URLError
-            safe = type(exc).__name__ if isinstance(exc, (HTTPError, URLError)) else str(exc)
+            safe = type(exc).__name__ if isinstance(exc, (HTTPError, URLError, KeyboardInterrupt)) else str(exc)
             state.update(status="interrupted", stop_reason="incomplete", error=safe)
             event(state, "interrupted", phase=state["phase"], error=safe)
             save_state(directory, state)

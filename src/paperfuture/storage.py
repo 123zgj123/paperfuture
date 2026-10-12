@@ -82,11 +82,11 @@ def unseal(path: Path) -> Any:
 
 
 @contextlib.contextmanager
-def exclusive(path: Path) -> Iterator[None]:
+def exclusive(path: Path, *, blocking=False) -> Iterator[None]:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a+") as stream:
         try:
-            fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.flock(stream.fileno(), fcntl.LOCK_EX | (0 if blocking else fcntl.LOCK_NB))
         except BlockingIOError as exc:
             raise RuntimeError(f"another process owns this workspace/run: {path}") from exc
         try:

@@ -40,21 +40,21 @@ COPY = {
         "api": "所有模型能力通过 API 调用",
         "prep": "A  历史资料准备 · 按领域、子方向与截止时间 T 构建并复用",
         "lit": "文献收集与筛选",
-        "lit1": "元数据收集与版本去重",
+        "lit1": "分年采集，重点覆盖最近两年",
         "lit2": "词法 + 向量召回 → 精排与轨迹覆盖选择",
-        "lit_out": "Selected data：版本化论文 + 可追溯全文片段",
+        "lit_out": "Selected data：版本化论文 + 可追溯原文片段",
         "graph": "带权有向发展图",
-        "graph_lines": ["节点：阶段、论文与核心机制", "边：有证据的技术继承", "粗细：技术变化幅度", "结构：分叉、汇合与未解瓶颈"],
+        "graph_lines": ["节点：阶段、论文与核心机制", "边：独立复核技术关系", "粗细：LLM 评分 0—100", "结构：分叉、汇合与未解瓶颈"],
         "graph_note": "边权重表示变化幅度，不代表成功概率",
-        "graph_feed": "阶段级全图 + 关键路径 + 原文证据",
+        "graph_feed": "完整阶段图 + 本轮检索的原文证据",
         "loop": "B  动态探索 · 一个候选对应一轮 · 全局最多四轮",
         "leap": "LLM 选择跃迁",
         "leap_lines": ["从当前瓶颈与历史转折出发", "确定改变的机制或假设", "选择目标幅度，并说明依据"],
         "leap_out": "候选 idea + 条件假设",
         "world": "World model 模拟与讨论",
-        "sim": "条件模拟",
+        "sim": "多模型独立模拟",
         "sim_sub": "成立 / 部分成立 / 失败，以及后续瓶颈",
-        "critic": "独立评议",
+        "critic": "独立评议与讨论",
         "critic_sub": "支持与异议均需依据；未知保留为假设",
         "merge": "综合判断",
         "merge_sub": "保留新颖机制，给出价值与可行性",
@@ -66,9 +66,9 @@ COPY = {
         "result": "Idea 与价值判断",
         "result_items": [("主 idea", "问题、机制与新颖点"), ("价值与可行性", "成立条件与不确定性"), ("验证建议", "最小实验与来源依据")],
         "result_note": "选择已评估的最佳候选",
-        "feedback": "模拟反馈 + 保留假设 + 下一瓶颈 → 调整下一跳（t + 1）",
+        "feedback": "全部前轮条件经验 + 保留假设 → 重检索原文并调整下一跳（t + 1）",
         "legend": "粗细不同的实线：历史技术变化    虚线：模拟反馈；不写回历史事实",
-        "status": "拟议系统框架 · 模拟判断不等于真实实验结果",
+        "status": "v0.3 系统框架 · 模拟判断仍需真实实验验证",
     },
     "en": {
         "title": "PaperFuture",
@@ -77,21 +77,21 @@ COPY = {
         "api": "All model inference via APIs",
         "prep": "A  Historical preparation · Reused for each domain, subfield and cutoff T",
         "lit": "Literature collection & selection",
-        "lit1": "Collect metadata and resolve paper versions",
+        "lit1": "Year-stratified collection; recent two-year focus",
         "lit2": "Lexical + dense retrieval → rerank for coverage",
-        "lit_out": "Selected data: versioned papers + full-text evidence",
+        "lit_out": "Selected data: versioned papers + source passages",
         "graph": "Weighted directed trajectory graph",
-        "graph_lines": ["Nodes: stages, papers, mechanisms", "Edges: technical inheritance", "Width: technical change", "Branches, merges, bottlenecks"],
+        "graph_lines": ["Nodes: stages, papers, mechanisms", "Edges: independently audited relations", "Width: LLM change score (0–100)", "Branches, merges, bottlenecks"],
         "graph_note": "Edge weight is change magnitude, not success probability",
-        "graph_feed": "Global stage graph + key paths + source evidence",
+        "graph_feed": "Global stage graph + round-specific source evidence",
         "loop": "B  Adaptive exploration · One candidate per round · At most four rounds in total",
         "leap": "LLM leap proposal",
         "leap_lines": ["Locate a bottleneck in the trajectory", "Specify the technical change", "Choose and justify leap magnitude"],
         "leap_out": "Idea + explicit assumptions",
         "world": "World model: simulate & discuss",
-        "sim": "Conditional simulation",
+        "sim": "Independent model forecasts",
         "sim_sub": "Outcomes, failures and next bottlenecks",
-        "critic": "Independent review",
+        "critic": "Review and cross-model discussion",
         "critic_sub": "Evidence-backed objections; explicit unknowns",
         "merge": "Reconcile and assess",
         "merge_sub": "Preserve novelty; assess value and feasibility",
@@ -103,9 +103,9 @@ COPY = {
         "result": "Idea & assessment",
         "result_items": [("Main idea", "Problem, mechanism, novelty"), ("Value & feasibility", "Conditions and uncertainty"), ("Validation plan", "Minimal test and sources")],
         "result_note": "Best assessed candidate",
-        "feedback": "Forecast feedback + retained assumptions + next bottleneck → next leap (t + 1)",
+        "feedback": "All prior conditional experiences + retained assumptions → retrieve evidence and choose next leap",
         "legend": "Solid edge width: historical change    Dashed loop: simulated feedback; never promoted to historical fact",
-        "status": "Proposed framework · Simulated assessments are not experimental results",
+        "status": "v0.3 framework · Simulated assessments require empirical validation",
     },
 }
 
@@ -192,12 +192,12 @@ def draw(lang):
     for i, line in enumerate(d["graph_lines"]):
         text(875, 273+31*i, line, 15.5, max_width=373)
     nodes = {"S1": (1298, 322), "S2": (1465, 275), "S3": (1465, 368), "S4": (1640, 322)}
-    links = [("S1", "S2", 1), ("S1", "S3", 3), ("S2", "S4", 2), ("S3", "S4", 1)]
-    for start, end, level in links:
+    links = [("S1", "S2", 18), ("S1", "S3", 72), ("S2", "S4", 46), ("S3", "S4", 28)]
+    for start, end, magnitude in links:
         x0, y0 = nodes[start]
         x1, y1 = nodes[end]
-        arrow([(x0+33, y0), (x1-35, y1)], C["teal"], 0.9+level*1.05, z=2)
-        text((x0+x1)/2, (y0+y1)/2-14, str(level), 13, C["teal"], align="center", va="center", bbox={"facecolor": C["teal_bg"], "edgecolor": "none", "pad": 1})
+        arrow([(x0+33, y0), (x1-35, y1)], C["teal"], 0.9+magnitude/24, z=2)
+        text((x0+x1)/2, (y0+y1)/2-14, str(magnitude), 13, C["teal"], align="center", va="center", bbox={"facecolor": C["teal_bg"], "edgecolor": "none", "pad": 1})
     for node, (x, y) in nodes.items():
         box(x-33, y-22, 66, 44, C["white"], C["teal"], radius=8, lw=1.3, z=3)
         text(x, y, node, 16, C["teal"], True, "center", "center")

@@ -46,7 +46,7 @@ class PaperFutureTests(unittest.TestCase):
         self.assertEqual(result["completed_rounds"], 1)
         self.assertEqual(result["stop_reason"], "stop_sufficient")
         self.assertEqual(result["recommendation"], "recommend_for_empirical_validation")
-        self.assertEqual(result["usage"]["network_attempts"], 11)
+        self.assertEqual(result["usage"]["network_attempts"], 18)
         self.assertEqual(len([x for x in endpoint.requests if x[0] == "propose"]), 1)
         critic_input = next(x[1] for x in endpoint.requests if x[0] == "critique")
         self.assertNotIn("simulation", critic_input)
@@ -119,8 +119,6 @@ class PaperFutureTests(unittest.TestCase):
         directory = self.directory()
         graph = unseal(directory/"trajectory.json")
         raw = {k: graph[k] for k in ("stages", "edges", "coverage_gaps")}
-        for edge in raw["edges"]:
-            edge.pop("weight")
         snapshot = Snapshot(unseal(directory/"snapshot.json"))
         selected = unseal(directory/"selected.json")
         validate_graph(raw, snapshot, selected)
@@ -147,7 +145,7 @@ class PaperFutureTests(unittest.TestCase):
         assessment["resolutions"][0]["evidence_ids"] = ["checked elsewhere"]
         score = score_assessment(assessment, critique, self.config["policy"])
         self.assertEqual(score["utility"], .8)
-        self.assertEqual(score["blocking_objection_ids"], ["o1"])
+        self.assertEqual(score["blocking_objection_ids"], ["C1"])
 
     def test_context_and_config_are_pinned_on_resume(self):
         self.execute()
@@ -217,8 +215,7 @@ class PaperFutureTests(unittest.TestCase):
         directory = self.directory()
         graph = unseal(directory/"trajectory.json")
         raw = {k: graph[k] for k in ("stages", "edges", "coverage_gaps")}
-        for edge in raw["edges"]:
-            edge.pop("weight")
+        raw["edges"]=[raw["edges"][0],raw["edges"][2]]
         first, middle, last = raw["stages"]
         first["paper_keys"].extend(last["paper_keys"])
         first["evidence_ids"].extend(last["evidence_ids"])

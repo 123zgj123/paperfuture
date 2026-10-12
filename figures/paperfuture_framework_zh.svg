@@ -205,43 +205,43 @@ z
    </g>
    <g id="patch_15">
     <path d="M 958.32 231.84
-L 1027.630512 198.935009
-" clip-path="url(#p8f839ee765)" style="fill: none; stroke: #157b78; stroke-width: 1.95; stroke-linecap: round"/>
-    <path d="M 1020.476584 198.789011
-L 1027.630512 198.935009
-L 1023.221357 204.570553
+L 1027.93351 198.791162
+" clip-path="url(#p8f839ee765)" style="fill: none; stroke: #157b78; stroke-width: 1.65; stroke-linecap: round"/>
+    <path d="M 1020.779582 198.645163
+L 1027.93351 198.791162
+L 1023.524355 204.426705
 z
-" clip-path="url(#p8f839ee765)" style="fill: #157b78; stroke: #157b78; stroke-width: 1.95; stroke-linecap: round"/>
+" clip-path="url(#p8f839ee765)" style="fill: #157b78; stroke: #157b78; stroke-width: 1.65; stroke-linecap: round"/>
    </g>
    <g id="patch_16">
     <path d="M 958.32 231.84
-L 1025.493595 263.051974
-" clip-path="url(#p8f839ee765)" style="fill: none; stroke: #157b78; stroke-width: 4.05; stroke-linecap: round"/>
-    <path d="M 1021.037955 257.45311
-L 1025.493595 263.051974
-L 1018.34112 263.257167
+L 1025.645684 263.122641
+" clip-path="url(#p8f839ee765)" style="fill: none; stroke: #157b78; stroke-width: 3.9; stroke-linecap: round"/>
+    <path d="M 1021.190044 257.523778
+L 1025.645684 263.122641
+L 1018.49321 263.327835
 z
-" clip-path="url(#p8f839ee765)" style="fill: #157b78; stroke: #157b78; stroke-width: 4.05; stroke-linecap: round"/>
+" clip-path="url(#p8f839ee765)" style="fill: #157b78; stroke: #157b78; stroke-width: 3.9; stroke-linecap: round"/>
    </g>
    <g id="patch_17">
     <path d="M 1078.56 198
-L 1152.529094 230.491097
-" clip-path="url(#p8f839ee765)" style="fill: none; stroke: #157b78; stroke-width: 3; stroke-linecap: round"/>
-    <path d="M 1147.956392 224.987426
-L 1152.529094 230.491097
-L 1145.382536 230.847056
+L 1152.716761 230.57353
+" clip-path="url(#p8f839ee765)" style="fill: none; stroke: #157b78; stroke-width: 2.816667; stroke-linecap: round"/>
+    <path d="M 1148.144059 225.069859
+L 1152.716761 230.57353
+L 1145.570203 230.929489
 z
-" clip-path="url(#p8f839ee765)" style="fill: #157b78; stroke: #157b78; stroke-width: 3; stroke-linecap: round"/>
+" clip-path="url(#p8f839ee765)" style="fill: #157b78; stroke: #157b78; stroke-width: 2.816667; stroke-linecap: round"/>
    </g>
    <g id="patch_18">
     <path d="M 1078.56 264.96
-L 1153.59708 232.701068
-" clip-path="url(#p8f839ee765)" style="fill: none; stroke: #157b78; stroke-width: 1.95; stroke-linecap: round"/>
-    <path d="M 1146.453541 232.288941
-L 1153.59708 232.701068
-L 1148.981255 238.168623
+L 1153.477248 232.752585
+" clip-path="url(#p8f839ee765)" style="fill: none; stroke: #157b78; stroke-width: 2.066667; stroke-linecap: round"/>
+    <path d="M 1146.333709 232.340458
+L 1153.477248 232.752585
+L 1148.861422 238.22014
 z
-" clip-path="url(#p8f839ee765)" style="fill: #157b78; stroke: #157b78; stroke-width: 1.95; stroke-linecap: round"/>
+" clip-path="url(#p8f839ee765)" style="fill: #157b78; stroke: #157b78; stroke-width: 2.066667; stroke-linecap: round"/>
    </g>
    <g id="patch_19">
     <path d="M 565.2 227.52
@@ -508,13 +508,13 @@ L 113.76 241.92
 " clip-path="url(#p8f839ee765)" style="fill: none; stroke: #2d65a1; stroke-width: 1.2; stroke-linecap: square"/>
    </g>
    <g id="text_8">
-    <text style="fill: #203247; font: 18px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="139.68" y="216.717187" transform="rotate(-0 139.68 216.717187)">元数据收集与版本去重</text>
+    <text style="fill: #203247; font: 18px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="139.68" y="216.717187" transform="rotate(-0 139.68 216.717187)">分年采集，重点覆盖最近两年</text>
    </g>
    <g id="text_9">
     <text style="fill: #203247; font: 16.2px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="139.68" y="249.909469" transform="rotate(-0 139.68 249.909469)">词法 + 向量召回 → 精排与轨迹覆盖选择</text>
    </g>
    <g id="text_10">
-    <text style="fill: #2d65a1; font: 16px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="74.16" y="300.1575" transform="rotate(-0 74.16 300.1575)">Selected data：版本化论文 + 可追溯全文片段</text>
+    <text style="fill: #2d65a1; font: 16px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="74.16" y="300.1575" transform="rotate(-0 74.16 300.1575)">Selected data：版本化论文 + 可追溯原文片段</text>
    </g>
    <g id="text_11">
     <text style="fill: #ffffff; font: 700 16px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="642.24" y="170.015" transform="rotate(-0 642.24 170.015)">2</text>
@@ -526,57 +526,57 @@ L 113.76 241.92
     <text style="fill: #203247; font: 15.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="630" y="208.337578" transform="rotate(-0 630 208.337578)">节点：阶段、论文与核心机制</text>
    </g>
    <g id="text_14">
-    <text style="fill: #203247; font: 15.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="630" y="230.657578" transform="rotate(-0 630 230.657578)">边：有证据的技术继承</text>
+    <text style="fill: #203247; font: 15.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="630" y="230.657578" transform="rotate(-0 630 230.657578)">边：独立复核技术关系</text>
    </g>
    <g id="text_15">
-    <text style="fill: #203247; font: 15.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="630" y="252.977578" transform="rotate(-0 630 252.977578)">粗细：技术变化幅度</text>
+    <text style="fill: #203247; font: 15.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="630" y="252.977578" transform="rotate(-0 630 252.977578)">粗细：LLM 评分 0—100</text>
    </g>
    <g id="text_16">
     <text style="fill: #203247; font: 15.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="630" y="275.297578" transform="rotate(-0 630 275.297578)">结构：分叉、汇合与未解瓶颈</text>
    </g>
    <g id="text_17">
     <g id="patch_38">
-     <path d="M 989.504375 212.170781
-L 999.855625 212.170781
-L 999.855625 197.509219
-L 989.504375 197.509219
+     <path d="M 985.36875 212.170781
+L 1003.99125 212.170781
+L 1003.99125 197.509219
+L 985.36875 197.509219
 z
 " style="fill: #eef8f6"/>
     </g>
-    <text style="fill: #157b78; font: 13px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="994.68" y="208.427188" transform="rotate(-0 994.68 208.427188)">1</text>
+    <text style="fill: #157b78; font: 13px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="994.68" y="208.427188" transform="rotate(-0 994.68 208.427188)">18</text>
    </g>
    <g id="text_18">
     <g id="patch_39">
-     <path d="M 989.504375 245.650781
-L 999.855625 245.650781
-L 999.855625 230.989219
-L 989.504375 230.989219
+     <path d="M 985.36875 245.650781
+L 1003.99125 245.650781
+L 1003.99125 230.989219
+L 985.36875 230.989219
 z
 " style="fill: #eef8f6"/>
     </g>
-    <text style="fill: #157b78; font: 13px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="994.68" y="241.907188" transform="rotate(-0 994.68 241.907188)">3</text>
+    <text style="fill: #157b78; font: 13px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="994.68" y="241.907188" transform="rotate(-0 994.68 241.907188)">72</text>
    </g>
    <g id="text_19">
     <g id="patch_40">
-     <path d="M 1112.624375 212.170781
-L 1122.975625 212.170781
-L 1122.975625 197.509219
-L 1112.624375 197.509219
+     <path d="M 1108.48875 212.170781
+L 1127.11125 212.170781
+L 1127.11125 197.509219
+L 1108.48875 197.509219
 z
 " style="fill: #eef8f6"/>
     </g>
-    <text style="fill: #157b78; font: 13px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="1117.8" y="208.427188" transform="rotate(-0 1117.8 208.427188)">2</text>
+    <text style="fill: #157b78; font: 13px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="1117.8" y="208.427188" transform="rotate(-0 1117.8 208.427188)">46</text>
    </g>
    <g id="text_20">
     <g id="patch_41">
-     <path d="M 1112.624375 245.650781
-L 1122.975625 245.650781
-L 1122.975625 230.989219
-L 1112.624375 230.989219
+     <path d="M 1108.48875 245.650781
+L 1127.11125 245.650781
+L 1127.11125 230.989219
+L 1108.48875 230.989219
 z
 " style="fill: #eef8f6"/>
     </g>
-    <text style="fill: #157b78; font: 13px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="1117.8" y="241.907188" transform="rotate(-0 1117.8 241.907188)">1</text>
+    <text style="fill: #157b78; font: 13px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="1117.8" y="241.907188" transform="rotate(-0 1117.8 241.907188)">28</text>
    </g>
    <g id="text_21">
     <text style="fill: #157b78; font: 700 16px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="934.56" y="236.255" transform="rotate(-0 934.56 236.255)">S1</text>
@@ -595,14 +595,14 @@ z
    </g>
    <g id="text_26">
     <g id="patch_42">
-     <path d="M 434.3425 351.5825
-L 697.4975 351.5825
-L 697.4975 328.0975
-L 434.3425 328.0975
+     <path d="M 438.13125 351.5825
+L 693.70875 351.5825
+L 693.70875 328.0975
+L 438.13125 328.0975
 z
 " style="fill: #ffffff"/>
     </g>
-    <text style="fill: #157b78; font: 16px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="565.92" y="344.255" transform="rotate(-0 565.92 344.255)">阶段级全图 + 关键路径 + 原文证据</text>
+    <text style="fill: #157b78; font: 16px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="565.92" y="344.255" transform="rotate(-0 565.92 344.255)">完整阶段图 + 本轮检索的原文证据</text>
    </g>
    <g id="text_27">
     <text style="fill: #586c80; font: 700 15.2px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="367.2" y="400.349625" transform="rotate(-0 367.2 400.349625)">B  动态探索 · 一个候选对应一轮 · 全局最多四轮</text>
@@ -632,13 +632,13 @@ z
     <text style="fill: #7561a4; font: 700 18.6px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="418.32" y="449.733094" transform="rotate(-0 418.32 449.733094)">World model 模拟与讨论</text>
    </g>
    <g id="text_36">
-    <text style="fill: #7561a4; font: 700 15.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="392.4" y="499.217578" transform="rotate(-0 392.4 499.217578)">条件模拟</text>
+    <text style="fill: #7561a4; font: 700 15.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="392.4" y="499.217578" transform="rotate(-0 392.4 499.217578)">多模型独立模拟</text>
    </g>
    <g id="text_37">
     <text style="fill: #203247; font: 13.8px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="392.4" y="517.365844" transform="rotate(-0 392.4 517.365844)">成立 / 部分成立 / 失败，以及后续瓶颈</text>
    </g>
    <g id="text_38">
-    <text style="fill: #7561a4; font: 700 15.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="392.4" y="553.937578" transform="rotate(-0 392.4 553.937578)">独立评议</text>
+    <text style="fill: #7561a4; font: 700 15.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="392.4" y="553.937578" transform="rotate(-0 392.4 553.937578)">独立评议与讨论</text>
    </g>
    <g id="text_39">
     <text style="fill: #203247; font: 13.8px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="392.4" y="572.085844" transform="rotate(-0 392.4 572.085844)">支持与异议均需依据；未知保留为假设</text>
@@ -697,13 +697,13 @@ z
     <text style="fill: #7561a4; font: 12.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="914.4" y="692.778047" transform="rotate(-0 914.4 692.778047)">继续</text>
    </g>
    <g id="text_57">
-    <text style="fill: #7561a4; font: 15.3px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="543.6" y="704.098898" transform="rotate(-0 543.6 704.098898)">模拟反馈 + 保留假设 + 下一瓶颈 → 调整下一跳（t + 1）</text>
+    <text style="fill: #7561a4; font: 15.3px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: middle" x="543.6" y="704.128781" transform="rotate(-0 543.6 704.128781)">全部前轮条件经验 + 保留假设 → 重检索原文并调整下一跳（t + 1）</text>
    </g>
    <g id="text_58">
     <text style="fill: #586c80; font: 11.7px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: start" x="43.2" y="767.050172" transform="rotate(-0 43.2 767.050172)">粗细不同的实线：历史技术变化    虚线：模拟反馈；不写回历史事实</text>
    </g>
    <g id="text_59">
-    <text style="fill: #586c80; font: 11.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="1252.8" y="787.058203" transform="rotate(-0 1252.8 787.058203)">拟议系统框架 · 模拟判断不等于真实实验结果</text>
+    <text style="fill: #586c80; font: 11.5px 'DejaVu Sans', 'Droid Sans Fallback'; text-anchor: end" x="1252.8" y="787.058203" transform="rotate(-0 1252.8 787.058203)">v0.3 系统框架 · 模拟判断仍需真实实验验证</text>
    </g>
   </g>
  </g>

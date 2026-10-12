@@ -2,19 +2,23 @@
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/paperfuture_framework_en.pdf}
-  \caption{Proposed PaperFuture framework.
-  (1--2) Versioned literature is selected for relevance and trajectory coverage,
+  \caption{PaperFuture framework.
+  (1--2) Year-stratified, versioned literature emphasizes the latest two calendar
+  years and is selected for relevance and trajectory coverage,
   then organized into a directed graph of research stages with evidence-backed
-  technical transitions. Edge width encodes the magnitude of technical change.
+  technical transitions. Independent LLM review checks relations and scores
+  technical change on five 0--10 dimensions and an overall 0--100 scale.
+  Edge widths and numbers illustrate this magnitude, not observed measurements.
   (3--5) An LLM proposes a leap using the global stage graph and detailed evidence.
-  A research world model simulates conditional outcomes, reviews objections and
-  assesses value and feasibility. Fixed decision rules either stop exploration
-  or return the predicted bottlenecks and retained assumptions to the next leap.
+  Multiple API models independently simulate conditional outcomes and critiques,
+  discuss disagreements and assess value and feasibility. Fixed decision rules
+  either stop exploration or use cumulative predictions, bottlenecks and retained
+  assumptions to retrieve evidence and locate the next leap.
   All candidates share a global limit of four exploration rounds.
   (6) The best assessed candidate is returned with its value, feasibility,
   uncertainty and validation plan. Dashed arrows carry simulated feedback;
   these predictions are never promoted to facts in the historical graph.
-  All model inference uses APIs. This figure specifies the intended system;
-  it does not claim completed implementation or validated forecasting performance.}
+  All model inference uses APIs. Software execution does not establish validated
+  scientific forecasting performance.}
   \label{fig:paperfuture-framework}
 \end{figure*}

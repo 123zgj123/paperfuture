@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paperfuture"
-version = "0.2.0"
+version = "0.3.0"
 description = "Evidence-grounded research trajectories and API-only conditional idea exploration"
 requires-python = ">=3.11"
 license = {text = "MIT"}

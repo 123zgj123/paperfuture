@@ -61,7 +61,7 @@ def validate(value: Any, schema: dict, path="$") -> None:
             validate(item, fields[key], f"{path}.{key}")
     elif kind == "array":
         if not schema["minItems"] <= len(value) <= schema["maxItems"]:
-            raise ContractError(f"{path}: invalid array length")
+            raise ContractError(f"{path}: invalid array length {len(value)}; expected {schema['minItems']}..{schema['maxItems']} items")
         for i, item in enumerate(value):
             validate(item, schema["items"], f"{path}[{i}]")
     elif kind == "string" and not value.strip():
@@ -71,27 +71,51 @@ def validate(value: Any, schema: dict, path="$") -> None:
             raise ContractError(f"{path}: outside [{schema['minimum']}, {schema['maximum']}]")
 
 
-DELTA = obj(**{k: number(0, 2, integer=True, nullable=True) for k in
-               ("problem", "assumption", "mechanism", "capability", "resource")})
+DIMENSIONS = ("problem", "assumption", "mechanism", "capability", "resource")
+DELTA = obj(**{k: number(0, 10, integer=True, nullable=True) for k in DIMENSIONS})
+DIMENSION_REASONS = obj(**{k: obj(reason=string(), evidence_ids=array()) for k in DIMENSIONS})
+INTERVAL = obj(lower=number(0,100,integer=True), upper=number(0,100,integer=True))
 EVIDENCE = array(string(), 1)
 EXTRACTION = obj(relevance=number(0, 4, integer=True), quality=number(0, 4, integer=True),
     selection_reason=string(), problem=string(), mechanism=string(), assumptions=array(),
     capabilities=array(), limitations=array(), bottlenecks=array(), subtopics=array(string(), 1),
-    evidence_ids=array(string(), 1, 8))
+    evidence_ids=array(string(), 1, 12))
 STAGE = obj(id=string(), label=string(), problem=string(), mechanism=string(), assumptions=array(),
     capabilities=array(), limitations=array(), bottlenecks=array(), paper_keys=array(string(), 1),
     evidence_ids=EVIDENCE)
 EDGE = obj(id=string(), source=string(), target=string(),
     relation=enum("refine", "replace_mechanism", "relax_assumption", "change_objective", "transfer_setting", "combine", "limit_or_refute"),
     inherited=string(), changed=string(), bottleneck=string(), delta=DELTA,
+    dimension_reasons=DIMENSION_REASONS, weight=number(0,100,integer=True,nullable=True),
+    weight_interval=INTERVAL,
     rationale=string(), confidence=enum("high", "medium", "low", "unknown"),
-    source_witness=string(), target_witness=string(), evidence_ids=EVIDENCE)
+    source_witness={**string(),"description":"An exact evidence quote ID from the source stage (E1, E2, etc. in the supplied input), never a stage ID such as s0."},
+    target_witness={**string(),"description":"An exact evidence quote ID from the target stage (E1, E2, etc. in the supplied input), never a stage ID such as s1."},
+    evidence_ids=array())
 GRAPH = obj(stages=array(STAGE, 2), edges=array(EDGE), coverage_gaps=array())
+STAGES = obj(stages=array(STAGE,1), coverage_gaps=array())
+STAGE_MERGE = obj(groups=array(obj(member_stage_ids=array(string(),1),representative_stage_id=string(),
+    comparisons=array(obj(stage_id=string(),same_problem={"type":"boolean"},same_mechanism={"type":"boolean"},
+        same_assumptions={"type":"boolean"},same_capability_boundary={"type":"boolean"},reason=string()))),2))
+EDGES = obj(edges=array(EDGE), unsupported_pairs=array(obj(source=string(),target=string(),reason=string())))
+EDGE_REVIEW = obj(reviews=array(obj(edge_id=string(),
+    verdict=enum("supported", "unsupported", "uncertain"),
+    relationship_reason=string(), evidence_ids=array(),
+    source_entailment=string(), target_entailment=string(),
+    delta=DELTA, dimension_reasons=DIMENSION_REASONS,
+    weight=number(0,100,integer=True,nullable=True), weight_interval=INTERVAL),1))
 ASSUMPTION = obj(id=string(), statement=string(), origin=enum("literature", "hypothesis"), evidence_ids=array())
 IDEA = obj(title=string(), problem=string(), mechanism=string(), difference=string(), minimal_test=string())
 PROPOSAL = obj(source_stages=array(string(), 1), source_edges=array(), bottleneck=string(),
     historical_pattern=string(), operation=string(), target_delta=DELTA,
-    target_weight=number(1, 4, integer=True), magnitude_reason=string(), evidence_ids=EVIDENCE,
+    target_weight=number(0,100,integer=True), target_interval=INTERVAL,
+    magnitude_reason=string(), evidence_ids=EVIDENCE,
+    causal_change=obj(existing_mechanism=string(), changed_principle=string(),
+                     causal_chain=array(string(),2), why_not_module_stacking=string(), falsifier=string()),
+    nearest_prior_art=array(obj(paper_key=string(), shared_elements=string(), mechanism_difference=string()),1),
+    minimal_experiment=obj(baseline_paper_keys=array(string(),1), intervention=string(), control=string(),
+                           observables=array(string(),1), falsification_rule=string(), confound=string()),
+    learning_trace=array(obj(experience_id=string(), implication=string(), change_in_this_proposal=string())),
     assumptions=array(ASSUMPTION), idea=IDEA)
 SCENARIO = obj(kind=enum("success", "partial", "failure"), conditions=array(string(), 1),
     mechanism_chain=array(string(), 1), observable_predictions=array(string(), 1),
@@ -100,6 +124,10 @@ SIMULATION = obj(epistemic_status=enum("conditional_simulation_not_evidence"), s
 OBJECTION = obj(id=string(), claim=string(), kind=enum("evidenced_conflict", "unknown", "taste"),
     severity=number(0, 1), condition=string(), evidence_ids=array(), assumption_ids=array(), repair=string())
 CRITIQUE = obj(preserved_novelty=string(), objections=array(OBJECTION), missed_opportunities=array())
+DISCUSSION = obj(epistemic_status=enum("conditional_simulation_not_evidence"),
+    agreements=array(string()), disagreements=array(obj(claim=string(), with_model_role=string(), reason=string())),
+    revised_predictions=array(obj(condition=string(), prediction=string(), evidence_ids=array(), assumption_ids=array())),
+    discriminating_tests=array(string(),1), next_leap_implications=array(string(),1))
 VALUE_SCORE = obj(score=number(0, 4, integer=True, nullable=True), reason=string(), evidence_ids=array())
 RESOLUTION = obj(objection_id=string(), disposition=enum("resolved", "unresolved", "not_applicable"),
     conditions_match={"type": "boolean"}, reason=string(), evidence_ids=array())
@@ -109,10 +137,19 @@ ASSESSMENT = obj(novelty=VALUE_SCORE, importance=VALUE_SCORE, potential_gain=VAL
     resolutions=array(RESOLUTION), remaining_unknowns=array(), next_question=string(),
     suggested_action=enum("revise", "continue_leap", "switch"), suggested_change=string(),
     parent_round=number(1, 4, integer=True), preserve_assumption_ids=array(),
-    mechanism_signature=string(), assumption_signature=string())
+    mechanism_signature=string(), assumption_signature=string(),
+    mechanism_audit=obj(kind=enum("mechanistic_change","justified_interaction","already_known","integration_only","unclear"),
+                       reason=string(), nearest_prior_art_keys=array(string(),1), evidence_ids=EVIDENCE,
+                       discriminating_test={"type":"boolean"}),
+    progress=obj(compared_round=number(0,4,integer=True), mechanism_changed={"type":"boolean"},
+                 resolved_previous_issue={"type":"boolean"}, reason=string()),
+    navigation=obj(target_stage_ids=array(string(),1), experience_ids=array(), rationale=string()),
+    model_disagreements=array(obj(issue=string(), positions=array(string(),2), resolution=string(),
+                                 remains_uncertain={"type":"boolean"})))
 RERANK = obj(results=array(obj(paper_key=string(), relevance=number(0, 4, integer=True), reason=string()), 1))
-SCHEMAS = {"extract": EXTRACTION, "rerank": RERANK, "graph": GRAPH, "propose": PROPOSAL,
-           "simulate": SIMULATION, "critique": CRITIQUE, "assess": ASSESSMENT}
+SCHEMAS = {"extract": EXTRACTION, "rerank": RERANK, "graph": GRAPH,
+           "graph_stages": STAGES, "graph_merge":STAGE_MERGE,"graph_edges": EDGES, "graph_review": EDGE_REVIEW, "propose": PROPOSAL,
+           "simulate": SIMULATION, "critique": CRITIQUE, "discuss": DISCUSSION, "assess": ASSESSMENT}
 
 
 def require_refs(ids: list, available: dict | set, context: str, nonempty=False) -> None:
@@ -122,4 +159,4 @@ def require_refs(ids: list, available: dict | set, context: str, nonempty=False)
         raise ContractError(f"{context}: duplicate identifiers")
     missing = set(ids) - set(available)
     if missing:
-        raise ContractError(f"{context}: unknown references {sorted(missing)}")
+        raise ContractError(f"{context}: unknown references {sorted(missing)}; supplied identifiers include {sorted(available)[:60]}")
