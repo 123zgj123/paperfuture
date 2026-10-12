@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-12",
+  "scope": "software_integration_not_scientific_effectiveness_evaluation",
+  "implementation_fingerprint": "0b23c88585ba22b469091fdb84084299018830d8b086a4c397101e1386b631ad",
+  "tests": {
+    "command": "PYTHONPATH=src:tests python3.11 -m unittest discover -s tests -q",
+    "total": 216,
+    "passed": 207,
+    "skipped": 9,
+    "failed": 0,
+    "new_paperfuture_tests": 27,
+    "skip_reason": "Existing external full-text/pilot/run records were not included in the original migration."
+  },
+  "legacy_snapshot": {
+    "copied_files": 263,
+    "hash_mismatches": 0,
+    "external_farfield_imports": 0
+  },
+  "package": {
+    "version": "0.2.0",
+    "wheel_build": "passed",
+    "installed_cli_outside_repository": "passed",
+    "installed_source_fingerprint_matches": "passed"
+  },
+  "offline_demos": {
+    "early_stop_rounds": 1,
+    "global_limit_rounds": 4,
+    "data_status": "explicitly_synthetic"
+  },
+  "live_integration": {
+    "run_id": "agent-security-fulltext-final-20261012",
+    "status": "complete",
+    "input_source": "automatic arxiv v1 metadata and PDF retrieval; local pdftotext; API-only model inference",
+    "papers": [
+      {
+        "paper_key": "arxiv:2302.12173@v1",
+        "title": "More than you've asked for: A Comprehensive Analysis of Novel Prompt Injection Threats to Application-Integrated Large Language Models",
+        "source_url": "https://arxiv.org/abs/2302.12173v1",
+        "version_public_at": "2023-02-23T17:14:38Z",
+        "content_level": "provided_sections"
+      },
+      {
+        "paper_key": "arxiv:2402.06363@v1",
+        "title": "StruQ: Defending Against Prompt Injection with Structured Queries",
+        "source_url": "https://arxiv.org/abs/2402.06363v1",
+        "version_public_at": "2024-02-09T12:15:51Z",
+        "content_level": "provided_sections"
+      },
+      {
+        "paper_key": "arxiv:2403.02691@v1",
+        "title": "InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated Large Language Model Agents",
+        "source_url": "https://arxiv.org/abs/2403.02691v1",
+        "version_public_at": "2024-03-05T06:21:45Z",
+        "content_level": "provided_sections"
+      }
+    ],
+    "stage_count": 3,
+    "edge_count": 3,
+    "completed_rounds": 3,
+    "reserved_rounds": 3,
+    "stop_reason": "stop_stagnation",
+    "recommendation": "needs_validation",
+    "selected_round": 1,
+    "network_attempts": 21,
+    "reported_tokens": 337976,
+    "unknown_billing_attempts": 0,
+    "replay_from_installed_wheel": "passed_without_additional_network_attempts",
+    "schema_evidence_graph_and_round_revalidation": "passed",
+    "private_artifacts": "var/paperfuture/live/runs/agent-security-fulltext-final-20261012",
+    "private_config": "var/paperfuture/live_config.json"
+  },
+  "development_api_runs": [
+    {
+      "run_id": "agent-security-fulltext-e2e-20261012",
+      "status": "interrupted",
+      "network_attempts": 14,
+      "reported_tokens": 213568,
+      "unknown_billing_attempts": 0
+    },
+    {
+      "run_id": "agent-security-fulltext-final-20261012",
+      "status": "complete",
+      "network_attempts": 21,
+      "reported_tokens": 337976,
+      "unknown_billing_attempts": 0
+    },
+    {
+      "run_id": "agent-security-live-smoke-20261012",
+      "status": "interrupted",
+      "network_attempts": 27,
+      "reported_tokens": 288824,
+      "unknown_billing_attempts": 0
+    }
+  ],
+  "development_totals": {
+    "network_attempts": 62,
+    "reported_tokens": 840368,
+    "monetary_cost": null
+  },
+  "issues_found_and_fixed": [
+    "Conditional parent hypotheses were omitted by model feedback; the controller now carries them forward automatically and never promotes predictions to evidence.",
+    "JSON repair now includes the invalid previous response and preserves the same artifact instead of requesting a fresh answer.",
+    "Concurrent imports serialize version-conflict checks; adding full text preserves earlier immutable observations."
+  ],
+  "limits": [
+    "Three historical papers form an engineering smoke corpus, not a representative Agent security benchmark.",
+    "Graph relationships and evidence entailment require expert semantic review.",
+    "Idea value scores are uncalibrated model judgments; the final idea still needs empirical validation.",
+    "API model identity and training cutoff are not independently verified.",
+    "No monetary cost estimate is made without provider rates; both successful and unsuccessful development requests are reported."
+  ]
+}

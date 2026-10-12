@@ -1,0 +1,50 @@
+{
+  "run_id": "multimodal_self_evolution_xai-pilot-01",
+  "domain": "multimodal_self_evolution_xai",
+  "subfield": "How can faithful cross-modal explanations reveal when self-improvement in a multimodal model changes its reasoning mechanism rather than exploiting feedback shortcuts?",
+  "question": "How can faithful cross-modal explanations reveal when self-improvement in a multimodal model changes its reasoning mechanism rather than exploiting feedback shortcuts?",
+  "cutoff": "2026-10-12T00:00:00Z",
+  "mode": "prospective",
+  "max_rounds": 4,
+  "sources": [
+    {
+      "type": "arxiv",
+      "max_results": 300,
+      "page_size": 100,
+      "version_policy": "v1",
+      "full_text": "none"
+    }
+  ],
+  "retrieval": {
+    "method": "hybrid",
+    "recall_k": 80,
+    "candidate_limit": 40,
+    "selected_limit": 20
+  },
+  "models": {
+    "default": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "embedding": {
+      "base_url": "${PAPERFUTURE_EMBEDDING_BASE_URL}",
+      "model": "${PAPERFUTURE_EMBEDDING_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    }
+  },
+  "api": {
+    "max_calls": 150,
+    "max_tokens": 2000000,
+    "max_output_tokens": 16000,
+    "timeout_seconds": 180,
+    "json_attempts": 2
+  },
+  "policy": {
+    "critic_weight": 0.2,
+    "sufficient_utility": 0.75,
+    "min_novelty": 3,
+    "min_importance": 3
+  },
+  "model_vintage_evidence": []
+}
