@@ -9,7 +9,7 @@ from .config import DOMAINS, credential, load_config
 from .contracts import SCHEMAS
 from .pipeline import run
 from .storage import atomic_json, read_json, unseal
-from .dataset import PLANS, data_root, harvest, load_corpus, publish_source, update_corpus
+from .dataset import PLANS, data_root, harvest, load_corpus, publish_source, supplement_corpus, update_corpus
 
 
 def main(argv=None):
@@ -45,6 +45,13 @@ def main(argv=None):
     update.add_argument('--fulltext-limit',type=int,default=24)
     update.add_argument('--paper-id',action='append',default=[])
     update.add_argument('--replay',action='store_true')
+    supplement=commands.add_parser('corpus-supplement',help='explicit historical gap backfill at an unchanged cutoff; outside research runs')
+    supplement.add_argument('--data-root',type=Path)
+    supplement.add_argument('--manifest',type=Path,required=True)
+    supplement.add_argument('--paper-id',action='append',default=[])
+    supplement.add_argument('--query',action='append',default=[])
+    supplement.add_argument('--fulltext-limit',type=int,default=24)
+    supplement.add_argument('--replay',action='store_true')
     maintenance=commands.add_parser('corpus-maintain',help='weekly acquisition, local vector warming and future-profile activation; no chat calls')
     maintenance.add_argument('--config',type=Path,required=True)
     maintenance.add_argument('--cutoff')
@@ -67,9 +74,12 @@ def main(argv=None):
             result=maintain(args.config,cutoff=args.cutoff,check_only=args.check_only)
             print(json.dumps(result,ensure_ascii=False,indent=2))
             return 1 if result['status']=='partial_failure' else 0
-        elif args.command in ('corpus-publish','corpus-update'):
+        elif args.command in ('corpus-publish','corpus-update','corpus-supplement'):
             if args.command=='corpus-publish':
                 result=publish_source(args.domain,args.data_root or data_root(),args.cutoff,args.input)
+            elif args.command=='corpus-supplement':
+                result=supplement_corpus(args.manifest,args.data_root or data_root(),paper_ids=args.paper_id,
+                    queries=args.query,fulltext_limit=args.fulltext_limit,replay=args.replay)
             else:
                 result=update_corpus(args.manifest,args.data_root or data_root(),args.cutoff,
                     overlap_days=args.overlap_days,fulltext_limit=args.fulltext_limit,extra_ids=args.paper_id,replay=args.replay)
@@ -102,7 +112,7 @@ def main(argv=None):
                         raise ValueError(f"missing literature file: {source['path']}")
                     if source['type']=='corpus':
                         manifest,_=load_corpus(Path(source['manifest']))
-                        if manifest['domain']!=config['domain']:raise ValueError('corpus domain mismatch')
+                        if manifest['domain'] not in {config['domain'],*config['auxiliary_domains']}:raise ValueError('corpus domain mismatch')
                 print(json.dumps({"ready": True, "models": checks, "network_tested": False}, indent=2))
             else:
                 args.workspace=args.workspace or data_root()

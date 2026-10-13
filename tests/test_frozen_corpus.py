@@ -175,3 +175,37 @@ class WeeklyMaintenanceTests(unittest.TestCase):
         config=copy.deepcopy(self.config);config['retrieval']['history_paper_ids']=['arxiv:2301.00002@v1']
         self.assertEqual(pending_ids(root,'agent_security',{'arxiv:2301.00001'},[config],1),['arxiv:2301.00002'])
         self.assertEqual(pending_ids(root,'multimodal_self_evolution_xai',set(),[self.config],20),[])
+
+    def test_joint_default_advances_only_when_both_corpora_are_ready(self):
+        root,agent,path,settings=self.prepare()
+        alignment=publish_corpus('llm_alignment',root,agent['cutoff'],papers())
+        auxiliary=json.loads(path.read_text());auxiliary['domain']='llm_alignment'
+        auxiliary['sources']=[{'type':'corpus','manifest':alignment['manifest_path']}]
+        auxiliary_path=root/'configs/alignment.json';auxiliary_path.write_text(json.dumps(auxiliary))
+        joint=json.loads(path.read_text());joint['auxiliary_domains']=['llm_alignment']
+        joint['sources']+=auxiliary['sources'];joint['retrieval']['domain_selected_floor']=1
+        joint_path=root/'configs/joint.json';joint_path.write_text(json.dumps(joint));before=joint_path.read_bytes()
+        settings.write_text(json.dumps({'data_root':str(root),'profiles':[str(path),str(auxiliary_path)],
+                                       'combined_profiles':[str(joint_path)]}))
+        with patch('urllib.request.urlopen',side_effect=AssertionError('check must stay offline')):
+            self.assertEqual(maintain(settings,check_only=True)['combined_profiles'][0]['domains'],
+                             ['agent_security','llm_alignment'])
+        cutoff='2024-01-08T00:00:00Z'
+        new={d:publish_corpus(d,root,cutoff,papers()) for d in ('agent_security','llm_alignment')}
+        def update(manifest,*args,**kw):return new[load_corpus(manifest)[0]['domain']]
+        def warm(root,config,manifest):
+            if config['domain']=='llm_alignment':raise RuntimeError('synthetic interrupted local index')
+            return {'status':'complete','external_model_calls':0}
+        with patch('paperfuture.maintenance.update_corpus',side_effect=update), \
+             patch('paperfuture.maintenance.warm_release',side_effect=warm):
+            report=maintain(settings,cutoff=cutoff)
+        self.assertEqual(report['status'],'partial_failure')
+        self.assertEqual(report['combined_profiles'][0]['status'],'preserved')
+        self.assertEqual(joint_path.read_bytes(),before)
+        with patch('paperfuture.maintenance.update_corpus',side_effect=update), \
+             patch('paperfuture.maintenance.warm_release',return_value={'status':'complete','external_model_calls':0}):
+            report=maintain(settings,cutoff=cutoff)
+        self.assertEqual(report['status'],'complete')
+        self.assertEqual([s['manifest'] for s in json.loads(joint_path.read_text())['sources']],
+                         [new[d]['manifest_path'] for d in ('agent_security','llm_alignment')])
+        self.assertEqual(json.loads(Path(report['combined_profiles'][0]['archived_profile']).read_text()),json.loads(before))

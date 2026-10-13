@@ -282,8 +282,8 @@ def collect(config: dict, store: LiteratureStore, cache: Path) -> list[str]:
         elif source["type"] == "corpus":
             from .dataset import load_corpus
             manifest, records = load_corpus(Path(source["manifest"]))
-            if manifest["domain"] != config["domain"]:
-                raise ValueError("published corpus belongs to a different research domain")
+            if manifest["domain"] not in {config["domain"],*config.get('auxiliary_domains',[])}:
+                raise ValueError("published corpus belongs to an undeclared research domain")
             keys.extend(store.add_many(records))
         elif source["type"] == "arxiv_dataset":
             from .dataset import harvest
@@ -296,6 +296,33 @@ def collect(config: dict, store: LiteratureStore, cache: Path) -> list[str]:
         else:
             keys.extend(store.add(p) for p in collect_arxiv(source, config, cache))
     return keys
+
+
+def corpus_scope(snapshot, config):
+    """Keep corpus membership separate from immutable source-paper content."""
+    from .dataset import load_corpus
+    releases=[];memberships={k:[] for k in snapshot.papers}
+    for source in config['sources']:
+        if source['type']!='corpus':continue
+        manifest,records=load_corpus(Path(source['manifest']))
+        domain=manifest['domain']
+        releases.append({k:manifest[k] for k in ('domain','release_id','cutoff','papers')})
+        for p in records:
+            if p['key'] in memberships and domain not in memberships[p['key']]:
+                memberships[p['key']].append(domain)
+    if config.get('auxiliary_domains'):
+        expected={config['domain'],*config['auxiliary_domains']}
+        if {m['domain'] for m in releases}!=expected:
+            raise ValueError('combined-domain configuration must supply every declared corpus exactly in scope')
+        if any(not domains for domains in memberships.values()):
+            raise ValueError('paper without an explicitly declared corpus membership')
+    if not releases:return snapshot
+    return Snapshot({**snapshot.payload,'corpus_releases':releases,
+                     'paper_domains':{k:sorted(v) for k,v in memberships.items()}})
+
+
+def domain_members(snapshot, domain):
+    return {k for k,domains in snapshot.payload.get('paper_domains',{}).items() if domain in domains}
 
 
 def tokens(text):
@@ -405,6 +432,18 @@ def candidate_pool(snapshot, config, gateway=None):
             vectors.update(zip(batch,gateway.embeddings([documents[k] for k in batch],identity=f"documents:{snapshot.id}:{offset}")))
         query=gateway.embeddings([config["question"]],identity=f"query:{snapshot.id}",input_type="query")[0]
         routes["vector"]=temporal_rank(sorted(keys,key=lambda k:(-cosine(query,vectors[k]),k)),snapshot,options["recall_k"],options)
+    domains=[config['domain'],*config.get('auxiliary_domains',[])] if config.get('auxiliary_domains') else []
+    domain_rankings={}
+    for domain in domains:
+        members=domain_members(snapshot,domain)
+        local=bm25(config['question'],{k:documents[k] for k in members},positive_only=True)
+        routes['domain:'+domain+':lexical']=temporal_rank(local,snapshot,options['recall_k'],options)
+        local_routes=[local]
+        if vectors:
+            dense=sorted(members,key=lambda k:(-cosine(query,vectors[k]),k))
+            routes['domain:'+domain+':vector']=temporal_rank(dense,snapshot,options['recall_k'],options)
+            local_routes.append(dense)
+        domain_rankings[domain]=rrf(local_routes,options['rrf_k'])
     facets={};strata={}
     for facet,query in options["facet_queries"].items():
         ranking=bm25(query,documents,positive_only=True)
@@ -433,12 +472,16 @@ def candidate_pool(snapshot, config, gateway=None):
     if citations: routes["cited_predecessor"]=sorted(citations,key=lambda k:(-len(citations[k]),k))
     ranked=rrf(list(routes.values()),options["rrf_k"])
     features={k:{"year:"+snapshot.get(k)["first_public_at"][:4]} | facets.get(k,set()) |
+              {'domain:'+d for d in snapshot.payload.get('paper_domains',{}).get(k,[])} |
               {"citation_bridge:"+source for source in citations.get(k,[])} for k in ranked}
-    candidates=coverage_rank(ranked,snapshot,options["candidate_limit"],options,features,seed_keys)
+    domain_priority=[k for i in range(options['domain_candidate_floor']) for d in domains
+                     for k in domain_rankings[d][i:i+1]]
+    candidates=coverage_rank(ranked,snapshot,options["candidate_limit"],options,features,domain_priority+seed_keys)
     provenance={k:[{"route":name,"rank":r.index(k)+1} for name,r in routes.items() if k in r] for k in ranked}
     return {"candidates":candidates,"rankings":list(routes.values()),"routes":routes,"features":{k:sorted(v) for k,v in features.items()},
         "provenance":provenance,"citation_sources":citations,"uncollected_references":missing_refs,
-        "declared_history_seeds":seed_keys,"uncollected_history_seeds":missing,"branch_year_pools":strata},vectors
+        "declared_history_seeds":seed_keys,"uncollected_history_seeds":missing,"branch_year_pools":strata,
+        'domain_candidate_counts':{d:len(set(candidates)&domain_members(snapshot,d)) for d in domains}},vectors
 
 
 def evidence_view(snapshot,key,query,limit):
@@ -513,14 +556,24 @@ def round_context(base,snapshot,config,feedback,experiences):
     query=" | ".join(c["query"] for c in channels)
     selected_experience_ids=set((feedback or {}).get("navigation",{}).get("experience_ids",[]))
     documents={k:p["title"]+" "+p["sections"].get("abstract","") for k,p in snapshot.papers.items()}
-    rankings=[bm25(c["query"],documents,positive_only=True) for c in channels]
+    if config.get('auxiliary_domains'):
+        channels=[{**c,'domain':d} for c in channels for d in [config['domain'],*config['auxiliary_domains']]]
+    membership={d:domain_members(snapshot,d) for d in [config['domain'],*config.get('auxiliary_domains',[])]}
+    rankings=[bm25(c["query"],{k:v for k,v in documents.items() if not c.get('domain') or k in membership[c['domain']]},positive_only=True) for c in channels]
     ranked=rrf(rankings)
     target=set((feedback or {}).get("navigation",{}).get("target_stage_ids",[]))
     target_keys=[k for n in base["complete_stage_graph"]["stages"] if n["id"] in target for k in n["paper_keys"]]
     # Allocate at least one position to each plan query before filling by RRF.
     # A switch starts from alternative evidence; old stage targets no longer
     # occupy every slot just because the assessor repeated their IDs.
-    leaders=[r[0] for r in rankings if r]
+    leaders=[k for i in range(config['retrieval']['domain_round_floor']) for r in rankings for k in r[i:i+1]]
+    if config.get('auxiliary_domains'):
+        per_domain={d:rrf([r for c,r in zip(channels,rankings) if c['domain']==d]) for d in membership}
+        # Reserve domain positions before query-channel leaders. A domain whose
+        # only useful match is in the last query must not lose every position.
+        reserved=[k for i in range(config['retrieval']['domain_round_floor']) for d in per_domain
+                  for k in per_domain[d][i:i+1]]
+        leaders=list(dict.fromkeys(reserved+leaders))
     priority=leaders+ranked+target_keys if action=="switch" else leaders+target_keys+ranked
     keys=list(dict.fromkeys(priority))[:config["retrieval"]["round_papers"]]
     budget=config["retrieval"]["round_evidence_chars"]
@@ -560,7 +613,9 @@ def round_context(base,snapshot,config,feedback,experiences):
             key=snapshot.evidence[ref]["paper_key"];p=snapshot.get(key)
             papers[key]={"key":key,"title":p["title"],"date":p["version_public_at"],"source_url":p["source_url"],"content_level":p["content_level"]}
     return {**base,"evidence":evidence,"papers":list(papers.values()),
+            'paper_domains':{k:snapshot.payload.get('paper_domains',{}).get(k,[]) for k in papers},
             "round_retrieval":{"query":query,"channels":channels,"action":action,"paper_keys":keys,"target_stage_ids":sorted(target),
+                'domain_counts':{d:len(set(keys)&domain_members(snapshot,d)) for d in [config['domain'],*config.get('auxiliary_domains',[])]},
                 "paper_reasons":{k:[{"purpose":c["purpose"],"rank":r.index(k)+1} for c,r in zip(channels,rankings) if k in r]
                     + ([{"purpose":"navigation_stage"}] if k in target_keys else []) for k in keys},
                 "expanded_graph_evidence_ids":sorted(wanted-set(deferred)),
@@ -589,10 +644,11 @@ def select_corpus(snapshot: Snapshot, config: dict, gateway) -> dict:
                     "ADD the missing records, including relevance=0 for unrelated papers; do not just reorder existing records.")
             for item in result["results"]:
                 require_refs(item["facets"],options["facet_queries"],"reranked research branches")
-        result = gateway.structured("rerank", {"question": config["question"], "domain_label": DOMAINS[config["domain"]]["label"],
+        result = gateway.structured("rerank", {"question": config["question"], "domain_label": ' + '.join(DOMAINS[d]['label'] for d in [config['domain'],*config.get('auxiliary_domains',[])]),
             "research_branches":options["facet_queries"],
             "allowed_facet_ids":list(options["facet_queries"]),
-            "papers": [{"paper_key": k, "text": documents[k]} for k in batch]},
+            "papers": [{"paper_key": k, "text": documents[k],
+                        'corpus_domains':snapshot.payload.get('paper_domains',{}).get(k,[])} for k in batch]},
             "Score direct relevance AND historical_relevance independently 0..4. Historical relevance means a specific enabling mechanism, turning point, counterexample or evaluation foundation needed to understand THIS question's trajectory; old age or topic similarity alone is not sufficient. Assign the strongest supported historical_role. Every facets entry MUST be an exact string from allowed_facet_ids (the KEYS of research_branches), never a descriptive label or query value; use an empty list if none applies. Explain the contribution relative to the research question, not just the publication year. Return every input identifier exactly once. Do not use current citation counts.",
             identity=f"rerank:{snapshot.id}:{offset}", check=check)
         reranked.update({r["paper_key"]: r for r in result["results"]})
@@ -625,6 +681,7 @@ def select_corpus(snapshot: Snapshot, config: dict, gateway) -> dict:
         paper, ext = snapshot.get(key), extractions[key]
         year = timestamp(paper["version_public_at"]).year
         return {"year:"+str(year), "role:"+reranked[key]["historical_role"],
+                *('domain:'+d for d in snapshot.payload.get('paper_domains',{}).get(key,[])),
                 *("branch_year:"+s+":"+str(year) for s in reranked[key]["facets"]),
                 "mechanism:"+ext["mechanism_family"].strip().lower()}
     covered, selected, reasons = set(), [], {}
@@ -656,6 +713,15 @@ def select_corpus(snapshot: Snapshot, config: dict, gateway) -> dict:
                 counts=Counter(timestamp(snapshot.get(k)["first_public_at"]).year for k in selected)
                 year=min({timestamp(snapshot.get(k)["first_public_at"]).year for k in recent},key=lambda y:(counts[y],-y))
                 eligible={k for k in recent if timestamp(snapshot.get(k)["first_public_at"]).year==year}
+        if config.get('auxiliary_domains'):
+            # Domain allocation applies only after evidence/relevance checks;
+            # it cannot force an irrelevant paper into the development graph.
+            domains=[config['domain'],*config['auxiliary_domains']]
+            counts={d:len(set(selected)&domain_members(snapshot,d)) for d in domains}
+            under=[d for d in domains if counts[d]<options['domain_selected_floor'] and remaining&domain_members(snapshot,d)]
+            if under:
+                domain=min(under,key=lambda d:(counts[d],domains.index(d)))
+                eligible=remaining&domain_members(snapshot,domain)
         # First cover evidence-validated branch/year and contribution roles;
         # then compare quality/redundancy. Unrelated seeds have no exemption.
         priority=lambda k:len({f for f in features(k)-covered if f.startswith(("branch_year:","year:","role:"))})
@@ -676,12 +742,14 @@ def select_corpus(snapshot: Snapshot, config: dict, gateway) -> dict:
             "coverage": sorted(covered), "coverage_gaps": sorted(eligible_features-covered)
                 +[f"collected_year_not_selected:{y}" for y in sorted(snapshot_years-selected_years)]
                 +[f"declared_history_seed_not_collected:{k}" for k in recall["uncollected_history_seeds"]]
+                +[f'domain_has_no_selected_evidence:{d}' for d in ([config['domain'],*config['auxiliary_domains']] if config.get('auxiliary_domains') else []) if not set(selected)&domain_members(snapshot,d)]
                 +[f"branch_not_selected:{f}" for f in options["facet_queries"] if not any(f in reranked[k]["facets"] for k in selected)],
             "year_counts":dict(Counter(str(timestamp(snapshot.get(k)["first_public_at"]).year) for k in selected)),
             "recent_fraction_target":options["recent_fraction"],
             "recent_fraction_semantics":"allocation_target_with_coverage_constraints_and_scarcity_backfill_not_a_guaranteed_fraction",
             "recent_fraction_actual":sum(timestamp(snapshot.get(k)["first_public_at"]).year>=boundary for k in selected)/len(selected) if selected else None,
             "candidate_count": len(candidates), "eligible_count": len(extractions), "snapshot_count": len(snapshot.papers),
+            'domain_selected_counts':{d:len(set(selected)&domain_members(snapshot,d)) for d in [config['domain'],*config.get('auxiliary_domains',[])]},
             "retrieval_method": options["method"], "rankings": rankings, "rerank": reranked,
             "limitations": ["Coverage is measured within the collected candidate pool, not the entire research field.",
                             "Abstract-only evidence limits judgments of mechanism and verified capability."]}

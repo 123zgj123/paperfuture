@@ -1,5 +1,5 @@
 {
-  "run_id": "ai4eda-v041-01",
+  "run_id": "ai4eda-v05-01",
   "domain": "ai4eda",
   "subfield": "How can AI-assisted RTL generation improve functional correctness and design generalization under explicit synthesis and PPA constraints?",
   "question": "How can AI-assisted RTL generation improve functional correctness and design generalization under explicit synthesis and PPA constraints?",
@@ -100,5 +100,12 @@
     "stage_batch": 3
   },
   "rating_anchors": [],
-  "literature_mode": "frozen"
+  "literature_mode": "frozen",
+  "research_skills": {
+    "enabled": true,
+    "tool_rounds": 2,
+    "tool_calls": 4,
+    "search_results": 5,
+    "evidence_chars": 10000
+  }
 }

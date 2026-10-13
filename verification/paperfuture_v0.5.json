@@ -1,0 +1,370 @@
+{
+  "at": "2026-10-13T13:23:03.024317+00:00",
+  "version": "0.5.2",
+  "scope": "corpus construction, cross-domain retrieval, research skills and idea-memory isolation",
+  "data_root": "/mnt/efs/zhangguijia/paperfuture",
+  "source_fingerprint": "31014fea8c1305c9afbde31cb30512151cbaf942851d7f5c7b14f5bdcff87f1a",
+  "wheel_sha256": "e8527b12190fe1f4dd57d2a27d41dab4b8fcbea61ea46a1a7f33e7daf59d9ed9",
+  "regression": {
+    "total": 316,
+    "passed": 307,
+    "skipped": 9,
+    "failed": 0,
+    "skip_reason": "historical external fixtures unavailable"
+  },
+  "installed_four_round_replay": {
+    "version": "0.5.2",
+    "installed_module": "/mnt/efs/zhangguijia/paperfuture/software/v0.5.2/installed/paperfuture/__init__.py",
+    "source_fingerprint": "31014fea8c1305c9afbde31cb30512151cbaf942851d7f5c7b14f5bdcff87f1a",
+    "json_and_document_identical": true,
+    "additional_network_calls": 0,
+    "hashes": {
+      "final_idea.json": "d8b17cc4b468a5cc4159e20558429d0ad082afd16822aa8c9611aec561af1757",
+      "IDEA.md": "dc4f103f1e9daf8b23cfe39b2adb038baff220c8c273577758fe77c74a973466"
+    },
+    "rounds": 4,
+    "distinct_branches": 4,
+    "packaged_skills": 5,
+    "scope": "synthetic joint-corpus four-round software replay and independent audit; NOT real model validation"
+  },
+  "real_corpora": {
+    "at": "2026-10-13T13:17:41.394469Z",
+    "domains": [
+      {
+        "domain": "agent_security",
+        "release_id": "cbe7a4c54262dcbcbf13218e521be30a4bc10a0a5a0251826925dadc97ead940",
+        "papers": 3587,
+        "fulltext_papers": 176,
+        "by_year": {
+          "2016": 1,
+          "2017": 12,
+          "2018": 30,
+          "2019": 54,
+          "2020": 76,
+          "2021": 101,
+          "2022": 93,
+          "2023": 86,
+          "2024": 512,
+          "2025": 1061,
+          "2026": 1561
+        },
+        "recent_papers": 2622,
+        "missing_years": [
+          2015
+        ],
+        "cutoff": "2026-10-12T00:00:00Z",
+        "fulltext_by_year": {
+          "2016": 1,
+          "2017": 3,
+          "2018": 3,
+          "2019": 3,
+          "2020": 3,
+          "2021": 3,
+          "2022": 3,
+          "2023": 4,
+          "2024": 11,
+          "2025": 43,
+          "2026": 99
+        },
+        "metadata_fields_present": {
+          "authors": 3587,
+          "categories": 3587,
+          "journal_ref": 48,
+          "doi": 71
+        },
+        "manifest_path": "/mnt/efs/zhangguijia/paperfuture/corpora/agent_security/releases/cbe7a4c54262dcbcbf13218e521be30a4bc10a0a5a0251826925dadc97ead940/manifest.json",
+        "verified_version_dates_and_artifact_hashes": true
+      },
+      {
+        "domain": "multimodal_self_evolution_xai",
+        "release_id": "9fab902b864452fd4b748c4d0263589d5f3d7d5dc3b4d7ec607b1233347379c0",
+        "papers": 9115,
+        "fulltext_papers": 100,
+        "by_year": {
+          "2015": 22,
+          "2016": 38,
+          "2017": 59,
+          "2018": 74,
+          "2019": 97,
+          "2020": 153,
+          "2021": 179,
+          "2022": 247,
+          "2023": 475,
+          "2024": 1187,
+          "2025": 3061,
+          "2026": 3523
+        },
+        "recent_papers": 6584,
+        "missing_years": [],
+        "cutoff": "2026-10-12T00:00:00Z",
+        "fulltext_by_year": {
+          "2015": 3,
+          "2016": 3,
+          "2017": 3,
+          "2018": 3,
+          "2019": 3,
+          "2020": 3,
+          "2021": 3,
+          "2022": 3,
+          "2023": 3,
+          "2024": 3,
+          "2025": 35,
+          "2026": 35
+        },
+        "metadata_fields_present": {
+          "authors": 9115,
+          "categories": 9115,
+          "journal_ref": 288,
+          "doi": 379
+        },
+        "manifest_path": "/mnt/efs/zhangguijia/paperfuture/corpora/multimodal_self_evolution_xai/releases/9fab902b864452fd4b748c4d0263589d5f3d7d5dc3b4d7ec607b1233347379c0/manifest.json",
+        "verified_version_dates_and_artifact_hashes": true
+      },
+      {
+        "domain": "ai4eda",
+        "release_id": "be9b35c15c4df19cdc615f13a0ad96ea6ca12f0edcdac5756fcedb272b62db23",
+        "papers": 810,
+        "fulltext_papers": 100,
+        "by_year": {
+          "2012": 2,
+          "2013": 1,
+          "2014": 2,
+          "2016": 3,
+          "2017": 4,
+          "2018": 15,
+          "2019": 17,
+          "2020": 35,
+          "2021": 36,
+          "2022": 49,
+          "2023": 70,
+          "2024": 134,
+          "2025": 214,
+          "2026": 228
+        },
+        "recent_papers": 442,
+        "missing_years": [
+          2010,
+          2011,
+          2015
+        ],
+        "cutoff": "2026-10-12T00:00:00Z",
+        "fulltext_by_year": {
+          "2012": 2,
+          "2013": 1,
+          "2014": 2,
+          "2016": 3,
+          "2017": 3,
+          "2018": 3,
+          "2019": 3,
+          "2020": 3,
+          "2021": 3,
+          "2022": 3,
+          "2023": 3,
+          "2024": 3,
+          "2025": 34,
+          "2026": 34
+        },
+        "metadata_fields_present": {
+          "authors": 810,
+          "categories": 810,
+          "doi": 74,
+          "journal_ref": 37
+        },
+        "manifest_path": "/mnt/efs/zhangguijia/paperfuture/corpora/ai4eda/releases/be9b35c15c4df19cdc615f13a0ad96ea6ca12f0edcdac5756fcedb272b62db23/manifest.json",
+        "verified_version_dates_and_artifact_hashes": true
+      },
+      {
+        "domain": "llm_alignment",
+        "release_id": "12486fb78f61157b918766a33710efabf6dfd721cf7ba9d83a303a0791de2e62",
+        "papers": 12596,
+        "fulltext_papers": 217,
+        "by_year": {
+          "2015": 3,
+          "2016": 12,
+          "2017": 18,
+          "2018": 26,
+          "2019": 39,
+          "2020": 55,
+          "2021": 63,
+          "2022": 129,
+          "2023": 929,
+          "2024": 2692,
+          "2025": 4224,
+          "2026": 4406
+        },
+        "recent_papers": 8630,
+        "missing_years": [],
+        "cutoff": "2026-10-13T00:00:00Z",
+        "fulltext_by_year": {
+          "2015": 3,
+          "2016": 3,
+          "2017": 4,
+          "2018": 3,
+          "2019": 4,
+          "2020": 4,
+          "2021": 3,
+          "2022": 5,
+          "2023": 6,
+          "2024": 3,
+          "2025": 78,
+          "2026": 101
+        },
+        "metadata_fields_present": {
+          "authors": 12596,
+          "categories": 12596,
+          "journal_ref": 195,
+          "doi": 210
+        },
+        "manifest_path": "/mnt/efs/zhangguijia/paperfuture/corpora/llm_alignment/releases/12486fb78f61157b918766a33710efabf6dfd721cf7ba9d83a303a0791de2e62/manifest.json",
+        "verified_version_dates_and_artifact_hashes": true
+      }
+    ],
+    "domain_records": 26108,
+    "unique_paper_versions": 25059,
+    "files_hash_checked": 1136,
+    "joint_preflight": {
+      "cutoff": "2026-10-12T00:00:00Z",
+      "papers": 15766,
+      "snapshot_id": "844c9f37c972c74ed9b943539fc34dd2c0881c4ced3a8b7307b50383838698a9",
+      "domain_candidate_counts": {
+        "agent_security": 43,
+        "llm_alignment": 32
+      },
+      "candidate_count": 60,
+      "method": "explicit lexical preflight plus exact source tools; hybrid cache audit is separate",
+      "tool_calls": 3,
+      "exact_evidence_passages": 4,
+      "network_calls": 0
+    },
+    "scope": "declared-query corpus integrity and software access; NOT exhaustive field coverage or idea quality validation"
+  },
+  "alignment_history_diagnostics": {
+    "papers": [
+      {
+        "paper_id": "arxiv:1706.03741",
+        "title": "Deep reinforcement learning from human preferences",
+        "fulltext": true
+      },
+      {
+        "paper_id": "arxiv:1909.08593",
+        "title": "Fine-Tuning Language Models from Human Preferences",
+        "fulltext": true
+      },
+      {
+        "paper_id": "arxiv:2009.01325",
+        "title": "Learning to summarize from human feedback",
+        "fulltext": true
+      },
+      {
+        "paper_id": "arxiv:2203.02155",
+        "title": "Training language models to follow instructions with human feedback",
+        "fulltext": true
+      },
+      {
+        "paper_id": "arxiv:2212.08073",
+        "title": "Constitutional AI: Harmlessness from AI Feedback",
+        "fulltext": true
+      },
+      {
+        "paper_id": "arxiv:2305.18290",
+        "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+        "fulltext": true
+      },
+      {
+        "paper_id": "arxiv:2305.20050",
+        "title": "Let's Verify Step by Step",
+        "fulltext": true
+      },
+      {
+        "paper_id": "arxiv:2312.09390",
+        "title": "Weak-to-Strong Generalization: Eliciting Strong Capabilities With Weak Supervision",
+        "fulltext": true
+      }
+    ],
+    "scope": "development-selected historical landmarks, NOT heldout coverage evaluation",
+    "additional_gap_papers": 37,
+    "query": "constitutional AI OR RLAIF over the full declared time range",
+    "base_release": "be64d33077c6c5bded94e0e196575a000810d87a16b4dcfb03fa00418b2138a4"
+  },
+  "skills": {
+    "procedures": [
+      "literature",
+      "trajectory",
+      "leap",
+      "world_model",
+      "navigation"
+    ],
+    "tools": [
+      "search_papers",
+      "read_passages",
+      "compare_stages"
+    ],
+    "default_plan_rounds": 2,
+    "default_tool_calls_per_candidate": 4,
+    "max_candidate_rounds": 4,
+    "reference": "https://github.com/leehomyc/EurekAI/tree/1319c5d6dc1a39faf790f917b137d464402e358d",
+    "upstream_code_executed": false,
+    "author_private_reasoning_imported": false
+  },
+  "memory": {
+    "cross_run_import": "rejected",
+    "idea_and_branch_ownership": "controller assigned",
+    "switch_context": "old complete narrative excluded from proposal and tool planning",
+    "cross_branch_transfer": "requires cited experience, applicability, changed conditions and discriminating test",
+    "retained_condition_without_cited_transfer": "rejected",
+    "simulations_added_to_paper_corpus": false
+  },
+  "local_indices": {
+    "agent_security": {
+      "status": "complete",
+      "papers": 3587
+    },
+    "ai4eda": {
+      "status": "complete",
+      "papers": 810,
+      "release_id": "be9b35c15c4df19cdc615f13a0ad96ea6ca12f0edcdac5756fcedb272b62db23",
+      "external_model_calls": 0,
+      "directory": "/mnt/efs/zhangguijia/paperfuture/runs/local-corpus-index-ai4eda-add45464147b",
+      "local_calls": 27
+    },
+    "multimodal_self_evolution_xai": {
+      "status": "complete",
+      "papers": 9115,
+      "release_id": "9fab902b864452fd4b748c4d0263589d5f3d7d5dc3b4d7ec607b1233347379c0",
+      "external_model_calls": 0,
+      "directory": "/mnt/efs/zhangguijia/paperfuture/runs/local-corpus-index-multimodal_self_evolution_xai-742222fc097f",
+      "local_calls": 286
+    },
+    "llm_alignment": {
+      "status": "warming_in_background_at_report_time",
+      "service": "paperfuture-alignment-index.service",
+      "progress": [
+        {
+          "path": "/mnt/efs/zhangguijia/paperfuture/runs/local-corpus-index-llm_alignment-cd27a3e2b6ec/progress.json",
+          "at": "2026-10-13T13:22:56.484918Z",
+          "total_papers": 12596,
+          "complete_papers": 832
+        }
+      ],
+      "completion_report": "/mnt/efs/zhangguijia/paperfuture/reviews/llm_alignment-full-vector-index-20261013.json",
+      "joint_hybrid_replay_report": "/mnt/efs/zhangguijia/paperfuture/reviews/v05-joint-hybrid-cache-replay.json"
+    }
+  },
+  "weekly": {
+    "schedule": "Mon 02:00 UTC",
+    "next_execution": "2026-10-19T02:00:00Z",
+    "domains": 4,
+    "combined_profiles": 1,
+    "installed_version": "0.5.2",
+    "old_runs_follow_new_releases": false,
+    "chat_calls": 0
+  },
+  "real_llm_calls_in_this_change": 0,
+  "limitations": [
+    "Query coverage is not exhaustive field coverage; most papers are abstract-only.",
+    "Eight selected landmarks are development diagnostics, not heldout recall evaluation.",
+    "The real joint preflight used explicitly lexical retrieval and source tools; full hybrid cache replay is pending local indexing.",
+    "Synthetic four-round tests establish software behavior, not high-value idea generation.",
+    "Semantic correctness of memory transfer, graph ratings and novelty still requires independent expert/empirical evaluation."
+  ]
+}

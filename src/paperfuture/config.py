@@ -12,6 +12,11 @@ from .storage import read_json, timestamp
 
 
 DOMAINS = {
+    "llm_alignment": {
+        "label": "LLM Alignment",
+        "queries": ['all:"language model" AND all:alignment', 'all:RLHF', 'all:"direct preference optimization"'],
+        "facets": ["instruction alignment", "human and AI preferences", "reward learning", "scalable oversight", "alignment failures"],
+    },
     "agent_security": {
         "label": "Agent security",
         "queries": ['all:"prompt injection"', 'all:"agent security"', 'all:"tool use" AND all:"security"'],
@@ -35,12 +40,16 @@ ROLES = ("extract", "rerank", "graph", "graph_stages", "graph_merge", "graph_edg
 DEFAULTS = {
     "mode": "prospective", "max_rounds": 4, "replicate_id": "1", "api_mode": "live",
     "literature_mode": "frozen",
+    "auxiliary_domains": [],
+    "research_skills": {"enabled":False, "tool_rounds":2, "tool_calls":4,
+                        "search_results":5, "evidence_chars":10000},
     "retrieval": {"method": "hybrid", "recall_k": 160, "candidate_limit": 100, "selected_limit": 40,
                   "min_relevance": 2, "min_quality": 2, "rrf_k": 60, "rerank_batch": 12,
                   "coverage_weight": 0.3, "redundancy_weight": 0.2, "recent_years": 2,
                   "recent_fraction": 0.65, "extraction_chars": 22000, "round_papers": 8,
                   "round_evidence_chars": 26000, "hydrate_candidates": 30,
-                  "facet_queries": {}, "history_paper_ids": [], "citation_backfill_limit": 20, "concurrent_calls": 3},
+                  "facet_queries": {}, "history_paper_ids": [], "citation_backfill_limit": 20, "concurrent_calls": 3,
+                  "domain_candidate_floor":4, "domain_selected_floor":2, "domain_round_floor":1},
     "graph": {"stage_batch": 8, "predecessors": 4, "edge_batch": 1, "review_batch": 1, "concurrent_calls": 3,
               "exhaustive_stage_limit": 24, "unexamined_sample": 5, "max_rating_disagreement": 15},
     "world_model": {"simulators": ["simulate", "simulate_secondary"], "critics": ["critique"],
@@ -87,7 +96,7 @@ def normalize(raw: dict) -> dict:
     if set(raw) - allowed:
         raise ValueError(f"unknown configuration keys: {sorted(set(raw)-allowed)}")
     for key, value in raw.items():
-        if key in ("retrieval", "policy", "api", "graph", "world_model"):
+        if key in ("retrieval", "policy", "api", "graph", "world_model", "research_skills"):
             if key == "policy" and "stagnation_epsilon" in value:
                 raise ValueError("policy.stagnation_epsilon was unused and has been removed; remove it for a new run. Stagnation is judged by causal progress, not score or lexical distance.")
             if set(value) - set(config[key]):
@@ -102,6 +111,17 @@ def normalize(raw: dict) -> dict:
         raise ValueError("run_id must be a safe filename of at most 96 characters")
     if config["domain"] not in DOMAINS:
         raise ValueError(f"domain must be one of {list(DOMAINS)}")
+    auxiliary=config['auxiliary_domains']
+    if not isinstance(auxiliary,list) or any(d not in DOMAINS for d in auxiliary) or len(set(auxiliary))!=len(auxiliary) or config['domain'] in auxiliary:
+        raise ValueError('auxiliary_domains must contain distinct supported domains excluding the primary domain')
+    if auxiliary and (config['literature_mode']!='frozen' or any(s.get('type')!='corpus' for s in config['sources'])):
+        raise ValueError('combined-domain research requires explicitly pinned corpus releases for every domain')
+    skills=config['research_skills']
+    if type(skills['enabled']) is not bool:
+        raise ValueError('research_skills.enabled must be boolean')
+    for k,upper in [('tool_rounds',2),('tool_calls',6),('search_results',10),('evidence_chars',30000)]:
+        if type(skills[k]) is not int or not 1<=skills[k]<=upper:
+            raise ValueError(f'research_skills.{k} must be within [1,{upper}]')
     timestamp(config["cutoff"])
     if not isinstance(config["rating_anchors"],list): raise ValueError("rating_anchors must be a list of expert annotations")
     anchor_ids=set()
@@ -143,6 +163,11 @@ def normalize(raw: dict) -> dict:
     if not 0 <= config["retrieval"]["recent_fraction"] <= 1:
         raise ValueError("recent_fraction must be in [0, 1]")
     retrieval=config["retrieval"]
+    for floor,limit in [('domain_candidate_floor','candidate_limit'),('domain_selected_floor','selected_limit'),('domain_round_floor','round_papers')]:
+        if type(retrieval[floor]) is not int or retrieval[floor]<1:
+            raise ValueError(f'retrieval.{floor} must be positive')
+        if auxiliary and retrieval[floor]*(1+len(auxiliary))>retrieval[limit]:
+            raise ValueError(f'retrieval.{limit} is too small for the declared per-domain allocation')
     if type(retrieval["concurrent_calls"]) is not int or not 1 <= retrieval["concurrent_calls"] <= 8:
         raise ValueError("retrieval.concurrent_calls must be an integer within [1,8]")
     if not isinstance(retrieval["facet_queries"],dict) or any(

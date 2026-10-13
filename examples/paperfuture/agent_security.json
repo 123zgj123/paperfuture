@@ -1,5 +1,5 @@
 {
-  "run_id": "agent_security-v041-01",
+  "run_id": "agent_security-v05-01",
   "domain": "agent_security",
   "subfield": "How can tool-using agents resist adaptive indirect prompt injection while preserving legitimate task utility?",
   "question": "How can tool-using agents resist adaptive indirect prompt injection while preserving legitimate task utility?",
@@ -100,5 +100,12 @@
     "stage_batch": 3
   },
   "rating_anchors": [],
-  "literature_mode": "frozen"
+  "literature_mode": "frozen",
+  "research_skills": {
+    "enabled": true,
+    "tool_rounds": 2,
+    "tool_calls": 4,
+    "search_results": 5,
+    "evidence_chars": 10000
+  }
 }

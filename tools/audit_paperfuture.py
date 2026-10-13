@@ -36,7 +36,7 @@ def file_hash(path):
 def audit_dataset(directory, root, checked_files):
     manifest = read_json(directory / "manifest.json")
     export = directory / "papers.jsonl"
-    papers = [json.loads(line) for line in export.read_text().splitlines() if line.strip()]
+    papers = [json.loads(line) for line in export.read_text().split('\n') if line.strip()]
     keys, years, full_years = set(), Counter(), Counter()
     for paper in papers:
         assert paper == paper_record(paper), f"paper normalization/hash mismatch: {paper['key']}"
@@ -103,8 +103,21 @@ def audit_run(directory):
     for slot in state["rounds"]:
         rd = directory/"rounds"/f"{slot['number']:02}"
         row, context = unseal(rd/"evaluated.json"), unseal(rd/"evidence_context.json")
-        assert unseal(rd/"experience_memory.json") == experiences_from_rounds(completed)
-        assert context == round_context(base, snapshot, spec, slot["input_feedback"], experiences_from_rounds(completed))
+        experience=experiences_from_rounds(completed)
+        if 'scope' in row:
+            from paperfuture.memory import memory_view, round_scope
+            scope=round_scope(spec['run_id'],slot['number'],slot['input_feedback'],completed)
+            assert row['scope']==unseal(rd/'memory_scope.json')==scope
+            experience,index=memory_view(experience,scope,slot['input_feedback'])
+            assert unseal(rd/'experience_index.json')==index
+        assert unseal(rd/"experience_memory.json") == experience
+        expected=round_context(base,snapshot,spec,slot['input_feedback'],experience)
+        if 'scope' in row:expected['memory_scope']=scope
+        if spec.get('research_skills',{}).get('enabled'):
+            from paperfuture.research_skills import evidence_tools, skill_manifest
+            assert unseal(directory/'skills_manifest.json')==skill_manifest()
+            expected=evidence_tools(None,expected,snapshot,spec,rd,slot['input_feedback'],replay_only=True)
+        assert context == expected
         validate(row["proposal"], SCHEMAS["propose"])
         proposal=copy.deepcopy(row["proposal"])
         validate_proposal_history(proposal,context,slot["input_feedback"],completed)

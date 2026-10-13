@@ -121,6 +121,8 @@ PROPOSAL = obj(source_stages=array(string(), 1), source_edges=array(), bottlenec
                             implication=string(), change_in_this_proposal=string())),
     assumption_decisions=array(obj(assumption_id=string(), disposition=enum("retain", "replace", "not_applicable"),
                                   replacement_ids=array(), reason=string())),
+    memory_transfers=array(obj(experience_id=string(), applicability=string(), condition_differences=array(),
+                              test=string(), evidence_ids=array())),
     retrieval_use=array(obj(paper_key=string(), disposition=enum("used", "not_relevant", "insufficient_evidence"),
                             reason=string(), evidence_ids=array())),
     assumptions=array(ASSUMPTION), idea=IDEA)
@@ -176,6 +178,10 @@ SCHEMAS = {"extract": EXTRACTION, "rerank": RERANK, "graph": GRAPH,
            "graph_stages": STAGES, "graph_merge":STAGE_MERGE,"graph_edges": EDGES, "graph_review": EDGE_REVIEW, "propose": PROPOSAL,
            "simulate": SIMULATION, "critique": CRITIQUE, "discuss": DISCUSSION, "assess": ASSESSMENT,
            "proposal_check":PROPOSAL_CHECK, "final_review":FINAL_REVIEW}
+SCHEMAS['research_tools']=obj(requests=array(obj(
+    tool=enum('search_papers','read_passages','compare_stages'),query=string(),domains=array(),
+    paper_keys=array(),stage_ids=array(),purpose=enum('closest_prior_art','falsifier','mechanism','transfer_conditions'),
+    reason=string()),0,6),stop_reason=string())
 
 
 def require_refs(ids: list, available: dict | set, context: str, nonempty=False) -> None:

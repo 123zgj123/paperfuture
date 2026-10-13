@@ -10,13 +10,16 @@ from .config import normalize, public_config
 from .exploration import (apply_final_review, assess, check_candidate, critique_panel, decide, discuss_panel,
                           experiences_from_rounds, propose, reconcile_candidate, score_assessment, simulate_panel, sufficient)
 from .graph import build_graph, graph_context
-from .literature import LiteratureStore, Snapshot, collect, hydrate_snapshot, round_context, select_corpus
+from .literature import LiteratureStore, Snapshot, collect, corpus_scope, hydrate_snapshot, round_context, select_corpus
 from .storage import IntegrityError, atomic_json, atomic_text, digest, exclusive, now, read_json, seal, unseal
+from .memory import memory_view, round_scope
 
 
 def implementation_fingerprint():
     import farfield.extras.llm as adapter
     sources = {p.name: p.read_text(encoding="utf-8") for p in sorted(Path(__file__).parent.glob("*.py"))}
+    sources.update({'skill:'+str(p.relative_to(Path(__file__).parent)):p.read_text()
+                    for p in sorted((Path(__file__).parent/'skills').glob('*/SKILL.md'))})
     sources["farfield_chat_adapter"] = Path(adapter.__file__).read_text(encoding="utf-8")
     return digest(sources)
 
@@ -188,6 +191,9 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
         spec = public_config(config)
         spec["implementation_fingerprint"] = implementation_fingerprint()
         seal(directory / "spec.json", spec)
+        if config['research_skills']['enabled']:
+            from .research_skills import skill_manifest
+            seal(directory/'skills_manifest.json',skill_manifest())
         if (directory / "state.json").exists():
             state = unseal(directory / "state.json")
         else:
@@ -210,7 +216,7 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                 store = LiteratureStore(workspace / "literature.sqlite")
                 try:
                     keys = collect(config, store, workspace / "collection_cache")
-                    snapshot = store.freeze(keys, config["cutoff"])
+                    snapshot = corpus_scope(store.freeze(keys, config["cutoff"]),config)
                     if config["literature_mode"] == "acquire":
                         report("1/6 archiving full-text evidence for temporally balanced retrieval candidates")
                         snapshot, failures=hydrate_snapshot(snapshot,config,workspace/"cache"/"arxiv",gateway)
@@ -233,12 +239,16 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
             selected = unseal(selected_path)
             atomic_json(directory/"literature_update_requests.json",{
                 "snapshot_id":snapshot.id, "domain":config["domain"],
+                'domains':[config['domain'],*config.get('auxiliary_domains',[])],
                 "uncollected_references":selected.get("recall_audit",{}).get("uncollected_references",{}),
                 "uncollected_history_seeds":selected.get("recall_audit",{}).get("uncollected_history_seeds",[]),
                 "coverage_gaps":selected.get("coverage_gaps",[]),
                 "policy":"diagnostic queue for a future corpus release; does not mutate this run"})
             if len(selected["selected_keys"])<2:
                 raise ValueError("fewer than two relevant evidence-bearing papers; inspect selected.json funnel before broadening collection")
+            if config['auxiliary_domains'] and any(selected['domain_selected_counts'].get(d,0)==0
+                    for d in [config['domain'],*config['auxiliary_domains']]):
+                raise ValueError('combined-domain selection lacks relevant evidence from a declared domain; inspect selected.json and revise the query or supplement a future corpus release')
             graph_path = directory / "trajectory.json"
             if not graph_path.exists():
                 state["phase"] = "graph"
@@ -289,9 +299,16 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                 round_dir = directory / "rounds" / f"{number:02}"
                 previous = [unseal(directory / "rounds" / f"{r['number']:02}" / "evaluated.json")
                             for r in state["rounds"] if r["number"] < number]
-                experience=experiences_from_rounds(previous)
+                scope=round_scope(config['run_id'],number,slot['input_feedback'],previous)
+                seal(round_dir/'memory_scope.json',scope)
+                all_experience=experiences_from_rounds(previous)
+                experience,memory_index=memory_view(all_experience,scope,slot['input_feedback'])
                 seal(round_dir/"experience_memory.json",experience)
+                seal(round_dir/'experience_index.json',memory_index)
                 current_context=round_context(context,snapshot,config,slot["input_feedback"],experience)
+                current_context['memory_scope']=scope
+                from .research_skills import evidence_tools
+                current_context=evidence_tools(gateway,current_context,snapshot,config,round_dir,slot['input_feedback'])
                 seal(round_dir/"evidence_context.json",current_context)
                 seal(round_dir / "context.json", {"graph_id": graph["graph_id"], "snapshot_id": snapshot.id,
                      "feedback": slot["input_feedback"], "question": config["question"]})
@@ -301,7 +318,7 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                         report(f"round {number}/{config['max_rounds']}: {name}")
                         seal(path, function())
                     return unseal(path)
-                row = {"number": number}
+                row = {"number": number,'scope':scope}
                 row["proposal"] = step("proposal", lambda: propose(gateway, current_context, config, number, slot["input_feedback"],previous))
                 row["proposal_check"] = step("proposal_check",lambda:check_candidate(gateway,row["proposal"],previous,slot["input_feedback"],number))
                 if row["proposal_check"]["accepted"]:

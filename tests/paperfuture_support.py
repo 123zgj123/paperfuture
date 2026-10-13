@@ -102,6 +102,8 @@ class SyntheticEndpoint:
                 "delta":delta,"dimension_reasons":{k:{"reason":"synthetic audit","evidence_ids":e["evidence_ids"],
                     "source_evidence_ids":[e["source_witness"]],"target_evidence_ids":[e["target_witness"]],"comparison_evidence_ids":[]} for k in delta},
                 "weight":63,"weight_interval":{"lower":50,"upper":74}} for e in data["edges"]]}
+        if role == 'research_tools':
+            return {'requests':[],'stop_reason':'synthetic fixture already has sufficient source passages'}
         if role == "propose":
             evidence = list(data["historical_context"]["evidence"])
             inherited = (data.get("conditional_feedback") or {}).get("inherited_assumptions", [])
@@ -117,6 +119,10 @@ class SyntheticEndpoint:
                         "observables":["unauthorized action rate"],"falsification_rule":"no paired reduction","confound":"over-restricting benign actions"},
                     "learning_trace":[{"experience_id":data["cumulative_experiences"][0]["id"],"usage":"retain","implication":"test predicted ambiguity","change_in_this_proposal":"change the explicit permission representation"}] if data["cumulative_experiences"] else [],
                     "assumption_decisions":[{"assumption_id":a,"disposition":"retain","replacement_ids":[],"reason":"fixture conditional dependency"} for a in sorted(conditions)],
+                    'memory_transfers':[{'experience_id':data['cumulative_experiences'][0]['id'],
+                        'applicability':'fixture shared threat model', 'condition_differences':['fixture intervention differs'],
+                        'test':'fixture paired applicability control', 'evidence_ids':[]}]
+                        if data['cumulative_experiences'] and data.get('memory_scope') and data['cumulative_experiences'][0].get('source_idea_id') not in data['memory_scope']['ancestor_idea_ids'] else [],
                     "retrieval_use":[{"paper_key":k,"disposition":"used","reason":"fixture baseline comparison",
                         "evidence_ids":[e for e,v in data["historical_context"]["evidence"].items() if v["paper_key"]==k][:1]}
                         for k in data["historical_context"]["round_retrieval"]["paper_keys"]],

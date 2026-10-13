@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paperfuture"
-version = "0.4.1"
+version = "0.5.2"
 description = "Evidence-grounded research trajectories and API-only conditional idea exploration"
 requires-python = ">=3.11"
 license = {text = "MIT"}
@@ -19,3 +19,6 @@ package-dir = {"" = "src"}
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["farfield*", "paperfuture*"]
+
+[tool.setuptools.package-data]
+paperfuture = ["skills/*/SKILL.md"]

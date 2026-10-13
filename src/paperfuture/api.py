@@ -383,6 +383,9 @@ class ModelGateway:
                       "output_limit": self.config["api"]["max_output_tokens"],"evidence_alias_map_hash":digest(reverse),
                       "request_parameters":chat_parameters(model, self.config["api"]["max_output_tokens"])}
         if reverse:seal(self.directory/"evidence_aliases"/(digest(reverse)+".json"),reverse)
+        if self.config.get('research_skills',{}).get('enabled'):
+            from .research_skills import role_instructions
+            instructions+='\n\n'+role_instructions(role)
         envelope = {"task": role, "instructions": instructions+" Cite supplied evidence aliases E1, E2, etc. exactly as given; do not invent or shorten identifiers.",
                     "input": translate(data,aliases), "output_schema": schema}
         base_prompt = canonical(envelope)

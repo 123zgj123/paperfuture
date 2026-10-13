@@ -1,5 +1,5 @@
 {
-  "run_id": "multimodal_self_evolution_xai-v041-01",
+  "run_id": "multimodal_self_evolution_xai-v05-01",
   "domain": "multimodal_self_evolution_xai",
   "subfield": "How can faithful cross-modal explanations reveal when self-improvement in a multimodal model changes its reasoning mechanism rather than exploiting feedback shortcuts?",
   "question": "How can faithful cross-modal explanations reveal when self-improvement in a multimodal model changes its reasoning mechanism rather than exploiting feedback shortcuts?",
@@ -100,5 +100,12 @@
     "stage_batch": 3
   },
   "rating_anchors": [],
-  "literature_mode": "frozen"
+  "literature_mode": "frozen",
+  "research_skills": {
+    "enabled": true,
+    "tool_rounds": 2,
+    "tool_calls": 4,
+    "search_results": 5,
+    "evidence_chars": 10000
+  }
 }

@@ -1,0 +1,123 @@
+{
+  "run_id": "agent-security-alignment-v05-01",
+  "domain": "agent_security",
+  "subfield": "Alignment objectives and the security-utility boundary of tool-using agents",
+  "question": "How do alignment objectives change the security-utility boundary of tool-using agents under adaptive indirect prompt injection?",
+  "cutoff": "2026-10-13T00:00:00Z",
+  "mode": "prospective",
+  "max_rounds": 4,
+  "sources": [
+    {
+      "type": "corpus",
+      "manifest": "${PAPERFUTURE_AGENT_CORPUS_MANIFEST}"
+    },
+    {
+      "type": "corpus",
+      "manifest": "${PAPERFUTURE_ALIGNMENT_CORPUS_MANIFEST}"
+    }
+  ],
+  "retrieval": {
+    "method": "hybrid",
+    "recall_k": 160,
+    "candidate_limit": 60,
+    "selected_limit": 36,
+    "recent_fraction": 0.65,
+    "hydrate_candidates": 0,
+    "min_quality": 2,
+    "facet_queries": {
+      "instruction_priority": "instruction hierarchy priority privileged instructions adversarial training",
+      "input_separation": "indirect prompt injection structured queries instruction data separation untrusted input",
+      "information_flow": "prompt injection provenance taint tracking information flow data marking",
+      "runtime_authorization": "tool agent capability permissions authorization reference monitor",
+      "adaptive_evaluation": "indirect prompt injection agent benchmark adaptive attack task utility evaluation",
+      "alignment_objectives": "preference optimization reward model instruction following alignment objective distribution shift",
+      "reward_exploitation": "reward hacking sycophancy specification gaming tool agent security task utility"
+    },
+    "history_paper_ids": [],
+    "citation_backfill_limit": 0,
+    "domain_candidate_floor": 6,
+    "domain_selected_floor": 3,
+    "domain_round_floor": 1
+  },
+  "models": {
+    "default": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "embedding": {
+      "base_url": "${PAPERFUTURE_EMBEDDING_BASE_URL}",
+      "model": "${PAPERFUTURE_EMBEDDING_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "simulate": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "simulate_secondary": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_SECONDARY_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "critique": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_CRITIC_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "graph_review": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_CRITIC_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "assess": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_CRITIC_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    }
+  },
+  "api": {
+    "max_calls": 800,
+    "max_tokens": 8000000,
+    "max_output_tokens": 16384,
+    "timeout_seconds": 180,
+    "json_attempts": 3,
+    "max_context_chars": 600000
+  },
+  "policy": {
+    "critic_weight": 0.2,
+    "sufficient_utility": 0.75,
+    "min_novelty": 3,
+    "min_importance": 3
+  },
+  "model_vintage_evidence": [],
+  "world_model": {
+    "simulators": [
+      "simulate",
+      "simulate_secondary"
+    ],
+    "critics": [
+      "critique"
+    ],
+    "discussion": true,
+    "min_distinct_models": 3
+  },
+  "graph": {
+    "edge_batch": 1,
+    "review_batch": 1,
+    "concurrent_calls": 3,
+    "stage_batch": 3
+  },
+  "rating_anchors": [],
+  "literature_mode": "frozen",
+  "research_skills": {
+    "enabled": true,
+    "tool_rounds": 2,
+    "tool_calls": 4,
+    "search_results": 5,
+    "evidence_chars": 10000
+  },
+  "auxiliary_domains": [
+    "llm_alignment"
+  ]
+}

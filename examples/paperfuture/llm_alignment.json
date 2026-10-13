@@ -1,0 +1,120 @@
+{
+  "run_id": "llm_alignment-v05-01",
+  "domain": "llm_alignment",
+  "subfield": "LLM alignment objectives, preference learning and robust oversight",
+  "question": "Which changes to alignment objectives can reduce reward exploitation and preserve intended behavior under distribution shift?",
+  "cutoff": "2026-10-13T00:00:00Z",
+  "mode": "prospective",
+  "max_rounds": 4,
+  "sources": [
+    {
+      "type": "corpus",
+      "manifest": "${PAPERFUTURE_CORPUS_MANIFEST}"
+    }
+  ],
+  "retrieval": {
+    "method": "hybrid",
+    "recall_k": 160,
+    "candidate_limit": 60,
+    "selected_limit": 36,
+    "recent_fraction": 0.65,
+    "hydrate_candidates": 0,
+    "min_quality": 2,
+    "facet_queries": {
+      "human_preference_learning": "human preferences reinforcement learning human feedback RLHF reward modeling",
+      "preference_objectives": "direct preference optimization policy optimization reference policy implicit reward",
+      "oversight": "weak to strong generalization scalable oversight process supervision outcome supervision",
+      "ai_feedback": "constitutional AI RLAIF AI feedback self alignment",
+      "alignment_failures": "reward hacking sycophancy deceptive alignment alignment faking distribution shift"
+    },
+    "history_paper_ids": [
+      "arxiv:1706.03741",
+      "arxiv:1909.08593",
+      "arxiv:2009.01325",
+      "arxiv:2203.02155",
+      "arxiv:2212.08073",
+      "arxiv:2305.18290",
+      "arxiv:2305.20050",
+      "arxiv:2312.09390"
+    ],
+    "citation_backfill_limit": 0
+  },
+  "models": {
+    "default": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "embedding": {
+      "base_url": "${PAPERFUTURE_EMBEDDING_BASE_URL}",
+      "model": "${PAPERFUTURE_EMBEDDING_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "simulate": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "simulate_secondary": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_SECONDARY_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "critique": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_CRITIC_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "graph_review": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_CRITIC_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    },
+    "assess": {
+      "base_url": "${PAPERFUTURE_BASE_URL}",
+      "model": "${PAPERFUTURE_CRITIC_MODEL}",
+      "api_key_env": "PAPERFUTURE_API_KEY"
+    }
+  },
+  "api": {
+    "max_calls": 800,
+    "max_tokens": 8000000,
+    "max_output_tokens": 16384,
+    "timeout_seconds": 180,
+    "json_attempts": 3,
+    "max_context_chars": 600000
+  },
+  "policy": {
+    "critic_weight": 0.2,
+    "sufficient_utility": 0.75,
+    "min_novelty": 3,
+    "min_importance": 3
+  },
+  "model_vintage_evidence": [],
+  "world_model": {
+    "simulators": [
+      "simulate",
+      "simulate_secondary"
+    ],
+    "critics": [
+      "critique"
+    ],
+    "discussion": true,
+    "min_distinct_models": 3
+  },
+  "graph": {
+    "edge_batch": 1,
+    "review_batch": 1,
+    "concurrent_calls": 3,
+    "stage_batch": 3
+  },
+  "rating_anchors": [],
+  "literature_mode": "frozen",
+  "research_skills": {
+    "enabled": true,
+    "tool_rounds": 2,
+    "tool_calls": 4,
+    "search_results": 5,
+    "evidence_chars": 10000
+  }
+}

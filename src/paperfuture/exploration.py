@@ -6,6 +6,7 @@ from .contracts import ContractError, require_refs
 from .graph import RUBRIC
 from .literature import tokens
 from .storage import digest
+from .memory import memory_view, validate_transfers
 
 
 def validate_proposal(proposal, context, inherited):
@@ -87,6 +88,14 @@ def experiences_from_rounds(rounds):
                     "assumptions":[a for a in assumptions if a["id"] in implication["assumption_ids"]],
                     "evidence_ids":implication["evidence_ids"],
                     "epistemic_status":"conditional_simulation_not_evidence"})
+    scopes={r['number']:r.get('scope') for r in rounds}
+    owners={s['run_id'] for s in scopes.values() if s}
+    if len(owners)>1 or (owners and any(s is None for s in scopes.values())):
+        raise ContractError('mixed run ownership in cumulative experience memory')
+    for item in result:
+        scope=scopes[item['round']]
+        if scope:
+            item.update(source_run_id=scope['run_id'],source_idea_id=scope['idea_id'],source_branch_id=scope['branch_id'])
     return result
 
 
@@ -197,7 +206,7 @@ def decide(rounds,config):
     if duplicate: action="switch"
     preserve=set(a["preserve_assumption_ids"])
     if action=="continue_leap": preserve.update(x["id"] for x in parent["proposal"]["assumptions"] if x["origin"]=="hypothesis")
-    inherited=[x for x in parent["proposal"]["assumptions"] if x["id"] in preserve]
+    inherited=[x for x in parent["proposal"]["assumptions"] if x["id"] in preserve] if action!='switch' else []
     if action=="continue_leap":
         inherited.append({"id":f"conditional_parent_round_{parent['number']}","statement":f"Conditional working hypothesis, NOT an observed result: candidate {parent['number']} mechanism proves viable under its stated conditions. Mechanism: {parent['proposal']['idea']['mechanism']}","origin":"hypothesis","evidence_ids":[]})
     return {"action":action,"terminal":False,"parent_round":parent["number"],"next_question":a["next_question"],
@@ -215,6 +224,7 @@ def decide(rounds,config):
 
 def validate_proposal_history(value,context,feedback,previous):
     previous=previous or [];experiences=experiences_from_rounds(previous)
+    experiences,_=memory_view(experiences,context.get('memory_scope'),feedback)
     experience_items,experience_assumptions=experience_prompt(experiences)
     inherited=copy.deepcopy(feedback.get("inherited_assumptions",[])) if feedback else []
     catalogue={e["id"]:e for e in experiences}
@@ -226,6 +236,11 @@ def validate_proposal_history(value,context,feedback,previous):
     for a in inherited: archive[a["id"]]=a
     refs=[e["experience_id"] for e in value["learning_trace"]]
     require_refs(refs,catalogue,"learning trace",bool(previous))
+    validate_transfers(value,experiences,context.get('memory_scope'),context['evidence'])
+    if context.get('memory_scope'):
+        visible={a['id'] for e in experiences for a in e['assumptions']} | {a['id'] for a in inherited}
+        if any(a['id'] in archive and a['id'] not in visible for a in value['assumptions']):
+            raise ContractError('assumption from an unrelated idea was not explicitly made available for transfer')
     required={a["id"] for a in inherited} if (feedback or {}).get("action")=="continue_leap" else set()
     considered={a["id"] for a in inherited}
     for key in refs:
@@ -259,23 +274,31 @@ def validate_proposal_history(value,context,feedback,previous):
 
 def propose(gateway,context,config,number,feedback,previous=None):
     previous=previous or [];experiences=experiences_from_rounds(previous)
+    experiences,memory_index=memory_view(experiences,context.get('memory_scope'),feedback)
     experience_items,experience_assumptions=experience_prompt(experiences)
     inherited=copy.deepcopy(feedback.get("inherited_assumptions",[])) if feedback else []
     catalogue={e["id"]:e for e in experiences}
     archive=dict(experience_assumptions)
-    for row in previous:
-        for a in row["proposal"]["assumptions"]:
-            if a["id"] in archive and archive[a["id"]]!=a: raise ContractError("experience assumption ID collision")
-            archive[a["id"]]=a
+    if not context.get('memory_scope'):
+        for row in previous:
+            for a in row['proposal']['assumptions']:
+                if a['id'] in archive and archive[a['id']]!=a:raise ContractError('experience assumption ID collision')
+                archive[a['id']]=a
     for a in inherited: archive[a["id"]]=a
+    from .memory import scoped_feedback
+    prompt_feedback=scoped_feedback(feedback,context.get('memory_scope'))
+    previous_candidates=[{'number':r['number'],'idea_id':r.get('scope',{}).get('idea_id'),
+        'branch_id':r.get('scope',{}).get('branch_id'),'bottleneck':r['proposal']['bottleneck'],
+        'principle':r['proposal']['causal_change']['changed_principle'],
+        'intervention':r['proposal']['minimal_experiment']['intervention'],
+        'purpose':'avoid duplicating a prior candidate; not active premises'} for r in previous]
     def check(value):
         validate_proposal_history(value,context,feedback,previous)
     return gateway.structured("propose",{"question":config["question"],"round":number,"max_rounds":config["max_rounds"],
-        "historical_context":context,"conditional_feedback":feedback,"cumulative_experiences":experience_items,
+        "historical_context":context,"conditional_feedback":prompt_feedback,"cumulative_experiences":experience_items,
         "experience_assumptions":archive,
-        "previous_candidates":[{"number":r["number"],"idea":r["proposal"]["idea"],"causal_change":r["proposal"]["causal_change"],
-            "remaining_unknowns":(r.get("assessment") or {}).get("remaining_unknowns",[]),
-            "proposal_check":r.get("proposal_check")} for r in previous]},
+        'memory_scope':context.get('memory_scope'),'unexpanded_memory_index':memory_index,
+        "previous_candidates":previous_candidates},
         "Propose exactly ONE NEW research direction beyond the supplied literature, using the complete stage/edge map and attached evidence. Graph manifests may list archived but unexpanded reference IDs: cite historical claims ONLY from the evidence passages actually attached to this context. Deferred references are pointers, not passages you have read. The historical graph is prior work, NOT a menu of new contributions: replaying an existing edge or proposing a method already described by a later node has zero novelty even if it improves an older baseline. Start from an unresolved limitation of the closest and strongest existing mechanism. nearest_prior_art MUST include that closest existing method, including any method whose name, intervention or reasoning recipe you borrow, not just a weak older comparator. State precisely which currently unsupported causal hypothesis or intervention differs from it. A new comparison of two existing methods alone is not a new defense mechanism. Do not present predicted gains as established observations. Identify a specific bottleneck and a causal principle or assumption to change. A list such as 'add multimodal + online learning + feedback' is not a mechanism: specify the intervention, causal chain, closest prior work, and a matched baseline experiment whose outcome could falsify the claimed advantage. A combination is legitimate only with a precise nontrivial interaction hypothesis and an ablation that distinguishes it from independent components. Do not manufacture novelty from a small evidence pool. Later rounds MUST use concrete cumulative_experiences and learning_trace explaining HOW a previous failure prediction, disagreement or conditional success changes the next location/mechanism. Avoid reformulating the same idea. Follow required_change: revise resolves its stated issue/pass condition; switch must change the causal principle, intervention or bottleneck, NOT merely stage IDs or wording. Predictions remain conditional; never turn simulated success into history. Experience conditions are an immutable ARCHIVE, not automatically active premises. In learning_trace state retain/test/repair/avoid/not_applicable. For each condition of every cited experience, each inherited assumption and each archived ID you use, provide exactly one assumption_decisions record: retain, replace with new active IDs, or not_applicable, with a precise reason. Only retain reactivates a premise. continue_leap MUST retain its required parent dependencies, including the conditional parent hypothesis. On revise/switch, replacing a criticized premise must not resurrect it. Use original IDs for unchanged premises; never duplicate an assumption with a new ID. Only new assumptions get round-prefixed IDs. Record retrieval_use for every dynamically retrieved paper, including justified rejection of irrelevant evidence; used entries require that paper's evidence. origin is exactly literature or hypothesis. " + RUBRIC,
         identity=f"round:{number}:propose",check=check)
 

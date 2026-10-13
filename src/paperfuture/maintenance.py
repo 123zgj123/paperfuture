@@ -29,7 +29,7 @@ def pending_ids(root, domain, known, configs, limit):
                    key=lambda p: p.stat().st_mtime, reverse=True)
     for path in paths:
         value = read_json(path)
-        if value.get('domain') == domain:
+        if domain in value.get('domains',[value.get('domain')]):
             candidates.extend(value.get('uncollected_history_seeds', []))
             candidates.extend(value.get('uncollected_references', {}))
     accepted = []
@@ -99,6 +99,49 @@ def promote_profiles(root, paths, originals, release):
     return promoted
 
 
+def combined_profile(root, path, groups):
+    """Validate a future-run alias without allowing an implicit extra corpus."""
+    path=Path(path).resolve()
+    if not path.is_relative_to(root):raise ValueError('combined profile must live on the data volume')
+    config=load_config(path)
+    domains=[config['domain'],*config['auxiliary_domains']]
+    if len(domains)<2 or not set(domains)<=set(groups):
+        raise ValueError('combined profile domains must all have scheduled primary profiles')
+    if config['literature_mode']!='frozen' or any(s['type']!='corpus' for s in config['sources']):
+        raise ValueError('combined defaults must pin immutable corpus releases')
+    releases=[]
+    for source in config['sources']:
+        manifest=Path(source['manifest']).resolve()
+        if not manifest.is_relative_to(root):raise ValueError('combined corpus must live on the data volume')
+        releases.append(load_corpus(manifest)[0])
+    if len(releases)!=len(domains) or {r['domain'] for r in releases}!=set(domains):
+        raise ValueError('combined profile must pin one release per declared domain')
+    model=config['models']['embedding']
+    if urlparse(model['base_url']).hostname!='127.0.0.1' or model.get('cache_scope')!='text':
+        raise ValueError('combined weekly warming requires the local per-text cache')
+    return {'path':path,'original':read_json(path),'config':config,'domains':domains}
+
+
+def promote_combined(root, item, releases):
+    """Publish both pointers together in one config replacement, after warming."""
+    path=item['path'];original=item['original']
+    updated=copy.deepcopy(original)
+    updated['cutoff']=min((r['cutoff'] for r in releases),key=timestamp)
+    updated['sources']=[{'type':'corpus','manifest':r['manifest_path']} for r in releases]
+    updated['run_id']='combined-corpus-'+digest({k:v for k,v in updated.items() if k!='run_id'})[:20]
+    config=normalize(updated)
+    # Paper rows are already cached by primary-profile maintenance; this also
+    # caches the combined question under its own exact query text.
+    warming=[warm_release(root,config,Path(r['manifest_path'])) for r in releases]
+    if read_json(path)!=original:raise ValueError('combined profile changed during maintenance; activation cancelled')
+    archive=root/'configs/history'/(path.stem+'.'+digest(original)[:16]+'.json')
+    if archive.exists() and read_json(archive)!=original:raise ValueError('archived combined profile hash conflict')
+    if not archive.exists():atomic_json(archive,original)
+    atomic_json(path,updated)
+    return {'profile':str(path),'archived_profile':str(archive),'run_id':updated['run_id'],
+        'release_ids':{r['domain']:r['release_id'] for r in releases},'warming':warming,'status':'activated'}
+
+
 def maintain(config_path, *, cutoff=None, check_only=False):
     settings = read_json(config_path)
     root = Path(settings['data_root']).resolve()
@@ -132,15 +175,19 @@ def maintain(config_path, *, cutoff=None, check_only=False):
         group['bases'].append((manifest_path, manifest, records))
     if not groups:
         raise ValueError('no weekly corpus profiles configured')
+    combined=[combined_profile(root,p,groups) for p in settings.get('combined_profiles',[])]
+    if len({c['path'] for c in combined})!=len(combined):raise ValueError('duplicate combined maintenance profile')
     report = {'started_at':now(), 'cutoff':cutoff, 'check_only':check_only, 'domains':[],
               'external_model_calls':0, 'schedule':'weekly; timer configuration is separate'}
     if check_only:
         report['domains'] = [{'domain':name, 'profiles':[str(p) for p in g['paths']],
             'papers':[b[1]['papers'] for b in g['bases']]} for name,g in groups.items()]
         report['status'] = 'configuration_validated_without_network'
+        report['combined_profiles']=[{'profile':str(c['path']),'domains':c['domains']} for c in combined]
         return report
     with exclusive(root/'maintenance/.lock'):
         report_path = root/'maintenance/reports'/(cutoff.replace(':','').replace('+','_')+'.json')
+        activated={}
         for domain, group in groups.items():
             entry = {'domain':domain, 'status':'running'}
             report['domains'].append(entry)
@@ -166,12 +213,25 @@ def maintain(config_path, *, cutoff=None, check_only=False):
                         warmed.add(key)
                 entry['profiles'] = promote_profiles(root, group['paths'], group['originals'], release)
                 entry.update(status='activated', papers=release['papers'], fulltext_papers=release['fulltext_papers'])
+                activated[domain]=release
             except (OSError, ValueError, RuntimeError, KeyError) as exc:
                 # Provider response bodies/credentials are intentionally absent.
                 entry.update(status='failed', error_type=type(exc).__name__,
                              failure_policy='existing research snapshots and earlier profiles preserved; inspect acquisition audit/local cache progress')
             atomic_json(report_path, report)
-        report.update(completed_at=now(), status='complete' if all(x['status']=='activated' for x in report['domains']) else 'partial_failure')
+        report['combined_profiles']=[]
+        for item in combined:
+            if not set(item['domains'])<=set(activated):
+                report['combined_profiles'].append({'profile':str(item['path']),'status':'preserved',
+                    'reason':'one or more constituent corpus updates failed; old joint release pair retained'})
+                continue
+            try:
+                report['combined_profiles'].append(promote_combined(root,item,[activated[d] for d in item['domains']]))
+            except (OSError,ValueError,RuntimeError,KeyError) as exc:
+                report['combined_profiles'].append({'profile':str(item['path']),'status':'failed','error_type':type(exc).__name__})
+            atomic_json(report_path,report)
+        report.update(completed_at=now(), status='complete' if all(x['status']=='activated'
+            for x in [*report['domains'],*report['combined_profiles']]) else 'partial_failure')
         atomic_json(report_path, report)
         atomic_json(root/'maintenance/latest.json', report)
     return report

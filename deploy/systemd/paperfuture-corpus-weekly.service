@@ -6,7 +6,7 @@ After=paperfuture-embedding.service
 [Service]
 Type=oneshot
 WorkingDirectory=/mnt/efs/zhangguijia/paperfuture
-Environment=PYTHONPATH=/mnt/efs/zhangguijia/paperfuture/software/v0.4.1/installed
+Environment=PYTHONPATH=/mnt/efs/zhangguijia/paperfuture/software/v0.5.2/installed
 Environment=PYTHONDONTWRITEBYTECODE=1
 Environment=TMPDIR=/mnt/efs/zhangguijia/paperfuture/maintenance/tmp
 ExecStart=/usr/bin/python3.11 -m paperfuture corpus-maintain --config /mnt/efs/zhangguijia/paperfuture/configs/weekly_corpora.json

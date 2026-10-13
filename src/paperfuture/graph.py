@@ -308,6 +308,12 @@ def graph_context(graph, snapshot, selected):
             n=len(snapshot.evidence[e]["quote"])
             if n<=budget: evidence[e]=snapshot.evidence[e];budget-=n
     return {"snapshot_id":snapshot.id,"graph_id":graph["graph_id"],"cutoff":snapshot.payload["cutoff"],
+        # Release manifests retain their actual totals for provenance, but a
+        # retrospective model must see counts only for cutoff-eligible papers.
+        'corpus_releases':[{'domain':r['domain'],'release_id':r['release_id'],
+            'eligible_papers':sum(r['domain'] in domains for domains in snapshot.payload.get('paper_domains',{}).values())}
+            for r in snapshot.payload.get('corpus_releases',[])],
+        'paper_domains':{k:snapshot.payload.get('paper_domains',{}).get(k,[]) for k in selected['selected_keys']},
         "complete_stage_graph":compact,"evidence":evidence,
         "evidence_manifest":{"snapshot_id":snapshot.id,"graph_id":graph["graph_id"],
             "all_graph_evidence_ids":sorted({e for n in graph["stages"]+graph["edges"] for e in n.get("evidence_ids",[])}),
