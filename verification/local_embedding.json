@@ -1,0 +1,82 @@
+{
+  "status": "local_service_agent_security_full_corpus_and_network_blocked_cache_replay_passed",
+  "model": {
+    "model_id": "nemotron-3-embed-1b-c0c9fea93ea4-856b5144e84cab2a",
+    "base_url": "http://127.0.0.1:8769/v1",
+    "profile": {
+      "repo_id": "nvidia/Nemotron-3-Embed-1B-BF16",
+      "revision": "c0c9fea93ea424587517f2c59e20db9f1d6bf615",
+      "checkpoint_manifest_sha256": "baa0cdddb420b5625f051dfe9c6d82654843b1224c02090c48931f8e5e40af70",
+      "server_source_sha256": "8a8b1fc66d5fc0bd2a23ecfe899fbfda6d68b67a893d3555a8f8c1afd905cccc",
+      "device": "cpu",
+      "dtype": "bfloat16",
+      "attention": "sdpa",
+      "batch_size": 1,
+      "threads": 4,
+      "max_tokens": 4096,
+      "dimensions": 2048,
+      "normalize": true,
+      "long_input_policy": "reject",
+      "query_prefix": "query: ",
+      "document_prefix": "passage: ",
+      "packages": {
+        "torch": "2.14.1+cpu",
+        "transformers": "5.19.0",
+        "sentence-transformers": "6.1.0",
+        "tokenizers": "0.23.3",
+        "numpy": "2.4.6"
+      }
+    },
+    "load_seconds": 39.20197112765163
+  },
+  "download": {
+    "files": 14,
+    "bytes": 2299030066,
+    "all_upstream_hashes_verified": true
+  },
+  "resources": {
+    "VmHWM": "3615256 kB",
+    "VmRSS": "3586832 kB",
+    "VmSwap": "0 kB",
+    "Threads": "15",
+    "checked_at": "2026-10-13T09:13:00.378789+00:00",
+    "pid": 3181021
+  },
+  "smoke_test": {
+    "documents": 24,
+    "queries": 3,
+    "dimensions": 2048,
+    "document_seconds": 8.51569950953126,
+    "query_seconds": 0.3907676115632057,
+    "norm_min": 0.9989692457180215,
+    "norm_max": 1.0036719735041373,
+    "cache_replay_identical": true,
+    "cache_replay_additional_calls": 0,
+    "external_api_calls": 0,
+    "limitation": "lexically selected small development sample; not evidence of full-corpus recall or superiority"
+  },
+  "data_directory": "/mnt/efs/zhangguijia/paperfuture",
+  "private_config_files": [
+    "/mnt/efs/zhangguijia/paperfuture/configs/agent_security_v04_local_embedding.json",
+    "/mnt/efs/zhangguijia/paperfuture/configs/multimodal_self_evolution_xai_v04_local_embedding.json",
+    "/mnt/efs/zhangguijia/paperfuture/configs/ai4eda_v04_local_embedding.json"
+  ],
+  "default_config_switch": {
+    "local_embedding_defaults": "configs/{agent_security,multimodal_self_evolution_xai,ai4eda}_v04.json",
+    "previous_api_config_backups": "configs/{agent_security,multimodal_self_evolution_xai,ai4eda}_v04_api_embedding.json",
+    "doctor_checks": "all_three_configs_passed_including_dataset_paths_and_14_credential_references_each",
+    "ongoing_frozen_experiment_configs_changed": false
+  },
+  "full_corpus_index_status": "agent_security_complete",
+  "details": "/mnt/efs/zhangguijia/paperfuture/software/local-embedding-cpu/validation.json",
+  "full_corpus_index": {
+    "status": "passed",
+    "papers": 3582,
+    "additional_network_calls": 0,
+    "elapsed_seconds": 22.593593851663172,
+    "first_pass_seconds": 1334.105,
+    "index_directory": "/mnt/efs/zhangguijia/paperfuture/runs/local-embedding-index-agent_security-41623c114cb0",
+    "first_pass_local_calls": 113,
+    "first_pass_local_tokens": 1014837
+  }
+}

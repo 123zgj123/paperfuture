@@ -7,7 +7,8 @@ from pathlib import Path
 
 from .api import ModelGateway
 from .config import normalize, public_config
-from .exploration import assess, critique_panel, decide, discuss_panel, experiences_from_rounds, propose, score_assessment, simulate_panel, sufficient
+from .exploration import (apply_final_review, assess, check_candidate, critique_panel, decide, discuss_panel,
+                          experiences_from_rounds, propose, reconcile_candidate, score_assessment, simulate_panel, sufficient)
 from .graph import build_graph, graph_context
 from .literature import LiteratureStore, Snapshot, collect, hydrate_snapshot, round_context, select_corpus
 from .storage import IntegrityError, atomic_json, atomic_text, digest, exclusive, now, read_json, seal, unseal
@@ -35,17 +36,40 @@ def render_final(directory, state, config, context, gateway):
         path = directory / "rounds" / f"{entry['number']:02}" / "evaluated.json"
         if path.exists():
             completed.append(unseal(path))
+    eligible=[r for r in completed if r.get("assessment")]
+    all_evidence=dict(context.get("evidence",{}));all_papers={p["key"]:p for p in context.get("papers",[])}
+    for row in completed:
+        path=directory/"rounds"/f"{row['number']:02}"/"evidence_context.json"
+        if path.exists():
+            ctx=unseal(path);all_evidence.update(ctx["evidence"]);all_papers.update({p["key"]:p for p in ctx["papers"]})
+    reconciled=[]
+    for row in eligible:
+        later=[r for r in completed if r["number"]>row["number"]]
+        if state["status"]=="complete" and later:
+            path=directory/"final_reviews"/f"{row['number']:02}.json"
+            if not path.exists():
+                # Only passages actually cited by these candidates/objections
+                # enter reconciliation. The full archive remains independently
+                # resolvable; simulations are never added as source evidence.
+                refs=set()
+                def cited(value):
+                    if isinstance(value,dict):
+                        for v in value.values(): cited(v)
+                    elif isinstance(value,list):
+                        for v in value: cited(v)
+                    elif isinstance(value,str) and value in all_evidence: refs.add(value)
+                cited([row]+later)
+                seal(path,reconcile_candidate(gateway,row,completed,{r:all_evidence[r] for r in sorted(refs)}))
+            row=apply_final_review(row,unseal(path),config["policy"])
+        reconciled.append(row)
     # A recommendation takes precedence over a higher but infeasible raw score.
     def rank(row):
         score = row["scores"]
         return (sufficient(row, config["policy"]), not bool(score["blocking_objection_ids"]),
                 row["assessment"]["feasibility"] != "substantive_obstacle",
                 score["utility"] if score["utility"] is not None else -2, -row["number"])
-    best = max(completed, key=rank) if completed else None
-    if best:
-        evidence_context=directory/"rounds"/f"{best['number']:02}"/"evidence_context.json"
-        if evidence_context.exists():
-            context=unseal(evidence_context)
+    best = max(reconciled, key=rank) if reconciled else None
+    context={**context,"evidence":all_evidence,"papers":list(all_papers.values())}
     if state["status"] == "interrupted":
         recommendation = "incomplete"
     elif best is None:
@@ -61,6 +85,13 @@ def render_final(directory, state, config, context, gateway):
              "status": state["status"], "recommendation": recommendation,
              "stop_reason": state.get("stop_reason"), "completed_rounds": len(completed),
              "reserved_rounds": len(state["rounds"]), "selected_round": best["number"] if best else None,
+             "evaluated_rounds":len(eligible),
+             "rejected_candidate_rounds":[r["number"] for r in completed if r.get("status")=="rejected_duplicate"],
+             "selection_audit":[{"round":r["number"],"utility":r["scores"]["utility"],
+                 "blocking_objection_ids":r["scores"]["blocking_objection_ids"],"feasibility":r["assessment"]["feasibility"],
+                 "later_findings_reconciled":"final_review" in r,
+                 "reason":r.get("final_review",{}).get("selection_reason","latest available assessment; no subsequent findings")}
+                 for r in reconciled],
              "candidate": best, "usage": gateway.usage(), "cutoff": config["cutoff"],
              "research_validity": {"model_vintage_evidence": config["model_vintage_evidence"],
                  "claim": "evidence_constrained_generation; model knowledge leakage has not been ruled out",
@@ -107,12 +138,24 @@ def render_final(directory, state, config, context, gateway):
             lines += [f"- 使用经验 `{lesson['experience_id']}`：{lesson['implication']}；本轮改变：{lesson['change_in_this_proposal']}"]
         lines += ["", "## 文献证据", ""]
         papers = {p["key"]: p for p in context.get("papers", [])}
-        for ref in best["proposal"]["evidence_ids"]:
+        refs=set(best["proposal"]["evidence_ids"])
+        for name in ("novelty","importance","potential_gain","mechanism_audit"):
+            refs.update(best["assessment"][name]["evidence_ids"])
+        for item in best["critique"]["objections"]+best["assessment"]["resolutions"]:
+            refs.update(item["evidence_ids"])
+        for ref in sorted(refs):
             if ref not in context.get("evidence", {}):
                 continue
             evidence = context["evidence"][ref]
             paper = papers[evidence["paper_key"]]
             lines += [f"- `{ref}` — [{paper['title']}]({paper['source_url']})，{paper['key']}，{evidence['section']} [{evidence['start']}:{evidence['end']}]。"]
+        if best.get("final_review"):
+            lines += ["", "## 后续证据与最终选优", "", best["final_review"]["selection_reason"],
+                "原始逐轮评分保持不变；此处按 final_reviews 中的适用条件复核后排序。"]
+        for r in final["selection_audit"]:
+            lines.append(f"- 第 {r['round']} 轮：效用 {r['utility']}；可行性 {r['feasibility']}；后续发现复核 {r['later_findings_reconciled']}；{r['reason']}")
+    if final["rejected_candidate_rounds"]:
+        lines += ["", f"重复或未执行必要切换的候选轮次：{final['rejected_candidate_rounds']}；均计入四轮上限，未再花费多模型讨论调用。"]
     if state.get("error"):
         lines += ["", f"运行中断：{state['error']}。使用同一配置重跑会恢复已保存的轮次。"]
     lines += ["", "完整图、逐轮输入、提案、模拟、独立批评、综合判断与决策均保存在此运行目录。",
@@ -155,6 +198,11 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
         gateway = gateway_factory(config, directory / "api", digest(spec))
         context = {}
         try:
+            if state["status"] == "interrupted":
+                state.update(status="running" if state["phase"] == "exploration" else "preparing",
+                             error=None, stop_reason=None)
+                event(state, "run_resumed", phase=state["phase"])
+                save_state(directory, state)
             snapshot_path = directory / "snapshot.json"
             if not snapshot_path.exists():
                 report("1/6 collecting immutable paper versions and freezing the cutoff")
@@ -163,7 +211,7 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                     keys = collect(config, store, workspace / "collection_cache")
                     snapshot = store.freeze(keys, config["cutoff"])
                     report("1/6 archiving full-text evidence for temporally balanced retrieval candidates")
-                    snapshot, failures=hydrate_snapshot(snapshot,config,workspace/"cache"/"arxiv")
+                    snapshot, failures=hydrate_snapshot(snapshot,config,workspace/"cache"/"arxiv",gateway)
                     atomic_json(directory/"fulltext_acquisition.json",{"failures":failures})
                 finally:
                     store.close()
@@ -177,6 +225,8 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                 report("1/6 retrieving, reranking, extracting and selecting trajectory coverage")
                 seal(selected_path, select_corpus(snapshot, config, gateway))
             selected = unseal(selected_path)
+            if len(selected["selected_keys"])<2:
+                raise ValueError("fewer than two relevant evidence-bearing papers; inspect selected.json funnel before broadening collection")
             graph_path = directory / "trajectory.json"
             if not graph_path.exists():
                 state["phase"] = "graph"
@@ -241,11 +291,17 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                     return unseal(path)
                 row = {"number": number}
                 row["proposal"] = step("proposal", lambda: propose(gateway, current_context, config, number, slot["input_feedback"],previous))
-                row["simulation"] = step("simulation", lambda: simulate_panel(gateway, current_context, row["proposal"], number,config))
-                row["critique"] = step("critique", lambda: critique_panel(gateway, current_context, row["proposal"], number,config))
-                row["discussion"] = step("discussion", lambda: discuss_panel(gateway,current_context,row,config))
-                row["assessment"] = step("assessment", lambda: assess(gateway, current_context, row, previous))
-                row["scores"] = score_assessment(row["assessment"], row["critique"], config["policy"])
+                row["proposal_check"] = step("proposal_check",lambda:check_candidate(gateway,row["proposal"],previous,slot["input_feedback"],number))
+                if row["proposal_check"]["accepted"]:
+                    row["status"]="evaluated"
+                    row["simulation"] = step("simulation", lambda: simulate_panel(gateway, current_context, row["proposal"], number,config))
+                    row["critique"] = step("critique", lambda: critique_panel(gateway, current_context, row["proposal"], number,config))
+                    row["discussion"] = step("discussion", lambda: discuss_panel(gateway,current_context,row,config))
+                    row["assessment"] = step("assessment", lambda: assess(gateway, current_context, row, previous))
+                    row["scores"] = score_assessment(row["assessment"], row["critique"], config["policy"])
+                else:
+                    row["status"]="rejected_duplicate"
+                    event(state,"candidate_rejected_before_simulation",number=number,reason=row["proposal_check"]["reason"])
                 seal(round_dir / "evaluated.json", row)
                 decision = decide(previous + [row], config)
                 seal(round_dir / "decision.json", decision)

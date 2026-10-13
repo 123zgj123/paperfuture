@@ -55,10 +55,12 @@ class SyntheticEndpoint:
 
     def respond(self, role, data):
         if role == "rerank":
-            return {"results": [{"paper_key": p["paper_key"], "relevance": 4, "reason": "synthetic relevant input"} for p in data["papers"]]}
+            return {"results": [{"paper_key": p["paper_key"], "relevance": 4,"historical_relevance":4,
+                "historical_role":"historical_enabler","facets":list(data["research_branches"])[:1],
+                "reason": "synthetic relevant input"} for p in data["papers"]]}
         if role == "extract":
             return {"relevance": 4, "quality": 3, "selection_reason": "fixture covers historical stage", "problem": "tool-data trust",
-                    "mechanism": "synthetic mechanism " + data["paper"]["paper_id"], "assumptions": ["tool data may be hostile"],
+                    "mechanism": "synthetic mechanism " + data["paper"]["paper_id"], "mechanism_family":"explicit authorization", "assumptions": ["tool data may be hostile"],
                     "capabilities": ["fixture capability"], "limitations": ["synthetic abstract only"], "bottlenecks": ["adaptive attacker"],
                     "subtopics": ["trust boundary"], "evidence_ids": list(data["evidence_spans"])}
         if role == "graph_stages":
@@ -84,7 +86,8 @@ class SyntheticEndpoint:
                 delta={"problem":2,"assumption":5,"mechanism":7,"capability":5,"resource":2}
                 edges.append({"id":f"e{i+1}","source":source,"target":target,"relation":"replace_mechanism",
                     "inherited":"synthetic setting","changed":"synthetic causal mechanism","bottleneck":"adaptive attacker",
-                    "delta":delta,"dimension_reasons":{k:{"reason":"synthetic annotated change","evidence_ids":refs} for k in delta},
+                    "delta":delta,"dimension_reasons":{k:{"reason":"synthetic annotated change","evidence_ids":refs,
+                        "source_evidence_ids":refs[:1],"target_evidence_ids":refs[1:],"comparison_evidence_ids":[]} for k in delta},
                     "weight":65,"weight_interval":{"lower":55,"upper":75},"rationale":"fixture transition","confidence":"medium",
                     "source_witness":refs[0],"target_witness":refs[1],"evidence_ids":refs})
             return {"edges":edges,"unsupported_pairs":[]}
@@ -94,11 +97,16 @@ class SyntheticEndpoint:
             delta={"problem":2,"assumption":5,"mechanism":7,"capability":5,"resource":2}
             return {"reviews":[{"edge_id":e["id"],"verdict":"supported","relationship_reason":"synthetic supports inheritance",
                 "evidence_ids":e["evidence_ids"],"source_entailment":"synthetic source mechanism","target_entailment":"synthetic changed mechanism",
-                "delta":delta,"dimension_reasons":{k:{"reason":"synthetic audit","evidence_ids":e["evidence_ids"]} for k in delta},
+                "inherited":"reviewed setting","changed":"reviewed causal mechanism","bottleneck":"reviewed attacker",
+                "rationale":"independent reviewer rationale","confidence":"low",
+                "delta":delta,"dimension_reasons":{k:{"reason":"synthetic audit","evidence_ids":e["evidence_ids"],
+                    "source_evidence_ids":[e["source_witness"]],"target_evidence_ids":[e["target_witness"]],"comparison_evidence_ids":[]} for k in delta},
                 "weight":63,"weight_interval":{"lower":50,"upper":74}} for e in data["edges"]]}
         if role == "propose":
             evidence = list(data["historical_context"]["evidence"])
             inherited = (data.get("conditional_feedback") or {}).get("inherited_assumptions", [])
+            conditions={a["id"] for a in inherited}
+            if data["cumulative_experiences"]: conditions.update(data["cumulative_experiences"][0]["assumption_ids"])
             return {"source_stages": ["s2"], "source_edges": ["e2"], "bottleneck": "untrusted tool output", "historical_pattern": "boundary refinement",
                     "operation": "change authorization representation", "target_delta": {"problem": 3, "assumption": 7, "mechanism": 7, "capability": 5, "resource": 2},
                     "target_weight": 73,"target_interval":{"lower":60,"upper":85}, "magnitude_reason": "replace a key assumption", "evidence_ids": evidence,
@@ -107,7 +115,11 @@ class SyntheticEndpoint:
                     "nearest_prior_art":[{"paper_key":data["historical_context"]["papers"][0]["key"],"shared_elements":"agent execution","mechanism_difference":"explicit authorization"}],
                     "minimal_experiment":{"baseline_paper_keys":[data["historical_context"]["papers"][0]["key"]],"intervention":"change authorization rule","control":"unchanged agent at matched utility",
                         "observables":["unauthorized action rate"],"falsification_rule":"no paired reduction","confound":"over-restricting benign actions"},
-                    "learning_trace":[{"experience_id":data["cumulative_experiences"][0]["id"],"implication":"test predicted ambiguity","change_in_this_proposal":"change the explicit permission representation"}] if data["cumulative_experiences"] else [],
+                    "learning_trace":[{"experience_id":data["cumulative_experiences"][0]["id"],"usage":"retain","implication":"test predicted ambiguity","change_in_this_proposal":"change the explicit permission representation"}] if data["cumulative_experiences"] else [],
+                    "assumption_decisions":[{"assumption_id":a,"disposition":"retain","replacement_ids":[],"reason":"fixture conditional dependency"} for a in sorted(conditions)],
+                    "retrieval_use":[{"paper_key":k,"disposition":"used","reason":"fixture baseline comparison",
+                        "evidence_ids":[e for e,v in data["historical_context"]["evidence"].items() if v["paper_key"]==k][:1]}
+                        for k in data["historical_context"]["round_retrieval"]["paper_keys"]],
                     "assumptions": inherited or [{"id": "a1", "statement": "permission intent can be represented", "origin": "hypothesis", "evidence_ids": []}],
                     "idea": {"title": f"SYNTHETIC idea {data['round']}", "problem": "permission ambiguity", "mechanism": f"test mechanism {data['round']}",
                              "difference": "a fixture-only distinction", "minimal_test": "controlled benign/adversarial paired comparison"}}
@@ -115,15 +127,26 @@ class SyntheticEndpoint:
             return {"epistemic_status": "conditional_simulation_not_evidence", "scenarios": [
                 {"kind": kind, "conditions": ["hypothesis a1 holds"], "mechanism_chain": ["intent limits tool action"],
                  "observable_predictions": ["compare unauthorized actions with matched utility"], "competing_explanation": "over-restriction",
-                 "next_bottleneck": "ambiguous intent", "evidence_ids": [], "assumption_ids": ["a1"]} for kind in ("success","partial","failure")]}
+                 "next_bottleneck": "ambiguous intent", "evidence_ids": [], "assumption_ids": [a['id'] for a in data['proposal']['assumptions']][:1]} for kind in ("success","partial","failure")]}
         if role == "critique":
             return {"preserved_novelty": "conditional boundary mechanism", "objections": [{"id": "o1", "claim": "requires experimental evidence",
-                "kind": "unknown", "severity": 1.0, "condition": "deployment", "evidence_ids": [], "assumption_ids": ["a1"], "repair": "paired tests"}],
+                "kind": "unknown", "severity": 1.0, "condition": "deployment", "evidence_ids": [], "assumption_ids": [a['id'] for a in data['proposal']['assumptions']][:1], "repair": "paired tests"}],
                 "missed_opportunities": []}
         if role == "discuss":
             return {"epistemic_status":"conditional_simulation_not_evidence","agreements":["effectiveness remains unknown"],"disagreements":[],
-                "revised_predictions":[{"condition":"intent representation is faithful","prediction":"unauthorized actions decrease","evidence_ids":[],"assumption_ids":["a1"]}],
-                "discriminating_tests":["matched utility paired test"],"next_leap_implications":["test ambiguity in the permission representation"]}
+                "revised_predictions":[{"condition":"intent representation is faithful","prediction":"unauthorized actions decrease","evidence_ids":[],"assumption_ids":[a['id'] for a in data['proposal']['assumptions']][:1]}],
+                "discriminating_tests":["matched utility paired test"],"next_leap_implications":[{"implication":"test ambiguity in the permission representation",
+                    "assumption_ids":[a['id'] for a in data['proposal']['assumptions']][:1],"evidence_ids":[]}]}
+        if role == "proposal_check":
+            return {"kind":"substantive_revision","compared_rounds":[r["number"] for r in data["previous_candidates"]],
+                "changed_axes":["intervention"],"reason":"synthetic causal comparison","unresolved_issue_addressed":"fixture ambiguity"}
+        if role == "final_review":
+            return {"candidate_round":data["candidate_round"],"resolutions":[{"objection_id":o["id"],"disposition":"unresolved",
+                    "conditions_match":True,"reason":"fixture applicable unknown","evidence_ids":[]} for o in data["objections"]],
+                "assumption_findings":[{"assumption_id":a["id"],"status":"retained","reason":"fixture unchanged condition","evidence_ids":[]} for a in data["candidate"]["assumptions"]],
+                "feasibility":data["original_assessment"]["feasibility"],"feasibility_reason":"fixture final feasibility",
+                "remaining_unknowns":data["original_assessment"]["remaining_unknowns"],"prior_art_status":"unchanged",
+                "prior_art_reason":"fixture no new novelty evidence","prior_art_evidence_ids":[],"selection_reason":"fixture reconciled with later unknowns"}
         if role == "assess":
             number = data["candidate"]["number"]
             score = {"score": 4 if self.high_value else 2, "reason": "synthetic judgment for control-flow testing", "evidence_ids": []}
@@ -138,6 +161,8 @@ class SyntheticEndpoint:
                 "mechanism_audit":{"kind":"mechanistic_change","reason":"causal permission rule is changed", "nearest_prior_art_keys":[data["historical_context"]["papers"][0]["key"]],
                     "evidence_ids":list(data["historical_context"]["evidence"])[:1],"discriminating_test":True},
                 "progress":{"compared_round":number-1,"mechanism_changed":not self.stagnate,"resolved_previous_issue":False,"reason":"synthetic controlled progress judgment"},
-                "navigation":{"target_stage_ids":["s2"],"experience_ids":[data["cumulative_experiences"][0]["id"]],"rationale":"investigate predicted ambiguity"},
+                "navigation":{"target_stage_ids":["s2"],"experience_ids":[data["cumulative_experiences"][0]["id"]],"rationale":"investigate predicted ambiguity",
+                    "unresolved_issue":"ambiguous intent","change_axis":"intervention","pass_condition":"paired reduction at matched utility",
+                    "queries":{"bottleneck":"ambiguous authorization intent","alternative":"capability scoped tool permissions","falsifier":"matched utility unauthorized action evaluation"}},
                 "model_disagreements":[]}
         raise AssertionError(role)

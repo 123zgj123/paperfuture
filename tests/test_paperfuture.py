@@ -46,7 +46,7 @@ class PaperFutureTests(unittest.TestCase):
         self.assertEqual(result["completed_rounds"], 1)
         self.assertEqual(result["stop_reason"], "stop_sufficient")
         self.assertEqual(result["recommendation"], "recommend_for_empirical_validation")
-        self.assertEqual(result["usage"]["network_attempts"], 18)
+        self.assertEqual(result["usage"]["network_attempts"], 19)
         self.assertEqual(len([x for x in endpoint.requests if x[0] == "propose"]), 1)
         critic_input = next(x[1] for x in endpoint.requests if x[0] == "critique")
         self.assertNotIn("simulation", critic_input)
@@ -130,6 +130,8 @@ class PaperFutureTests(unittest.TestCase):
         edge = damaged["edges"][0]
         edge["source"],edge["target"] = edge["target"],edge["source"]
         edge["source_witness"],edge["target_witness"] = edge["target_witness"],edge["source_witness"]
+        for reason in edge["dimension_reasons"].values():
+            reason["source_evidence_ids"],reason["target_evidence_ids"]=reason["target_evidence_ids"],reason["source_evidence_ids"]
         with self.assertRaisesRegex(ContractError, "strictly older"):
             validate_graph(damaged, snapshot, selected)
 

@@ -35,6 +35,10 @@ def main(argv=None):
     bench = commands.add_parser("bench")
     bench.add_argument("--cases", type=Path, required=True)
     bench.add_argument("--output", type=Path, required=True)
+    ratings=commands.add_parser("bench-graph",help="evaluate heldout expert relation/score labels without model calls")
+    ratings.add_argument("--run",type=Path,required=True)
+    ratings.add_argument("--annotations",type=Path,required=True)
+    ratings.add_argument("--output",type=Path,required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "collect":
@@ -48,6 +52,10 @@ def main(argv=None):
         elif args.command == "status":
             state = unseal(args.run_directory / "state.json")
             print(json.dumps({k: state[k] for k in ("status", "phase", "rounds", "stop_reason")}, ensure_ascii=False, indent=2))
+        elif args.command == "bench-graph":
+            from .bench import audit_graph_ratings
+            atomic_json(args.output,audit_graph_ratings(args.run,read_json(args.annotations)))
+            print(f"Heldout graph judgment audit: {args.output}")
         elif args.command == "bench":
             from .bench import audit_cases
             atomic_json(args.output, audit_cases(read_json(args.cases), args.cases.resolve().parent))

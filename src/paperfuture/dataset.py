@@ -85,7 +85,7 @@ class Archive:
                 time.sleep(max(0, 3.1 - (time.time() - previous)))
                 stamp.write_text(str(time.time()))
                 try:
-                    req = urllib.request.Request(url, headers={"User-Agent": "PaperFuture/0.3 research-literature-archive"})
+                    req = urllib.request.Request(url, headers={"User-Agent": "PaperFuture/0.4 research-literature-archive"})
                     limit = (128 if pdf else 40)*1024*1024
                     with urllib.request.urlopen(req, timeout=60) as response:
                         raw = response.read(limit+1)
@@ -294,11 +294,17 @@ def _harvest(domain, plan, directory, archive, cutoff, historical_limit, recent_
     by_year = {}
     for key, p in records.items():
         by_year.setdefault(timestamp(p["first_public_at"]).year, []).append(key)
-    chosen = []
+    from .literature import bm25,rrf
+    chosen = [];fulltext_selection={}
     for year in sorted(by_year):
         if year < end.year-1:
-            chosen.extend(sorted(by_year[year])[:min(3, len(by_year[year]))])
-    from .literature import bm25
+            docs={k:records[k]["title"]+" "+records[k]["sections"]["abstract"] for k in by_year[year]}
+            routes={facet:bm25(query,docs,positive_only=True) for facet,query in plan["facets"].items()}
+            # Relevance and facet diversity, never lexicographic arXiv IDs.
+            ranked=rrf(list(routes.values()));leaders=[r[0] for r in routes.values() if r]
+            selected=list(dict.fromkeys(leaders+ranked))[:min(3,len(docs))]
+            chosen.extend(selected)
+            fulltext_selection.update({k:{"year":year,"routes":[f for f,r in routes.items() if k in r[:3]]} for k in selected})
     recent_years=[y for y in (end.year-1,end.year) if y in by_year]
     for i,year in enumerate(recent_years):
         quota=max(0,(fulltext_limit-len(chosen))//(len(recent_years)-i))
@@ -311,6 +317,7 @@ def _harvest(domain, plan, directory, archive, cutoff, historical_limit, recent_
                     selected.append(ranking[rank])
             if len(selected)>=quota: break
         chosen.extend(selected)
+        fulltext_selection.update({k:{"year":year,"policy":"recent_facet_round_robin"} for k in selected})
     chosen = chosen[:fulltext_limit]
     fulltext_failures = []
     for index, key in enumerate(chosen):
@@ -339,6 +346,7 @@ def _harvest(domain, plan, directory, archive, cutoff, historical_limit, recent_
         "strata": sorted(discovery["strata"], key=lambda s:s["year"]),
         "missing_years": [y for y in range(plan["start_year"],end.year+1) if not years[y]],
         "metadata_failures": failures, "fulltext_failures": fulltext_failures,
+        "fulltext_selection":{k:fulltext_selection[k] for k in chosen},
         "coverage_claim": "declared-query coverage only; recent work prioritized; not proof of complete field coverage",
         "missing_version_records": sorted(set(discovery["identifiers"]) - set(records)),
         "fulltext_policy": "version-specific archived PDF and text; historical-year minimum followed by recent emphasis; further PDFs fetched for selected papers"}

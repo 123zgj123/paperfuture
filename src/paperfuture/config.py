@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import math
 import os
 from pathlib import Path
 import re
@@ -37,15 +38,17 @@ DEFAULTS = {
                   "min_relevance": 2, "min_quality": 2, "rrf_k": 60, "rerank_batch": 12,
                   "coverage_weight": 0.3, "redundancy_weight": 0.2, "recent_years": 2,
                   "recent_fraction": 0.65, "extraction_chars": 22000, "round_papers": 8,
-                  "round_evidence_chars": 26000, "hydrate_candidates": 30},
-    "graph": {"stage_batch": 8, "predecessors": 4, "edge_batch": 1, "review_batch": 1, "concurrent_calls": 3},
+                  "round_evidence_chars": 26000, "hydrate_candidates": 30,
+                  "facet_queries": {}, "history_paper_ids": [], "citation_backfill_limit": 20, "concurrent_calls": 3},
+    "graph": {"stage_batch": 8, "predecessors": 4, "edge_batch": 1, "review_batch": 1, "concurrent_calls": 3,
+              "exhaustive_stage_limit": 24, "unexamined_sample": 5, "max_rating_disagreement": 15},
     "world_model": {"simulators": ["simulate", "simulate_secondary"], "critics": ["critique"],
                     "discussion": True, "min_distinct_models": 2},
     "policy": {"critic_weight": 0.2, "sufficient_utility": 0.75, "min_novelty": 3,
-               "min_importance": 3, "hard_conflict_severity": 0.8, "stagnation_epsilon": 0.02},
+               "min_importance": 3, "hard_conflict_severity": 0.8},
     "api": {"max_calls": 500, "max_tokens": 2000000, "max_output_tokens": 6000,
             "timeout_seconds": 180, "json_attempts": 2, "max_context_chars": 180000},
-    "sources": [], "models": {}, "model_vintage_evidence": [],
+    "sources": [], "models": {}, "model_vintage_evidence": [], "rating_anchors": [],
 }
 
 
@@ -83,6 +86,8 @@ def normalize(raw: dict) -> dict:
         raise ValueError(f"unknown configuration keys: {sorted(set(raw)-allowed)}")
     for key, value in raw.items():
         if key in ("retrieval", "policy", "api", "graph", "world_model"):
+            if key == "policy" and "stagnation_epsilon" in value:
+                raise ValueError("policy.stagnation_epsilon was unused and has been removed; remove it for a new run. Stagnation is judged by causal progress, not score or lexical distance.")
             if set(value) - set(config[key]):
                 raise ValueError(f"unknown {key} configuration")
             config[key].update(value)
@@ -96,6 +101,19 @@ def normalize(raw: dict) -> dict:
     if config["domain"] not in DOMAINS:
         raise ValueError(f"domain must be one of {list(DOMAINS)}")
     timestamp(config["cutoff"])
+    if not isinstance(config["rating_anchors"],list): raise ValueError("rating_anchors must be a list of expert annotations")
+    anchor_ids=set()
+    from .contracts import DIMENSIONS
+    for a in config["rating_anchors"]:
+        fields={"anchor_id","source_key","target_key","relation","delta","weight","rationale","evidence_ids","annotator","split"}
+        if not isinstance(a,dict) or set(a)!=fields or a["split"]!="calibration":
+            raise ValueError("rating anchors require explicit calibration split, expert identity, endpoints, score and evidence; heldout labels must never enter generation")
+        if a["anchor_id"] in anchor_ids: raise ValueError("duplicate rating anchor IDs")
+        anchor_ids.add(a["anchor_id"])
+        if any(not isinstance(a[k],str) or not a[k].strip() for k in ("anchor_id","source_key","target_key","relation","rationale","annotator")):
+            raise ValueError("rating anchor identity, relation and explanation must be nonempty")
+        if type(a["weight"]) is not int or not 0<=a["weight"]<=100 or set(a["delta"])!=set(DIMENSIONS) or any(type(v) is not int or not 0<=v<=10 for v in a["delta"].values()):
+            raise ValueError("invalid expert anchor ordinal scores")
     if type(config["max_rounds"]) is not int or not 1 <= config["max_rounds"] <= 4:
         raise ValueError("max_rounds is a GLOBAL integer limit from 1 through 4")
     if config["mode"] not in ("prospective", "retrospective") or config["api_mode"] not in ("live", "replay"):
@@ -104,7 +122,7 @@ def normalize(raw: dict) -> dict:
         raise ValueError("retrieval method must be hybrid or explicit lexical ablation")
     if not 0 <= config["policy"]["critic_weight"] <= 0.35:
         raise ValueError("critic_weight must be within [0, 0.35]; keep exploration value explicit")
-    for key in ("sufficient_utility", "hard_conflict_severity", "stagnation_epsilon"):
+    for key in ("sufficient_utility", "hard_conflict_severity"):
         if not 0 <= config["policy"][key] <= 1:
             raise ValueError(f"policy.{key} must be within [0, 1]")
     for key in ("min_novelty", "min_importance"):
@@ -120,6 +138,19 @@ def normalize(raw: dict) -> dict:
         raise ValueError("hydrate_candidates must be a nonnegative integer")
     if not 0 <= config["retrieval"]["recent_fraction"] <= 1:
         raise ValueError("recent_fraction must be in [0, 1]")
+    retrieval=config["retrieval"]
+    if type(retrieval["concurrent_calls"]) is not int or not 1 <= retrieval["concurrent_calls"] <= 8:
+        raise ValueError("retrieval.concurrent_calls must be an integer within [1,8]")
+    if not isinstance(retrieval["facet_queries"],dict) or any(
+            not isinstance(k,str) or not k.strip() or not isinstance(v,str) or not v.strip()
+            for k,v in retrieval["facet_queries"].items()):
+        raise ValueError("retrieval.facet_queries must map research branch IDs to explicit queries")
+    if not isinstance(retrieval["history_paper_ids"],list) or any(not isinstance(k,str) or not k.strip() for k in retrieval["history_paper_ids"]):
+        raise ValueError("retrieval.history_paper_ids must contain canonical paper IDs or version keys")
+    if type(retrieval["citation_backfill_limit"]) is not int or retrieval["citation_backfill_limit"]<0:
+        raise ValueError("retrieval.citation_backfill_limit must be nonnegative")
+    if not retrieval["facet_queries"]:
+        retrieval["facet_queries"]={f:f for f in DOMAINS[config["domain"]]["facets"]}
     for key, value in config["graph"].items():
         if type(value) is not int or value < 1:
             raise ValueError(f"graph.{key} must be positive")
@@ -160,8 +191,24 @@ def normalize(raw: dict) -> dict:
     if config["retrieval"]["method"] == "hybrid" and "embedding" not in models:
         raise ValueError("hybrid retrieval needs models.embedding; choose lexical explicitly for an ablation")
     for role, model in models.items():
-        if set(model) - {"base_url", "model", "api_key_env", "api_key_file"}:
+        if set(model) - {"base_url", "model", "api_key_env", "api_key_file", "reasoning_effort", "output_token_parameter", "temperature", "stream", "input_prefixes"}:
             raise ValueError(f"models.{role}: unsupported option (never put a plaintext key in config)")
+        if "input_prefixes" in model:
+            prefixes = model["input_prefixes"]
+            if role != "embedding" or not isinstance(prefixes, dict) or set(prefixes) != {"query", "document"} or any(
+                    not isinstance(v, str) or len(v) > 2048 for v in prefixes.values()):
+                raise ValueError("only embedding accepts input_prefixes with explicit query and document strings")
+        if model.get("output_token_parameter", "max_tokens") not in ("max_tokens", "max_completion_tokens"):
+            raise ValueError(f"models.{role}: unsupported output_token_parameter")
+        if "reasoning_effort" in model and model["reasoning_effort"] not in ("none", "minimal", "low", "medium", "high", "xhigh", "max", "ultra"):
+            raise ValueError(f"models.{role}: unsupported reasoning_effort; provider support must also be verified")
+        temperature = model.get("temperature")
+        if temperature is not None and (type(temperature) not in (int, float) or not math.isfinite(temperature) or not 0 <= temperature <= 2):
+            raise ValueError(f"models.{role}: temperature must be null or a finite number in [0,2]")
+        if type(model.get("stream",False)) is not bool:
+            raise ValueError(f"models.{role}: stream must be Boolean")
+        if role == "embedding" and set(model) & {"reasoning_effort", "output_token_parameter", "temperature", "stream"}:
+            raise ValueError("embedding does not accept chat parameters")
         if not model.get("model") or not model.get("base_url"):
             raise ValueError(f"models.{role}: model and base_url are required")
         url = urlparse(model["base_url"])

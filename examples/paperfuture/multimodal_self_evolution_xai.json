@@ -1,5 +1,5 @@
 {
-  "run_id": "multimodal_self_evolution_xai-v03-01",
+  "run_id": "multimodal_self_evolution_xai-v04-01",
   "domain": "multimodal_self_evolution_xai",
   "subfield": "How can faithful cross-modal explanations reveal when self-improvement in a multimodal model changes its reasoning mechanism rather than exploiting feedback shortcuts?",
   "question": "How can faithful cross-modal explanations reveal when self-improvement in a multimodal model changes its reasoning mechanism rather than exploiting feedback shortcuts?",
@@ -22,7 +22,16 @@
     "selected_limit": 36,
     "recent_fraction": 0.65,
     "hydrate_candidates": 40,
-    "min_quality": 2
+    "min_quality": 2,
+    "facet_queries": {
+      "self_improvement": "multimodal vision language self improvement self correction feedback iterative learning",
+      "causal_explanation": "vision language multimodal causal tracing mechanistic interpretability explanation faithfulness",
+      "feedback_reliability": "multimodal self reflection reward feedback reliability hallucination verification",
+      "representation_change": "vision language representation evolution concept attribution model editing",
+      "evaluation": "multimodal self improvement benchmark explanation faithfulness causal intervention evaluation"
+    },
+    "history_paper_ids": [],
+    "citation_backfill_limit": 20
   },
   "models": {
     "default": {
@@ -90,6 +99,8 @@
   "graph": {
     "edge_batch": 1,
     "review_batch": 1,
-    "concurrent_calls": 3
-  }
+    "concurrent_calls": 3,
+    "stage_batch": 3
+  },
+  "rating_anchors": []
 }

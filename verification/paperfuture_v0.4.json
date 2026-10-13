@@ -1,0 +1,561 @@
+{
+  "verified_at": "2026-10-13T10:34:14.330143Z",
+  "version": "0.4.0",
+  "scope": "engineering_acceptance_with_partial_real_integration_not_scientific_validation",
+  "current_source_fingerprint": "ff2ffa883386ad211889d1f5ef65a30041cb6626a1bccaa1a0e8f48380c5b058",
+  "current_source_validation": {
+    "tests_total": 291,
+    "tests_passed": 282,
+    "tests_skipped": 9,
+    "test_seconds": 17.231,
+    "skip_reason": "missing historical external FarField evaluation materials",
+    "test_log": "/mnt/efs/zhangguijia/paperfuture/reviews/astra-max-fixes-20261013/tests-v04-scoped.log",
+    "package": {
+      "implementation_fingerprint": "ff2ffa883386ad211889d1f5ef65a30041cb6626a1bccaa1a0e8f48380c5b058",
+      "wheel": "/mnt/efs/zhangguijia/paperfuture/software/v0.4-scoped/paperfuture-0.4.0-py3-none-any.whl",
+      "wheel_sha256": "ade77669cf932db375ebf1796ecf870d5c25dd3415077ac93dbf7aa14278acfd",
+      "offline_run": "/mnt/efs/zhangguijia/paperfuture/validation/v04-scoped-offline/runs/SYNTHETIC-four-rounds",
+      "scope": "SYNTHETIC, not scientific evidence or real model execution"
+    },
+    "synthetic_four_round_audit": {
+      "run_id": "SYNTHETIC-four-rounds",
+      "snapshot_papers": 3,
+      "selected_papers": 3,
+      "selection_years": {
+        "2021": 1,
+        "2023": 1,
+        "2022": 1
+      },
+      "stages": 3,
+      "proposed_edges": 3,
+      "supported_edges": 3,
+      "edge_weights": [
+        63,
+        63,
+        63
+      ],
+      "completed_rounds": 4,
+      "stop_reason": "stop_limit",
+      "recommendation": "needs_validation",
+      "selected_round": 1,
+      "world_model_ids": [
+        "gpt-6-astra"
+      ],
+      "schema_provenance_temporal_graph_memory_and_controller_checks": "passed",
+      "human_semantic_review": "pending",
+      "scientific_quality": "not_established_by_this_audit"
+    },
+    "installed_network_blocked_replay": {
+      "version": "0.4.0",
+      "installed_module": "/mnt/efs/zhangguijia/paperfuture/software/v0.4-scoped/installed/paperfuture/__init__.py",
+      "source_fingerprint": "ff2ffa883386ad211889d1f5ef65a30041cb6626a1bccaa1a0e8f48380c5b058",
+      "json_and_document_identical": true,
+      "additional_network_calls": 0,
+      "hashes": {
+        "final_idea.json": "c971ce062cd74238f309e19a8ca0c100d33a35bd698542fc0a15264411a58f05",
+        "IDEA.md": "5eb24338e22008aafac42c267f3783728d502d50cb4dcdf2dc4310882270ba02"
+      },
+      "scope": "synthetic four-round software replay, NOT real model validation"
+    }
+  },
+  "implementation_changes": {
+    "literature": "independent vector, facet and citation recall; historical roles; bounded citation backfill; per-paper funnel and explicit coverage gaps",
+    "graph": "one paper per initial stage, audited global equivalence, complete small-graph pair inspection, evidence-grounded 5 x 0..10 and overall 0..100 ordinal ratings, blind review and disagreement abstention",
+    "leap": "causal mechanism and falsifier, prior-art audit, scientific content pinned during format repairs, duplicate candidate checks",
+    "simulation": "independent model roles and disagreement records; unknown or taste objections do not automatically penalize novelty",
+    "feedback": "explicit experience use, hypothesis dependencies, action-specific retrieval queries and next-leap pass conditions; earlier candidates reconciled against later findings",
+    "runtime": "stream completion checks, bounded transport retry, durable usage reservations, successful preparation reuse after format repair, canonical inline evidence IDs",
+    "coverage_scope": "batch evidence absence stays attached to its paper batch and is not promoted to a whole-graph gap",
+    "local_embedding": "pinned and hash-verified local Nemotron model, data-disk CPU environment, prefix-separated cache, full Agent Security title/abstract index"
+  },
+  "datasets": [
+    {
+      "domain": "agent_security",
+      "papers": 3582,
+      "fulltext_papers": 158,
+      "by_year": {
+        "2016": 1,
+        "2017": 12,
+        "2018": 30,
+        "2019": 54,
+        "2020": 76,
+        "2021": 100,
+        "2022": 91,
+        "2023": 84,
+        "2024": 512,
+        "2025": 1061,
+        "2026": 1561
+      },
+      "recent_papers": 2622,
+      "missing_years": [
+        2015
+      ],
+      "coverage_claim": "declared-query coverage only; recent work prioritized; not proof of complete field coverage",
+      "directory": "/mnt/efs/zhangguijia/paperfuture/datasets/agent_security/20261012",
+      "source_export_sha256": "6a4cbea945c6f2a851939bbc18f3dc9cd0ce7da640d1701e4e7f64971d3282fe",
+      "same_export_as_previous_data_audit": true
+    },
+    {
+      "domain": "ai4eda",
+      "papers": 810,
+      "fulltext_papers": 100,
+      "by_year": {
+        "2012": 2,
+        "2013": 1,
+        "2014": 2,
+        "2016": 3,
+        "2017": 4,
+        "2018": 15,
+        "2019": 17,
+        "2020": 35,
+        "2021": 36,
+        "2022": 49,
+        "2023": 70,
+        "2024": 134,
+        "2025": 214,
+        "2026": 228
+      },
+      "recent_papers": 442,
+      "missing_years": [
+        2010,
+        2011,
+        2015
+      ],
+      "coverage_claim": "declared-query coverage only; recent work prioritized; not proof of complete field coverage",
+      "directory": "/mnt/efs/zhangguijia/paperfuture/datasets/ai4eda/20261012",
+      "source_export_sha256": "cc76b77dd79c4f95e0aed73c5cfd6ff6b520a5f089bb6fa4b67f823a5eddd0f6",
+      "same_export_as_previous_data_audit": true
+    },
+    {
+      "domain": "multimodal_self_evolution_xai",
+      "papers": 9115,
+      "fulltext_papers": 100,
+      "by_year": {
+        "2015": 22,
+        "2016": 38,
+        "2017": 59,
+        "2018": 74,
+        "2019": 97,
+        "2020": 153,
+        "2021": 179,
+        "2022": 247,
+        "2023": 475,
+        "2024": 1187,
+        "2025": 3061,
+        "2026": 3523
+      },
+      "recent_papers": 6584,
+      "missing_years": [],
+      "coverage_claim": "declared-query coverage only; recent work prioritized; not proof of complete field coverage",
+      "directory": "/mnt/efs/zhangguijia/paperfuture/datasets/multimodal_self_evolution_xai/20261012",
+      "source_export_sha256": "f5509d9da62e7195ec745b30b6e77b9b0f2c745a9ba49b9d86a51639322090af",
+      "same_export_as_previous_data_audit": true
+    }
+  ],
+  "unique_paper_versions_across_domain_exports": 13438,
+  "real_integration": {
+    "run_id": "agent-security-v04-20261013-integration-04",
+    "directory": "/mnt/efs/zhangguijia/paperfuture/runs/agent-security-v04-20261013-integration-04",
+    "status": "interrupted",
+    "phase": "exploration",
+    "last_error": "provider stream ended without a complete finish marker",
+    "frozen_source_fingerprint": "457e67e2b7ebfeadb1a9c5aa2bc927b9613d2cbf69de1a4a63ac44f0b8530c1d",
+    "uses_latest_source": false,
+    "graph_and_completed_step_contract_audit": "passed_using_matching_frozen_package",
+    "preparation_origin_hashes": "all_source_and_destination_artifacts_match",
+    "snapshot_papers": 3587,
+    "selected_papers": 12,
+    "selected_years": {
+      "2023": 1,
+      "2024": 3,
+      "2026": 4,
+      "2025": 4
+    },
+    "selected_recent_fraction": 0.6666666666666666,
+    "history_diagnostic_cases": {
+      "arxiv:2312.14197@v1": {
+        "funnel_status": "selected",
+        "reached_rerank": true
+      },
+      "arxiv:2402.06363@v1": {
+        "funnel_status": "selection_budget_excluded",
+        "reached_rerank": true
+      },
+      "arxiv:2403.02691@v1": {
+        "funnel_status": "selection_budget_excluded",
+        "reached_rerank": true
+      },
+      "arxiv:2403.14720@v1": {
+        "funnel_status": "selected",
+        "reached_rerank": true
+      },
+      "arxiv:2404.13208@v1": {
+        "funnel_status": "selected",
+        "reached_rerank": true
+      },
+      "arxiv:2406.13352@v1": {
+        "funnel_status": "selected",
+        "reached_rerank": true
+      },
+      "arxiv:2503.18813@v1": {
+        "funnel_status": "selected",
+        "reached_rerank": true
+      }
+    },
+    "history_diagnostic_cases_are_heldout": false,
+    "selected_coverage_gaps": [
+      "mechanism:agentic data exfiltration evaluation",
+      "mechanism:auxiliary llm input sanitization",
+      "mechanism:channel-separated instruction tuning",
+      "mechanism:counterfactual causal attribution",
+      "mechanism:counterfactual masked re-execution",
+      "mechanism:dependency graph execution constraints",
+      "mechanism:indirect prompt injection benchmarking",
+      "mechanism:information flow control",
+      "mechanism:information flow typing on execution graphs",
+      "mechanism:information-flow control",
+      "mechanism:semantic taint tracking",
+      "mechanism:semantic task-to-scope authorization",
+      "mechanism:source-channel separation",
+      "mechanism:test-time adversarial search",
+      "mechanism:test-time input sanitization",
+      "mechanism:test-time task alignment verification",
+      "mechanism:typed capability-based runtime authorization",
+      "collected_year_not_selected:2016",
+      "collected_year_not_selected:2017",
+      "collected_year_not_selected:2018",
+      "collected_year_not_selected:2019",
+      "collected_year_not_selected:2020",
+      "collected_year_not_selected:2021",
+      "collected_year_not_selected:2022"
+    ],
+    "stages": 12,
+    "supported_edges": 7,
+    "candidate_pairs_examined": 66,
+    "unexamined_pairs": 0,
+    "edge_weights": [
+      64,
+      66,
+      70,
+      64,
+      64,
+      62,
+      62
+    ],
+    "rating_audit": [
+      {
+        "edge_id": "e3",
+        "builder_weight": 74,
+        "reviewer_weight": 64,
+        "absolute_difference": 10,
+        "magnitude_status": "uncalibrated_review_judgment",
+        "final_explanation_source": "reviewer",
+        "interval_semantics": "model_judgment_range_not_statistical_confidence_interval",
+        "evidence_levels": [
+          "provided_sections"
+        ]
+      },
+      {
+        "edge_id": "e4",
+        "builder_weight": 74,
+        "reviewer_weight": 66,
+        "absolute_difference": 8,
+        "magnitude_status": "uncalibrated_review_judgment",
+        "final_explanation_source": "reviewer",
+        "interval_semantics": "model_judgment_range_not_statistical_confidence_interval",
+        "evidence_levels": [
+          "provided_sections"
+        ]
+      },
+      {
+        "edge_id": "e5",
+        "builder_weight": 72,
+        "reviewer_weight": 70,
+        "absolute_difference": 2,
+        "magnitude_status": "uncalibrated_review_judgment",
+        "final_explanation_source": "reviewer",
+        "interval_semantics": "model_judgment_range_not_statistical_confidence_interval",
+        "evidence_levels": [
+          "provided_sections"
+        ]
+      },
+      {
+        "edge_id": "e8",
+        "builder_weight": 78,
+        "reviewer_weight": 64,
+        "absolute_difference": 14,
+        "magnitude_status": "uncalibrated_review_judgment",
+        "final_explanation_source": "reviewer",
+        "interval_semantics": "model_judgment_range_not_statistical_confidence_interval",
+        "evidence_levels": [
+          "provided_sections"
+        ]
+      },
+      {
+        "edge_id": "e9",
+        "builder_weight": 74,
+        "reviewer_weight": 64,
+        "absolute_difference": 10,
+        "magnitude_status": "uncalibrated_review_judgment",
+        "final_explanation_source": "reviewer",
+        "interval_semantics": "model_judgment_range_not_statistical_confidence_interval",
+        "evidence_levels": [
+          "provided_sections"
+        ]
+      },
+      {
+        "edge_id": "e10",
+        "builder_weight": 65,
+        "reviewer_weight": 62,
+        "absolute_difference": 3,
+        "magnitude_status": "uncalibrated_review_judgment",
+        "final_explanation_source": "reviewer",
+        "interval_semantics": "model_judgment_range_not_statistical_confidence_interval",
+        "evidence_levels": [
+          "provided_sections"
+        ]
+      },
+      {
+        "edge_id": "e12",
+        "builder_weight": 64,
+        "reviewer_weight": 62,
+        "absolute_difference": 2,
+        "magnitude_status": "uncalibrated_review_judgment",
+        "final_explanation_source": "reviewer",
+        "interval_semantics": "model_judgment_range_not_statistical_confidence_interval",
+        "evidence_levels": [
+          "provided_sections"
+        ]
+      }
+    ],
+    "calibration_status": "no_expert_calibration_anchors",
+    "rounds": [
+      {
+        "number": 1,
+        "saved_steps": [
+          "context",
+          "critique",
+          "discussion",
+          "evidence_context",
+          "experience_memory",
+          "proposal",
+          "proposal_check",
+          "simulation"
+        ],
+        "decision": null,
+        "candidate_title": "Relational Authority Contracts Through Protected-Handle Rebinding",
+        "simulation_models": [
+          "gpt-6-astra",
+          "gemini-3.8-flash"
+        ],
+        "critique_models": [
+          "qwen3.8-max-0902"
+        ],
+        "discussion_models": [
+          "gpt-6-astra",
+          "gemini-3.8-flash"
+        ]
+      }
+    ],
+    "evaluated_rounds": 0,
+    "recommendation": "incomplete",
+    "global_reserved_candidate_slots": 2,
+    "global_candidate_limit": 4,
+    "full_run_and_multiround_feedback_real_validation": "pending",
+    "latest_fixes_not_in_frozen_run": [
+      "local embedding",
+      "bounded incomplete-stream retry",
+      "canonical inline evidence aliases",
+      "batch evidence gap scope",
+      "preparation format-repair cache reuse"
+    ],
+    "observed_empty_nonstream_responses": 4,
+    "transport_diagnosis": "HTTP responses with 131 bytes and no SSE content or completion markers; discussion succeeded on identical-request retry. Vendor internal cause is not established.",
+    "identity_limitation": "model IDs and token usage are gateway declarations, not independent verification of model weights"
+  },
+  "remote_api_accounting": {
+    "authorization_limits": {
+      "requests": 450,
+      "tokens": 8000000,
+      "candidate_rounds": 4
+    },
+    "preflight_including_catalog": {
+      "requests": 8,
+      "tokens": 17582
+    },
+    "runs": [
+      {
+        "run_id": "agent-security-v04-20261013-integration-01",
+        "requests": 18,
+        "reported_tokens": 121908,
+        "token_debit_including_unknown_reservations": 362777,
+        "unknown_or_dispatched_attempts": 4,
+        "by_role": {
+          "embedding": {
+            "received": 13,
+            "failed_or_unknown": 0,
+            "dispatched": 1,
+            "reported_tokens": 108198,
+            "token_debit": 185909
+          },
+          "rerank": {
+            "received": 1,
+            "failed_or_unknown": 3,
+            "dispatched": 0,
+            "reported_tokens": 13710,
+            "token_debit": 176868
+          }
+        }
+      },
+      {
+        "run_id": "agent-security-v04-20261013-integration-02",
+        "requests": 40,
+        "reported_tokens": 286920,
+        "token_debit_including_unknown_reservations": 410423,
+        "unknown_or_dispatched_attempts": 1,
+        "by_role": {
+          "rerank": {
+            "received": 6,
+            "failed_or_unknown": 0,
+            "dispatched": 0,
+            "reported_tokens": 47915,
+            "token_debit": 47915
+          },
+          "extract": {
+            "received": 33,
+            "failed_or_unknown": 0,
+            "dispatched": 0,
+            "reported_tokens": 239005,
+            "token_debit": 239005
+          },
+          "graph_stages": {
+            "received": 0,
+            "failed_or_unknown": 1,
+            "dispatched": 0,
+            "reported_tokens": 0,
+            "token_debit": 123503
+          }
+        }
+      },
+      {
+        "run_id": "agent-security-v04-20261013-integration-03",
+        "requests": 141,
+        "reported_tokens": 1892650,
+        "token_debit_including_unknown_reservations": 2958007,
+        "unknown_or_dispatched_attempts": 11,
+        "by_role": {
+          "rerank": {
+            "received": 7,
+            "failed_or_unknown": 0,
+            "dispatched": 0,
+            "reported_tokens": 53028,
+            "token_debit": 53028
+          },
+          "extract": {
+            "received": 32,
+            "failed_or_unknown": 0,
+            "dispatched": 0,
+            "reported_tokens": 234263,
+            "token_debit": 234263
+          },
+          "graph_stages": {
+            "received": 4,
+            "failed_or_unknown": 0,
+            "dispatched": 0,
+            "reported_tokens": 100120,
+            "token_debit": 100120
+          },
+          "graph_merge": {
+            "received": 1,
+            "failed_or_unknown": 0,
+            "dispatched": 0,
+            "reported_tokens": 87377,
+            "token_debit": 87377
+          },
+          "graph_edges": {
+            "received": 70,
+            "failed_or_unknown": 9,
+            "dispatched": 0,
+            "reported_tokens": 1078784,
+            "token_debit": 1767039
+          },
+          "graph_review": {
+            "received": 16,
+            "failed_or_unknown": 0,
+            "dispatched": 0,
+            "reported_tokens": 339078,
+            "token_debit": 339078
+          },
+          "propose": {
+            "received": 0,
+            "failed_or_unknown": 2,
+            "dispatched": 0,
+            "reported_tokens": 0,
+            "token_debit": 377102
+          }
+        }
+      },
+      {
+        "run_id": "agent-security-v04-20261013-integration-04",
+        "requests": 15,
+        "reported_tokens": 543052,
+        "token_debit_including_unknown_reservations": 2397074,
+        "unknown_or_dispatched_attempts": 7,
+        "by_role": {
+          "propose": {
+            "received": 2,
+            "failed_or_unknown": 0,
+            "dispatched": 0,
+            "reported_tokens": 122794,
+            "token_debit": 122794
+          },
+          "simulate": {
+            "received": 2,
+            "failed_or_unknown": 0,
+            "dispatched": 0,
+            "reported_tokens": 117686,
+            "token_debit": 117686
+          },
+          "critique": {
+            "received": 1,
+            "failed_or_unknown": 2,
+            "dispatched": 0,
+            "reported_tokens": 50798,
+            "token_debit": 456328
+          },
+          "discuss": {
+            "received": 3,
+            "failed_or_unknown": 2,
+            "dispatched": 0,
+            "reported_tokens": 251774,
+            "token_debit": 753826
+          },
+          "assess": {
+            "received": 0,
+            "failed_or_unknown": 3,
+            "dispatched": 0,
+            "reported_tokens": 0,
+            "token_debit": 946440
+          }
+        }
+      }
+    ],
+    "total": {
+      "requests": 222,
+      "reported_tokens": 2862112,
+      "token_debit_including_unknown_reservations": 6145863
+    },
+    "local_embedding_calls_included": false,
+    "billing_prices_available": false,
+    "unknown_attempt_policy": "reserve conservative input/output allowance even when provider billing is unknown"
+  },
+  "local_embedding_report": "verification/local_embedding.json",
+  "remaining_validation": [
+    "Complete a real run of the latest source, including observed inter-round feedback; synthetic tests do not establish research quality.",
+    "Independent history-coverage annotations, expert graph-rating calibration and heldout retrieval relevance evaluation are still required.",
+    "The 12-paper pilot cannot establish comprehensive field coverage; 7/7 development seeds reached rerank but only 5/7 fit the selected budget.",
+    "Current dataset coverage is limited to declared queries and sources; most records are metadata and abstracts.",
+    "Local embedding relevance smoke tests do not establish improvement over the old API model.",
+    "No downstream idea experiment or independent high-value novelty result has been demonstrated."
+  ]
+}

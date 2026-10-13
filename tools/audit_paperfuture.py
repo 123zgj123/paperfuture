@@ -6,6 +6,7 @@ novelty or expert agreement. No model or literature network calls are made.
 from __future__ import annotations
 
 import argparse
+import copy
 from collections import Counter
 import hashlib
 import json
@@ -16,8 +17,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from paperfuture.contracts import SCHEMAS, require_refs, validate
 from paperfuture.dataset import data_root
-from paperfuture.exploration import (decide, experiences_from_rounds, score_assessment,
-    validate_assessment, validate_critique, validate_proposal, validate_simulation)
+from paperfuture.exploration import (apply_final_review, decide, experiences_from_rounds, score_assessment, sufficient,
+    validate_assessment, validate_critique, validate_proposal_history, validate_simulation)
 from paperfuture.graph import validate_graph
 from paperfuture.literature import Snapshot, paper_record, round_context
 from paperfuture.pipeline import implementation_fingerprint
@@ -105,10 +106,15 @@ def audit_run(directory):
         assert unseal(rd/"experience_memory.json") == experiences_from_rounds(completed)
         assert context == round_context(base, snapshot, spec, slot["input_feedback"], experiences_from_rounds(completed))
         validate(row["proposal"], SCHEMAS["propose"])
-        inherited = list((slot["input_feedback"] or {}).get("inherited_assumptions", []))
-        used = {item["experience_id"] for item in row["proposal"]["learning_trace"]}
-        inherited += [a for e in experiences_from_rounds(completed) if e["id"] in used for a in e["assumptions"]]
-        validate_proposal(row["proposal"], context, inherited)
+        proposal=copy.deepcopy(row["proposal"])
+        validate_proposal_history(proposal,context,slot["input_feedback"],completed)
+        assert proposal==row["proposal"], "persisted proposal omitted an active dependency"
+        if row.get("status")=="rejected_duplicate":
+            assert not row["proposal_check"]["accepted"]
+            assert not (rd/"simulation.json").exists()
+            assert decide(completed+[row],spec)==unseal(rd/"decision.json")==slot["decision"]
+            completed.append(row)
+            continue
         for member in row["simulation"]["members"]:
             model_ids.add(member["model_id"])
             validate(member["result"], SCHEMAS["simulate"])
@@ -119,7 +125,7 @@ def audit_run(directory):
             validate_critique(member["result"], row["proposal"], context)
         for member in row["discussion"]["members"]:
             validate(member["result"], SCHEMAS["discuss"])
-            for prediction in member["result"]["revised_predictions"]:
+            for prediction in member["result"]["revised_predictions"]+member["result"]["next_leap_implications"]:
                 require_refs(prediction["evidence_ids"], context["evidence"], "discussion evidence")
                 require_refs(prediction["assumption_ids"], {a["id"] for a in row["proposal"]["assumptions"]}, "discussion assumptions")
         validate(row["assessment"], SCHEMAS["assess"])
@@ -130,7 +136,20 @@ def audit_run(directory):
     final = read_json(directory/"final_idea.json")
     assert state["status"] == final["status"] == "complete"
     assert len(completed) == final["completed_rounds"] == final["reserved_rounds"] <= spec["max_rounds"] <= 4
-    assert final["candidate"] == completed[final["selected_round"]-1]
+    candidates=[]
+    for row in completed:
+        if not row.get("assessment"):continue
+        review=directory/"final_reviews"/f"{row['number']:02}.json"
+        if review.exists():
+            reconciliation=unseal(review)
+            validate(reconciliation["review"],SCHEMAS["final_review"])
+            row=apply_final_review(row,reconciliation,spec["policy"])
+        candidates.append(row)
+    def rank(row):
+        score=row["scores"]
+        return (sufficient(row,spec["policy"]),not bool(score["blocking_objection_ids"]),
+            row["assessment"]["feasibility"]!="substantive_obstacle",score["utility"] if score["utility"] is not None else -2,-row["number"])
+    assert final["candidate"]==max(candidates,key=rank)
     return {"run_id": final["run_id"], "snapshot_papers": len(snapshot.papers),
         "selected_papers": len(selected["selected_keys"]), "selection_years": selected["year_counts"],
         "stages": len(graph["stages"]), "proposed_edges": len(graph["proposed_edges"]),

@@ -1,5 +1,5 @@
 {
-  "run_id": "agent_security-v03-01",
+  "run_id": "agent_security-v04-01",
   "domain": "agent_security",
   "subfield": "How can tool-using agents resist adaptive indirect prompt injection while preserving legitimate task utility?",
   "question": "How can tool-using agents resist adaptive indirect prompt injection while preserving legitimate task utility?",
@@ -22,7 +22,16 @@
     "selected_limit": 36,
     "recent_fraction": 0.65,
     "hydrate_candidates": 40,
-    "min_quality": 2
+    "min_quality": 2,
+    "facet_queries": {
+      "instruction_priority": "instruction hierarchy priority privileged instructions adversarial training",
+      "input_separation": "indirect prompt injection structured queries instruction data separation untrusted input",
+      "information_flow": "prompt injection provenance taint tracking information flow data marking",
+      "runtime_authorization": "tool agent capability permissions authorization reference monitor",
+      "adaptive_evaluation": "indirect prompt injection agent benchmark adaptive attack task utility evaluation"
+    },
+    "history_paper_ids": [],
+    "citation_backfill_limit": 20
   },
   "models": {
     "default": {
@@ -90,6 +99,8 @@
   "graph": {
     "edge_batch": 1,
     "review_batch": 1,
-    "concurrent_calls": 3
-  }
+    "concurrent_calls": 3,
+    "stage_batch": 3
+  },
+  "rating_anchors": []
 }

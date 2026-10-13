@@ -61,7 +61,7 @@ class PaperFutureV03Tests(unittest.TestCase):
         result,endpoint=self.execute(config=second)
         self.assertEqual([role for role,_ in endpoint.requests],['propose','simulate','critique','discuss','assess'])
         reuse=result['usage']['preparation_cache_reuses']
-        self.assertEqual(len(reuse),11)
+        self.assertEqual(len(reuse),12)
         self.assertTrue(all(Path(r['provenance']['source_receipt']).exists() for r in reuse))
         third=copy.deepcopy(self.config);third.update(run_id='independent-replicate',replicate_id='2')
         _,endpoint=self.execute(config=third)
@@ -138,7 +138,7 @@ class PaperFutureV03Tests(unittest.TestCase):
                     groups=result['groups'];other=groups.pop()['representative_stage_id']
                     groups[0]['member_stage_ids'].append(other)
                     groups[0]['comparisons']=[{'stage_id':other,'same_problem':True,'same_mechanism':False,
-                        'same_assumptions':True,'same_capability_boundary':True,'reason':'same broad topic, different mechanism'}]
+                        'same_assumptions':True,'same_capability_boundary':True,'reason':'same broad topic, different mechanism','evidence_ids':list(data['evidence'])}]
                 return result
         config=copy.deepcopy(self.config);config['graph']['stage_batch']=2
         with self.assertRaisesRegex(ContractError,'different technical regimes'):
