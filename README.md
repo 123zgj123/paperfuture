@@ -1,6 +1,6 @@
 # PaperFuture
 
-PaperFuture v0.4 沿用六步主线：**文献收集与筛选 → 带权有向发展图 → LLM 选择跃迁方向和幅度 → world model 模拟与讨论 → 动态探索，全局最多四轮 → idea 与价值判断**。
+PaperFuture v0.4.1 沿用六步主线：**文献收集与筛选 → 带权有向发展图 → LLM 选择跃迁方向和幅度 → world model 模拟与讨论 → 动态探索，全局最多四轮 → idea 与价值判断**。
 
 支持 Agent Security、多模态大模型自进化中的可解释性、AI4EDA。研究推理通过 API；向量化可使用外部 API，也可使用数据盘上的本地开放模型。默认流程无需 GPU；本地向量化使用额外的 CPU 和内存。运行完成表示流程完成，不能据此宣称 idea 已被实验验证。
 
@@ -25,12 +25,14 @@ export PAPERFUTURE_SECONDARY_MODEL='YOUR_SECOND_MODEL_ID'
 export PAPERFUTURE_CRITIC_MODEL='YOUR_THIRD_MODEL_ID'
 export PAPERFUTURE_EMBEDDING_BASE_URL='https://YOUR_PROVIDER/v1'
 export PAPERFUTURE_EMBEDDING_MODEL='YOUR_EMBEDDING_MODEL_ID'
+# 首次使用先按下文“文献收集与筛选”建库并发布固定版本。
+export PAPERFUTURE_CORPUS_MANIFEST="填写 corpus-publish 输出的 manifest_path"
 # 在本机设置 PAPERFUTURE_API_KEY；不要把明文密钥写入配置或 Git。
 .venv/bin/paperfuture doctor --config examples/paperfuture/agent_security.json
 .venv/bin/paperfuture run --config examples/paperfuture/agent_security.json
 ```
 
-示例入口会先构建／恢复文献库，再顺序执行筛选、构图、跃迁、模拟讨论和输出。API 兼容 `/chat/completions` 与 `/embeddings`；每个角色均可独立设置服务地址、模型和凭据引用。`doctor` 只检查本机配置。模型列表不等于实际可调用性，多模型接入应先做小型调用验证。程序检查配置中模型标识的多样性，不能独立证明网关背后的模型权重身份。
+示例入口读取已发布的固定语料，再顺序执行筛选、构图、跃迁、模拟讨论和输出。默认 `literature_mode=frozen`，生成过程中不采集论文或补全文；采集和增量更新独立执行。API 兼容 `/chat/completions` 与 `/embeddings`；每个角色均可独立设置服务地址、模型和凭据引用。`doctor` 只检查本机配置。模型列表不等于实际可调用性，多模型接入应先做小型调用验证。程序检查配置中模型标识的多样性，不能独立证明网关背后的模型权重身份。
 
 推理模型的参数需要显式配置。例如 GPT-6 Astra 可设置 `"reasoning_effort": "max"`、`"output_token_parameter": "max_completion_tokens"`、`"temperature": null`；`null` 表示不发送温度。其他服务可设置数值温度和 `max_tokens`。程序不偷偷替换模型，实际请求参数参与缓存身份并保存在回执中；修改推理强度后不会复用旧强度的准备结果。输出额度包含供应商计入的推理 tokens，并不保证全部用于可见 JSON。
 
@@ -70,11 +72,21 @@ v0.4 的契约新增历史贡献角色、逐维证据角色、假设处理决策
   --cutoff 2026-10-12T00:00:00Z --fulltext-limit 100
 ```
 
+建库完成后只需发布一次：
+
+```bash
+.venv/bin/paperfuture corpus-publish --domain agent_security \
+  --data-root "$PAPERFUTURE_DATA_ROOT" --cutoff 2026-10-12T00:00:00Z \
+  --input "$PAPERFUTURE_DATA_ROOT/datasets/agent_security/20261012/papers.jsonl"
+```
+
+将输出的 `manifest_path` 作为 `PAPERFUTURE_CORPUS_MANIFEST`。配置固定具体版本，不在实验中跟随 `latest.json`。本机默认配置已切换到固定语料；每周维护只检查新增时间窗口和待补录文献，并仅向量化缓存缺失的文本。更新失败保留旧配置，已开始的实验继续使用原快照。部署和恢复命令见 [固定语料与每周更新](docs/corpus_updates.md)。
+
 采集按领域的明确子方向查询与年份分层。Agent Security 与多模态领域从 2015 年开始，AI4EDA 从 2010 年开始；没有检索结果的年份明确列为缺口。2025—2026 是当前配置的最近两个日历年，2026 仅到截止日。大年份再按月份分页，失败的查询会尝试拆成更小且不重叠的日期窗口；完整记录请求、匹配数量、获取数量、失败与恢复过程和截断情况。查询覆盖不等于全领域覆盖，当前索引也不能被冒充为历史时刻的索引。
 
 发现阶段只取得论文 ID；正文与摘要请求明确的 arXiv **v1**。不把最新修订内容贴到旧年份上。元数据保存标题、作者、类别、DOI／期刊信息（来源有则保存）、首次公开日期、版本日期和来源。全文层保留原始 PDF、提取文本、SHA-256 和来源响应，参考文献中的 arXiv 标识只做机械提取，仍可能不完整。公式、图表、扫描件和复杂排版不能保证被文本提取完整表达。
 
-全文优先覆盖早期年份，并在最近两年之间分配名额、按子方向选择论文；已有全文不会因调整抽样而删除。正式运行在冻结快照前为相关候选补全文。未取得的全文记录为 `abstract_only`，不能假定已经看过全文实验。
+全文优先覆盖早期年份，并在最近两年之间分配名额、按子方向选择论文；已有全文不会因调整抽样而删除。全文补充在独立建库或周更维护时执行，正常生成直接读取已有证据。未取得的全文记录为 `abstract_only`，不能假定已经看过全文实验。
 
 数据目录如下：
 
@@ -85,7 +97,11 @@ $PAPERFUTURE_DATA_ROOT/
     version_records.json, papers.jsonl, literature.sqlite
     snapshot-<content-hash>.json
   cache/arxiv/              原始 Atom、PDF、文本及来源回执
-  cache/embeddings/         按输入内容与模型标识复用的向量
+  corpora/<domain>/releases/<release_id>/  不可变 manifest.json 和 papers.jsonl
+  corpora/<domain>/latest.json, active.json  最新发布与已激活版本
+  cache/embeddings/         原有批次向量与回执来源
+  cache/embedding_rows.sqlite  按精确文本、前缀和模型复用的向量
+  maintenance/             每周维护审计与日志
   configs/                 本机运行配置，只引用密钥文件
   runs/<run_id>/           完整运行记录
   legacy-v02/              旧数据与旧运行
@@ -103,7 +119,7 @@ $PAPERFUTURE_DATA_ROOT/
 
 三领域合计 13,507 条领域记录，跨领域去重后为 13,438 个论文版本。当前声明查询内没有未完成年份、缺失版本或失败的全文下载；“已归档全文”是详细证据子集，其余是完整元数据与摘要，不能宣称全部论文都已获取全文。Agent Security 的 2015 年、AI4EDA 的 2010、2011、2015 年无匹配结果，清单保留这些缺口。PDF 单文件下载上限为 128 MB，所有 PDF 和提取文本都位于数据盘。公开的数量与完整性记录见 [数据验收](verification/paperfuture_data_v0.3.json)。
 
-筛选算法为：**当前问题 BM25 + 全库独立向量召回（本地模型或 API）+ 明确分支的多查询召回 + 已有引用回溯 → RRF → 历史／近期分配与分支覆盖 → LLM 双重相关性重排 → 原文提取 → 证据质量筛选 → 覆盖与冗余控制**。`retrieval.facet_queries` 明确当前问题的技术分支；`history_paper_ids` 可声明经过审查、需要进入重排的历史论文 ID，但不能绕过相关性和证据筛选。优先为这些候选补全文，并按 `citation_backfill_limit` 有界补取被引用论文的 v1；新增资料只进入新的运行快照，晚于截止时间的版本排除。
+筛选算法为：**当前问题 BM25 + 全库独立向量召回（本地模型或 API）+ 明确分支的多查询召回 + 已有引用回溯 → RRF → 历史／近期分配与分支覆盖 → LLM 双重相关性重排 → 原文提取 → 证据质量筛选 → 覆盖与冗余控制**。`retrieval.facet_queries` 明确当前问题的技术分支；`history_paper_ids` 可声明经过审查、需要进入重排的历史论文 ID，但不能绕过相关性和证据筛选。固定模式只回溯库内已有引用；缺失的历史种子和被引用论文写入 `literature_update_requests.json`，由后续独立更新补录，不能中途改变本次实验的论文或向量。显式 `literature_mode=acquire` 才恢复旧的运行前补全文行为；不要用它作为日常生成入口。
 
 直接相关性和历史贡献分别评分，历史贡献区分使能机制、转折点、反例和评测基础。机制覆盖使用提取的 `mechanism_family`，不再截取描述前八个词。近期占比默认 65%，含义是有覆盖约束、允许候选不足时回填的**预算分配目标**，不是精确比例或硬上限。年份本身不能压过技术分支和有来源的引用桥接；无关旧论文不为凑年份而通过筛选。`selected.json` 的 `funnel` 为每篇论文记录未召回、候选预算排除、重排拒绝、证据不足、提取相关性拒绝、最终预算排除或已入选；`recall_audit` 记录查询、引用来源、未收集的声明文献和分支／年份候选。
 
@@ -111,7 +127,7 @@ $PAPERFUTURE_DATA_ROOT/
 
 `retrieval.concurrent_calls` 控制互不依赖的论文提取并发，默认 3、最多 8。请求共享同一个事务预算，结果仍按候选顺序汇总。提取与建图并发遇到致命错误时取消排队工作，已发出的请求完成后保留回执；轮间探索依然按依赖顺序执行。
 
-采集遵循 [arXiv 版本查询接口](https://info.arxiv.org/help/api/user-manual.html)，同一归档目录的请求统一限速、加锁并缓存。`sources` 支持 `arxiv_dataset` 自动完整建库、本地 `jsonl`，以及兼容旧配置的 `arxiv` 输入。`lexical` 是显式消融，向量调用失败不会静默退化成词法检索。
+采集遵循 [arXiv 版本查询接口](https://info.arxiv.org/help/api/user-manual.html)，同一归档目录的请求统一限速、加锁并缓存。`sources` 默认支持不可变发布版 `corpus` 和本地 `jsonl`；网络源 `arxiv_dataset` 与 `arxiv` 必须显式开启 `literature_mode=acquire`。`lexical` 是显式消融，向量调用失败不会静默退化成词法检索。
 
 ## 2. 带权有向发展图
 
@@ -182,7 +198,9 @@ python3.11 tools/audit_paperfuture.py --data-root "$PAPERFUTURE_DATA_ROOT" \
 
 离线演示使用明确标记的合成论文与 HTTP 响应，只检验软件行为。正式入口不会退回合成数据。新增回归检查覆盖证据冲突遗漏、模块堆叠、错误关系剔除、独立评分、多模型调用、全部前轮经验、动态检索、时间平衡、全文范围与原始 PDF 完整性。
 
-v0.4 当前验收：291 项测试中 282 项通过、9 项因历史外部材料缺失跳过；新安装包的四轮合成运行、独立审计和禁止网络的结果重放通过。本地 Nemotron 向量服务已完成 Agent Security 全部 3582 篇标题／摘要编码，三个领域的本机默认配置已接入，见 [本地向量验收](verification/local_embedding.json)。
+v0.4.1 固定语料验收：300 项测试中 291 项通过、9 项跳过；独立安装包的四轮离线运行与禁止网络的结果重放通过。真实 Agent Security 3,587 篇固定语料及其向量在禁止网络下复用成功，新增 API 调用为 0。每周一 02:00 UTC 的持久化定时器已启用，详情见 [固定语料验收](verification/paperfuture_v0.4.1.json)。这证明数据维护与缓存行为，不代表新 idea 的价值已经验证。
+
+v0.4 历史验收：291 项测试中 282 项通过、9 项因历史外部材料缺失跳过；新安装包的四轮合成运行、独立审计和禁止网络的结果重放通过。本地 Nemotron 向量服务已完成 Agent Security 全部 3582 篇标题／摘要编码，三个领域的本机默认配置已接入，见 [本地向量验收](verification/local_embedding.json)。
 
 v0.4 的真实 API 联调仍未完成：冻结的联调版本筛选 12 篇论文、保留 12 个技术阶段，审查全部 66 对候选关系后接受 7 条边；七篇开发诊断文献全部进入重排，其中五篇进入最终选择。第一轮候选、两模型模拟、批评和讨论已保存，价值评估连续三次收到不完整响应而中断。所有预检与失败运行合计 222 次请求，供应商报告 2,862,112 tokens；计入未知用量的保守预留后为 6,145,863 tokens，低于本次 450 次／800 万 tokens 上限。最新源码还修复了流式重试、正文证据别名和批次覆盖范围，但未用它覆盖既有冻结实验。当前不能宣称真实多轮反馈已验证有效，也没有专家评分校准或 idea 实证结果，详情见 [v0.4 验收报告](verification/paperfuture_v0.4.json)。
 

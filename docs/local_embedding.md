@@ -33,7 +33,8 @@ PaperFuture 可以把向量化改为本机推理，同时保留原有的文献�
   "base_url": "http://127.0.0.1:8769/v1",
   "model": "填写 profile.json 中的 model_id",
   "api_key_file": "/mnt/efs/zhangguijia/paperfuture/configs/local_embedding.key",
-  "input_prefixes": {"query": "query: ", "document": "passage: "}
+  "input_prefixes": {"query": "query: ", "document": "passage: "},
+  "cache_scope": "text"
 }
 ```
 
@@ -55,7 +56,7 @@ PaperFuture 可以把向量化改为本机推理，同时保留原有的文献�
   --profile-file /mnt/efs/zhangguijia/paperfuture/software/local-embedding-cpu/profile.json
 ```
 
-该命令在前台运行；部署记录中的 PID 和日志用于检查本次启动。服务不是系统启动项。`GET /health` 和 `GET /v1/models` 都需要本地鉴权；前者提供实际推理配置。三个领域的 `*_v04.json` 默认配置已切换到本地服务，也可使用同内容的 `*_v04_local_embedding.json`。正在进行的旧实验继续使用其冻结配置。
+该命令用于手动前台启动。本机已将同一份服务代码固定在数据盘，并启用用户级 `paperfuture-embedding.service`；它随用户服务管理器启动，异常退出自动重启，退出 SSH 不影响运行。检查使用 `systemctl --user status paperfuture-embedding.service`，不要同时手动启动第二个实例。`GET /health` 和 `GET /v1/models` 都需要本地鉴权；前者提供实际推理配置。三个领域的 `*_v04.json` 默认配置已切换到本地服务，也可使用同内容的 `*_v04_local_embedding.json`。正在进行的旧实验继续使用其冻结配置。
 
 只预计算论文向量、不调用远程研究模型时，可以运行：
 
@@ -65,7 +66,7 @@ python3.11 tools/warm_local_embeddings.py \
   --data-root /mnt/efs/zhangguijia/paperfuture
 ```
 
-此工具只允许 `127.0.0.1` 的向量服务，记录冻结的标题／摘要输入、逐次回执、进度和最终用量。重复运行复用已经完成的向量；已有批次改变时，先尝试从相同模型、相同前缀的成功回执逐行重组。进度位于 `runs/local-embedding-index-*/progress.json`，完成后生成 `completed.json`。
+此工具只允许 `127.0.0.1` 的向量服务，记录冻结的标题／摘要输入、逐次回执、进度和最终用量。v0.4.1 默认本地配置使用 `cache_scope=text`：按精确标题／摘要、用途前缀、模型及服务地址逐条复用。新增、排序变化、补全文不会触发未变化的标题／摘要重新编码。更换模型或更改标题／摘要才生成对应的新向量。远程模型默认仍使用批次缓存，只有确认输出与批次同伴无关后才能开启逐条复用。历史回执的一次性迁移使用 `tools/repack_embedding_cache.py`，保留来源哈希且不调用模型。进度位于 `runs/local-embedding-index-*/progress.json`，完成后生成 `completed.json`。
 
 检索小样本仅验证加载、输入约定、向量质量的基本合理性和接口连通性；它不证明全领域召回完整，也不证明优于原来的 API 向量模型。正式评测需要独立标注的查询、相关论文和历史轨迹覆盖标准。
 

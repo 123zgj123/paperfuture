@@ -34,6 +34,7 @@ ROLES = ("extract", "rerank", "graph", "graph_stages", "graph_merge", "graph_edg
          "simulate", "simulate_secondary", "critique", "critique_secondary", "discuss", "assess")
 DEFAULTS = {
     "mode": "prospective", "max_rounds": 4, "replicate_id": "1", "api_mode": "live",
+    "literature_mode": "frozen",
     "retrieval": {"method": "hybrid", "recall_k": 160, "candidate_limit": 100, "selected_limit": 40,
                   "min_relevance": 2, "min_quality": 2, "rrf_k": 60, "rerank_batch": 12,
                   "coverage_weight": 0.3, "redundancy_weight": 0.2, "recent_years": 2,
@@ -71,8 +72,9 @@ def load_config(path: Path) -> dict:
     config = normalize(_expand(read_json(path)))
     base = path.resolve().parent
     for source in config["sources"]:
-        if source["type"] == "jsonl":
-            source["path"] = str((base / source["path"]).resolve())
+        if source["type"] in ("jsonl", "corpus"):
+            field = "path" if source["type"] == "jsonl" else "manifest"
+            source[field] = str((base / source[field]).resolve())
     for model in config["models"].values():
         if model.get("api_key_file"):
             model["api_key_file"] = str((base / Path(model["api_key_file"]).expanduser()).resolve())
@@ -118,6 +120,8 @@ def normalize(raw: dict) -> dict:
         raise ValueError("max_rounds is a GLOBAL integer limit from 1 through 4")
     if config["mode"] not in ("prospective", "retrospective") or config["api_mode"] not in ("live", "replay"):
         raise ValueError("invalid run mode")
+    if config["literature_mode"] not in ("frozen", "acquire"):
+        raise ValueError("literature_mode must be frozen or explicitly acquire")
     if config["retrieval"]["method"] not in ("hybrid", "lexical"):
         raise ValueError("retrieval method must be hybrid or explicit lexical ablation")
     if not 0 <= config["policy"]["critic_weight"] <= 0.35:
@@ -164,9 +168,14 @@ def normalize(raw: dict) -> dict:
     if config["api"]["max_tokens"] < config["api"]["max_output_tokens"]:
         raise ValueError("max_tokens must accommodate at least one output allowance")
     for source in config["sources"]:
+        if config["literature_mode"] == "frozen" and source.get("type") not in ("jsonl", "corpus"):
+            raise ValueError("frozen research runs require local jsonl or a published corpus; collect/update literature separately")
         if source.get("type") == "jsonl":
             if set(source) != {"type", "path"}:
                 raise ValueError("jsonl source expects only type and path")
+        elif source.get("type") == "corpus":
+            if set(source) != {"type", "manifest"} or not isinstance(source["manifest"], str) or not source["manifest"]:
+                raise ValueError("corpus source expects type and an immutable release manifest path")
         elif source.get("type") == "arxiv_dataset":
             if set(source)-{"type","data_root","historical_limit","recent_limit","fulltext_limit"} or not source.get("data_root"):
                 raise ValueError("arxiv_dataset requires a data_root and optional acquisition limits")
@@ -191,8 +200,10 @@ def normalize(raw: dict) -> dict:
     if config["retrieval"]["method"] == "hybrid" and "embedding" not in models:
         raise ValueError("hybrid retrieval needs models.embedding; choose lexical explicitly for an ablation")
     for role, model in models.items():
-        if set(model) - {"base_url", "model", "api_key_env", "api_key_file", "reasoning_effort", "output_token_parameter", "temperature", "stream", "input_prefixes"}:
+        if set(model) - {"base_url", "model", "api_key_env", "api_key_file", "reasoning_effort", "output_token_parameter", "temperature", "stream", "input_prefixes", "cache_scope"}:
             raise ValueError(f"models.{role}: unsupported option (never put a plaintext key in config)")
+        if "cache_scope" in model and (role != "embedding" or model["cache_scope"] not in ("batch", "text")):
+            raise ValueError("embedding cache_scope must be batch or text; text requires batch-independent encoding")
         if "input_prefixes" in model:
             prefixes = model["input_prefixes"]
             if role != "embedding" or not isinstance(prefixes, dict) or set(prefixes) != {"query", "document"} or any(

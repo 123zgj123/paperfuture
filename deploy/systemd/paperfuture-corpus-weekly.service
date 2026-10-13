@@ -1,0 +1,17 @@
+[Unit]
+Description=Update PaperFuture corpora and warm local vectors without chat API calls
+Requires=paperfuture-embedding.service
+After=paperfuture-embedding.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/mnt/efs/zhangguijia/paperfuture
+Environment=PYTHONPATH=/mnt/efs/zhangguijia/paperfuture/software/v0.4.1/installed
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=TMPDIR=/mnt/efs/zhangguijia/paperfuture/maintenance/tmp
+ExecStart=/usr/bin/python3.11 -m paperfuture corpus-maintain --config /mnt/efs/zhangguijia/paperfuture/configs/weekly_corpora.json
+TimeoutStartSec=6h
+UMask=0077
+NoNewPrivileges=true
+StandardOutput=append:/mnt/efs/zhangguijia/paperfuture/maintenance/weekly.log
+StandardError=append:/mnt/efs/zhangguijia/paperfuture/maintenance/weekly.log

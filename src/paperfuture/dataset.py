@@ -352,3 +352,130 @@ def _harvest(domain, plan, directory, archive, cutoff, historical_limit, recent_
         "fulltext_policy": "version-specific archived PDF and text; historical-year minimum followed by recent emphasis; further PDFs fetched for selected papers"}
     atomic_json(directory / "manifest.json", manifest)
     return manifest
+
+
+def load_corpus(path: Path):
+    """Read an immutable, hash-checked release. This function never uses network."""
+    manifest=unseal(path)
+    if manifest.get('artifact_type')!='paperfuture_corpus_release':
+        raise ValueError('expected an immutable PaperFuture corpus release manifest')
+    export=path.parent/'papers.jsonl'
+    raw=export.read_bytes()
+    if hashlib.sha256(raw).hexdigest()!=manifest['export_sha256']:
+        raise ValueError('published corpus export hash mismatch')
+    records=[paper_record(json.loads(line)) for line in raw.decode().splitlines() if line.strip()]
+    if len(records)!=manifest['papers'] or len({p['key'] for p in records})!=len(records):
+        raise ValueError('published corpus paper count or uniqueness mismatch')
+    if any(max(timestamp(p['first_public_at']),timestamp(p['version_public_at']))>timestamp(manifest['cutoff']) for p in records):
+        raise ValueError('published corpus contains post-cutoff evidence')
+    identity=digest({k:manifest[k] for k in ('domain','cutoff','export_sha256')})
+    if manifest['release_id']!=identity:
+        raise ValueError('published corpus release identity mismatch')
+    return manifest,records
+
+
+def publish_corpus(domain, root, cutoff, records, *, provenance=None):
+    """Publish a new immutable release; never overwrite an earlier export."""
+    if domain not in PLANS:raise ValueError('unknown corpus domain')
+    end=timestamp(cutoff)
+    rows=sorted((paper_record(p) for p in records),key=lambda p:p['key'])
+    if len(rows)<2 or len({p['key'] for p in rows})!=len(rows):
+        raise ValueError('a corpus release needs at least two distinct paper versions')
+    if any(max(timestamp(p['first_public_at']),timestamp(p['version_public_at']))>end for p in rows):
+        raise ValueError('cannot publish papers later than the corpus cutoff')
+    text=''.join(json.dumps(p,ensure_ascii=False,sort_keys=True)+'\n' for p in rows)
+    core={'domain':domain,'cutoff':cutoff,'export_sha256':hashlib.sha256(text.encode()).hexdigest()}
+    identity=digest(core)
+    directory=root/'corpora'/domain/'releases'/identity
+    with exclusive(directory/'.lock',blocking=True):
+        path=directory/'manifest.json'
+        if path.exists():
+            existing,_=load_corpus(path)
+            return {**existing,'manifest_path':str(path)}
+        years=Counter(p['first_public_at'][:4] for p in rows)
+        manifest={**core,'artifact_type':'paperfuture_corpus_release','release_id':identity,
+            'created_at':now(),'papers':len(rows),'fulltext_papers':sum('full_text' in p['sections'] for p in rows),
+            'by_year':dict(sorted(years.items())),
+            'recent_papers':sum(n for y,n in years.items() if int(y)>=end.year-1),
+            'missing_years':[y for y in range(PLANS[domain]['start_year'],end.year+1) if str(y) not in years],
+            'provenance':provenance or {},
+            'coverage_claim':'declared-query coverage; independent field coverage review remains necessary'}
+        # Manifest is the publication boundary. A failed/in-progress write is
+        # never returned as a usable release.
+        atomic_text(directory/'papers.jsonl',text)
+        seal(path,manifest)
+    atomic_json(root/'corpora'/domain/'latest.json',{'release_id':identity,'manifest_path':str(path)})
+    return {**manifest,'manifest_path':str(path)}
+
+
+def publish_source(domain, root, cutoff, source):
+    if source.suffix=='.jsonl':
+        rows=[json.loads(line) for line in source.read_text().splitlines() if line.strip()]
+    else:
+        rows=unseal(source)['papers']
+    return publish_corpus(domain,root,cutoff,rows,provenance={
+        'source':str(source),'source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),
+        'operation':'freeze_existing_local_records_without_network'})
+
+
+def update_corpus(manifest_path, root, cutoff, *, overlap_days=7, fulltext_limit=24, extra_ids=(), replay=False):
+    """Fetch only a new date window and requested missing IDs; preserve history.
+
+    An incomplete metadata window never advances the published release. Missing
+    PDFs remain explicitly abstract-only. No LLM or embedding API is called.
+    """
+    base,rows=load_corpus(manifest_path)
+    end=timestamp(cutoff);previous=timestamp(base['cutoff'])
+    if end<=previous:raise ValueError('corpus update cutoff must advance the previous release')
+    if not 0<=overlap_days<=365 or fulltext_limit<0:raise ValueError('invalid update limits')
+    domain=base['domain'];papers={p['key']:p for p in rows}
+    begin=previous-dt.timedelta(days=overlap_days)
+    directory=root/'corpora'/domain/'updates'/digest({'base':base['release_id'],'cutoff':cutoff,
+        'overlap_days':overlap_days,'extra_ids':sorted(extra_ids),'fulltext_limit':fulltext_limit})
+    archive=Archive(root/'cache/arxiv',replay=replay)
+    with exclusive(directory/'.lock',blocking=True):
+        found=set()
+        def page(raw,path):
+            values=parse_arxiv(raw)
+            found.update(p['paper_id'][6:]+'v1' for p in values)
+            return values
+        query=' OR '.join('('+q+')' for name,q in PLANS[domain]['facets'].items() if name!='historical_foundations')
+        window=discover_window(archive,query,begin,end,page)
+        audit={'base_manifest':str(manifest_path),'base_release':base['release_id'],'cutoff':cutoff,
+            'overlap_days':overlap_days,'window':window,'extra_ids':list(extra_ids),'failures':[],
+            'new_keys':[],'fulltext_enriched':[],'status':'collecting'}
+        atomic_json(directory/'audit.json',audit)
+        if window['error'] or window['matched']!=window['retrieved']:
+            raise ValueError('incremental discovery incomplete; existing release preserved; inspect update audit')
+        for identifier in extra_ids:
+            if not re.fullmatch(r'arxiv:\d{4}\.\d{4,5}(?:@v1)?',identifier):
+                raise ValueError('supplement IDs must be canonical arxiv IDs with optional @v1')
+            found.add(identifier.removeprefix('arxiv:').removesuffix('@v1')+'v1')
+        known={p['paper_id'][6:]+p['version_id'] for p in rows if p['paper_id'].startswith('arxiv:')}
+        missing=sorted(found-known)
+        for offset in range(0,len(missing),50):
+            batch=missing[offset:offset+50]
+            raw,_=archive.query({'id_list':','.join(batch),'max_results':len(batch)})
+            values=parse_arxiv(raw)
+            if {p['paper_id'][6:]+p['version_id'] for p in values}!=set(batch):
+                raise ValueError('incremental explicit-version metadata mismatch; old release preserved')
+            for raw_paper in values:
+                p=paper_record(raw_paper)
+                if max(timestamp(p['first_public_at']),timestamp(p['version_public_at']))<=end:
+                    papers[p['key']]=p;audit['new_keys'].append(p['key'])
+            atomic_json(directory/'audit.json',audit)
+        # Optional evidence enrichment is confined to this maintenance command.
+        priority=sorted(audit['new_keys'],key=lambda k:(papers[k]['first_public_at'],k),reverse=True)
+        priority+=sorted(k for k,p in papers.items() if k not in priority and 'full_text' not in p['sections'])
+        chosen=[k for k in priority if 'full_text' not in papers[k]['sections'] and papers[k]['paper_id'].startswith('arxiv:')][:fulltext_limit]
+        for key in chosen:
+            try:
+                papers[key]=paper_record(enrich_fulltext(papers[key],archive));audit['fulltext_enriched'].append(key)
+            except (OSError,ValueError,RuntimeError,subprocess.SubprocessError) as exc:
+                audit['failures'].append({'key':key,'error':type(exc).__name__,'result':'abstract_only'})
+        result=publish_corpus(domain,root,cutoff,papers.values(),provenance={
+            'base_release':base['release_id'],'update_audit':str(directory/'audit.json'),
+            'new_papers':len(audit['new_keys']),'enriched_fulltexts':len(audit['fulltext_enriched'])})
+        audit.update(status='published',manifest_path=result['manifest_path'])
+        atomic_json(directory/'audit.json',audit)
+        return result

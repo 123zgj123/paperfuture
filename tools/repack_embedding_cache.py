@@ -15,6 +15,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from paperfuture.api import ModelGateway, embedding_inputs
+from paperfuture.embedding_cache import EmbeddingRows
 from paperfuture.storage import digest, seal, unseal, atomic_json, exclusive
 
 
@@ -66,6 +67,17 @@ def repack(root, directory):
                 # reuse; do not silently pick whichever receipt was read last.
                 if text in saved and saved[text][0] != vector: conflicts.add(text)
                 saved.setdefault(text, (vector, provenance))
+    row_cache=EmbeddingRows(root/'cache/embedding_rows.sqlite')
+    try:
+        groups={}
+        for text,(vector,provenance) in saved.items():
+            if text not in conflicts:
+                group=groups.setdefault(digest(provenance),{'texts':[],'vectors':[],'provenance':provenance})
+                group['texts'].append(text);group['vectors'].append(vector)
+        for group in groups.values():
+            row_cache.put(model,group['texts'],group['vectors'],group['provenance'])
+    finally:
+        row_cache.close()
     documents = {p['key']:p['title']+'\n'+p['sections'].get('abstract',next(iter(p['sections'].values()))) for p in snapshot['papers']}
     keys = sorted(documents); created=[]; skipped=[]
     for offset in range(0,len(keys),32):

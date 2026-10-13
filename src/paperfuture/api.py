@@ -18,6 +18,7 @@ import urllib.request
 from farfield.extras.llm import Backend, LLMClient, TokenLedger, sampling_is_locked
 from .config import credential
 from .contracts import ContractError, SCHEMAS, validate
+from .embedding_cache import EmbeddingRows, row_id
 from .storage import canonical, digest, now, seal, unseal
 
 
@@ -190,8 +191,11 @@ class ModelGateway:
         self.db.commit()
         self._preparation_index = None
         self._validated_origins = {}
+        self._embedding_rows = None
 
     def close(self):
+        if self._embedding_rows is not None:
+            self._embedding_rows.close()
         self.db.close()
 
     def fork(self):
@@ -460,6 +464,27 @@ class ModelGateway:
     def embeddings(self, texts: list[str], *, identity: str, input_type="document") -> list[list[float]]:
         model = self._model("embedding")
         texts = embedding_inputs(texts, model, input_type)
+        if self.shared_embeddings and model.get('cache_scope','batch')=='text':
+            if self._embedding_rows is None:
+                self._embedding_rows=EmbeddingRows(self.shared_embeddings.parent/'embedding_rows.sqlite')
+            saved=self._embedding_rows.get(model,texts)
+            if saved:
+                self._validate_vectors([v['vector'] for v in saved.values()])
+                with self.db:
+                    self.db.executemany('INSERT OR IGNORE INTO embedding_reuse VALUES(?,?,?)',[
+                        (row_id(model,t),str(self._embedding_rows.path),json.dumps({
+                            'method':'exact_text_row_reuse','row_id':row_id(model,t),**v['provenance']})) for t,v in saved.items()])
+            missing=list(dict.fromkeys(t for t in texts if t not in saved))
+            if missing:
+                vectors=self._embedding_batch(missing,identity=identity)
+                # _embedding_batch records the exact successful receipt or batch
+                # cache origin; duplicate input texts are encoded only once.
+                saved.update(self._embedding_rows.get(model,missing))
+            return self._validate_vectors([saved[t]['vector'] for t in texts])
+        return self._embedding_batch(texts,identity=identity)
+
+    def _embedding_batch(self, texts, *, identity):
+        model = self._model("embedding")
         request = {"model": model["model"], "input": texts, "encoding_format": "float"}
         cache_id=digest({"base_url":model["base_url"],"request":request})
         shared=self.shared_embeddings/(cache_id+".json") if self.shared_embeddings else None
@@ -470,6 +495,9 @@ class ModelGateway:
             vectors=self._validate_vectors(saved["vectors"])
             with self.db:
                 self.db.execute("INSERT OR IGNORE INTO embedding_reuse VALUES(?,?,?)",(cache_id,str(shared),json.dumps(saved["provenance"])))
+            if self._embedding_rows is not None:
+                self._embedding_rows.put(model,texts,vectors,{'batch_cache':str(shared),
+                    'batch_payload_hash':digest(saved),'origin':saved['provenance']})
             return vectors
         self.context = {"role": "embedding", "identity": identity}
         key = credential(model) if self.config["api_mode"] == "live" else "replay"
@@ -495,6 +523,9 @@ class ModelGateway:
             seal(shared,{"input_hash":digest(texts),"vectors":vectors,"provenance":{
                 "model":model["model"],"base_url":model["base_url"],"origin_api_directory":str(self.directory),
                 "response_hash":digest(json.loads(raw)),"model_identity_independently_verified":False}})
+            if self._embedding_rows is not None:
+                self._embedding_rows.put(model,texts,vectors,{'batch_cache':str(shared),
+                    'origin_api_directory':str(self.directory),'response_hash':digest(json.loads(raw))})
         return vectors
 
     @staticmethod

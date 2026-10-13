@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly immutable PaperFuture corpus update
+
+[Timer]
+OnCalendar=Mon *-*-* 02:00:00 UTC
+Persistent=true
+AccuracySec=1min
+Unit=paperfuture-corpus-weekly.service
+
+[Install]
+WantedBy=timers.target

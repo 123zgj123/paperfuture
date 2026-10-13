@@ -279,6 +279,12 @@ def collect(config: dict, store: LiteratureStore, cache: Path) -> list[str]:
                         except (ValueError,TypeError) as exc:
                             raise ValueError(f"{source['path']}:{line_number}: {exc}") from exc
             keys.extend(store.add_many(records))
+        elif source["type"] == "corpus":
+            from .dataset import load_corpus
+            manifest, records = load_corpus(Path(source["manifest"]))
+            if manifest["domain"] != config["domain"]:
+                raise ValueError("published corpus belongs to a different research domain")
+            keys.extend(store.add_many(records))
         elif source["type"] == "arxiv_dataset":
             from .dataset import harvest
             manifest = harvest(config["domain"],Path(source["data_root"]),config["cutoff"],

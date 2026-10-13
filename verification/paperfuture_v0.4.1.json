@@ -1,0 +1,148 @@
+{
+  "version": "0.4.1",
+  "created_at": "2026-10-13T11:46:55.913299+00:00",
+  "tests": {
+    "total": 300,
+    "passed": 291,
+    "skipped": 9
+  },
+  "build": {
+    "implementation_fingerprint": "5c46af1dbfd895ef989af6fd7072fdd0c788ba65d802b20dc650c6ff4ce08905",
+    "wheel": "/mnt/efs/zhangguijia/paperfuture/software/v0.4.1/paperfuture-0.4.1-py3-none-any.whl",
+    "wheel_sha256": "aae6ceaf664a60bffe18a8a93b2d1cf0e6336c707cc13433c1dbe67c61da322f",
+    "offline_run": "/mnt/efs/zhangguijia/paperfuture/validation/v041-frozen-offline/runs/SYNTHETIC-four-rounds",
+    "scope": "SYNTHETIC, not scientific evidence or real model execution"
+  },
+  "installed_offline_replay": {
+    "version": "0.4.1",
+    "installed_module": "/mnt/efs/zhangguijia/paperfuture/software/v0.4.1/installed/paperfuture/__init__.py",
+    "source_fingerprint": "5c46af1dbfd895ef989af6fd7072fdd0c788ba65d802b20dc650c6ff4ce08905",
+    "json_and_document_identical": true,
+    "additional_network_calls": 0,
+    "hashes": {
+      "final_idea.json": "18e829d43afa0ecb544d0d0e5b986671bb6a57d61582478fa2779b8ebe235210",
+      "IDEA.md": "5eb24338e22008aafac42c267f3783728d502d50cb4dcdf2dc4310882270ba02"
+    },
+    "scope": "synthetic four-round software replay, NOT real model validation"
+  },
+  "real_frozen_corpus_cache_replay": {
+    "source_fingerprint": "5c46af1dbfd895ef989af6fd7072fdd0c788ba65d802b20dc650c6ff4ce08905",
+    "release_id": "cbe7a4c54262dcbcbf13218e521be30a4bc10a0a5a0251826925dadc97ead940",
+    "papers": 3587,
+    "fulltexts": 176,
+    "collected_snapshot_papers": 3587,
+    "snapshot_id": "74d728d906fc7839902cbda093ff31f0af37e33244ce3c414f4153889c51fee3",
+    "network_blocked": true,
+    "elapsed_seconds": 31.503,
+    "cache_calls": 0,
+    "cache_row_reuses": 3588,
+    "model": "nemotron-3-embed-1b-c0c9fea93ea4-856b5144e84cab2a",
+    "scope": "Real frozen literature and existing vectors, no LLM calls or scientific quality claim"
+  },
+  "corpora": [
+    {
+      "domain": "agent_security",
+      "release_id": "cbe7a4c54262dcbcbf13218e521be30a4bc10a0a5a0251826925dadc97ead940",
+      "manifest_path": "/mnt/efs/zhangguijia/paperfuture/corpora/agent_security/releases/cbe7a4c54262dcbcbf13218e521be30a4bc10a0a5a0251826925dadc97ead940/manifest.json",
+      "papers": 3587,
+      "fulltext_papers": 176,
+      "by_year": {
+        "2016": 1,
+        "2017": 12,
+        "2018": 30,
+        "2019": 54,
+        "2020": 76,
+        "2021": 101,
+        "2022": 93,
+        "2023": 86,
+        "2024": 512,
+        "2025": 1061,
+        "2026": 1561
+      },
+      "recent_papers": 2622,
+      "missing_years": [
+        2015
+      ]
+    },
+    {
+      "domain": "multimodal_self_evolution_xai",
+      "release_id": "9fab902b864452fd4b748c4d0263589d5f3d7d5dc3b4d7ec607b1233347379c0",
+      "manifest_path": "/mnt/efs/zhangguijia/paperfuture/corpora/multimodal_self_evolution_xai/releases/9fab902b864452fd4b748c4d0263589d5f3d7d5dc3b4d7ec607b1233347379c0/manifest.json",
+      "papers": 9115,
+      "fulltext_papers": 100,
+      "by_year": {
+        "2015": 22,
+        "2016": 38,
+        "2017": 59,
+        "2018": 74,
+        "2019": 97,
+        "2020": 153,
+        "2021": 179,
+        "2022": 247,
+        "2023": 475,
+        "2024": 1187,
+        "2025": 3061,
+        "2026": 3523
+      },
+      "recent_papers": 6584,
+      "missing_years": []
+    },
+    {
+      "domain": "ai4eda",
+      "release_id": "be9b35c15c4df19cdc615f13a0ad96ea6ca12f0edcdac5756fcedb272b62db23",
+      "manifest_path": "/mnt/efs/zhangguijia/paperfuture/corpora/ai4eda/releases/be9b35c15c4df19cdc615f13a0ad96ea6ca12f0edcdac5756fcedb272b62db23/manifest.json",
+      "papers": 810,
+      "fulltext_papers": 100,
+      "by_year": {
+        "2012": 2,
+        "2013": 1,
+        "2014": 2,
+        "2016": 3,
+        "2017": 4,
+        "2018": 15,
+        "2019": 17,
+        "2020": 35,
+        "2021": 36,
+        "2022": 49,
+        "2023": 70,
+        "2024": 134,
+        "2025": 214,
+        "2026": 228
+      },
+      "recent_papers": 442,
+      "missing_years": [
+        2010,
+        2011,
+        2015
+      ]
+    }
+  ],
+  "weekly_schedule": {
+    "unit": "paperfuture-corpus-weekly.timer",
+    "enabled": true,
+    "on_calendar": "Mon *-*-* 02:00:00 UTC",
+    "next_trigger_utc": "2026-10-19T02:00:00Z",
+    "persistent": true,
+    "user_linger": true,
+    "external_chat_calls": 0,
+    "full_weekly_network_cycle_tested": false
+  },
+  "live_idea_attempt": {
+    "run_id": "agent-security-v04-20261013-local-idea-01",
+    "source_fingerprint": "ff2ffa883386ad211889d1f5ef65a30041cb6626a1bccaa1a0e8f48380c5b058",
+    "status": "interrupted",
+    "phase": "graph",
+    "reason": "provider stream returned an error event",
+    "selected_papers": 18,
+    "candidate_rounds": 0,
+    "calls": 88,
+    "token_debit_including_local_and_unknown": 1364355,
+    "new_idea_completed": false
+  },
+  "limitations": [
+    "Declared-query corpus coverage only; many papers have abstracts but no full text.",
+    "Synthetic workflow tests do not demonstrate valuable scientific novelty.",
+    "Full periodic acquisition was tested with deterministic fixtures; the next actual timer firing has not occurred.",
+    "Multi-domain combination and LLM Alignment are follow-on work requested after this package was frozen."
+  ]
+}

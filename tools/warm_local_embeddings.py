@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from paperfuture.api import ModelGateway
 from paperfuture.config import load_config
+from paperfuture.dataset import load_corpus
 from paperfuture.storage import atomic_json, digest, exclusive, seal, unseal
 from repack_embedding_cache import repack
 
@@ -31,14 +32,14 @@ def main():
         raise ValueError('warm_local_embeddings only allows the local 127.0.0.1 embedding service')
     papers={}
     for source in config['sources']:
-        if source['type']!='jsonl':
-            raise ValueError('precompute requires an already exported JSONL dataset')
-        path=Path(source['path']).resolve()
+        if source['type'] not in ('jsonl','corpus'):
+            raise ValueError('precompute requires an exported JSONL dataset or immutable corpus release')
+        path=Path(source['path'] if source['type']=='jsonl' else source['manifest']).resolve()
         if not path.is_relative_to(args.data_root.resolve()):
             raise ValueError('paper dataset must be on the declared data volume')
-        for line in path.read_text().splitlines():
-            if not line.strip():continue
-            p=json.loads(line)
+        records=(load_corpus(path)[1] if source['type']=='corpus' else
+                 [json.loads(line) for line in path.read_text().splitlines() if line.strip()])
+        for p in records:
             if 'abstract' not in p['sections']:
                 raise ValueError('precompute requires explicit abstract text')
             value={'key':p['key'],'title':p['title'],'sections':{'abstract':p['sections']['abstract']}}

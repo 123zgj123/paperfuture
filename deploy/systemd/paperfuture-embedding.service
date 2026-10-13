@@ -1,0 +1,19 @@
+[Unit]
+Description=PaperFuture loopback Nemotron embedding service
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/efs/zhangguijia/paperfuture
+ExecStart=/mnt/efs/zhangguijia/paperfuture/software/local-embedding-cpu/venv/bin/python -u /mnt/efs/zhangguijia/paperfuture/software/local-embedding-cpu/local_embedding_server.py --model-directory /mnt/efs/zhangguijia/paperfuture/models/nvidia/Nemotron-3-Embed-1B-BF16/c0c9fea93ea424587517f2c59e20db9f1d6bf615 --key-file /mnt/efs/zhangguijia/paperfuture/configs/local_embedding.key --profile-file /mnt/efs/zhangguijia/paperfuture/software/local-embedding-cpu/profile.json
+Environment=TMPDIR=/mnt/efs/zhangguijia/paperfuture/software/local-embedding-cpu/tmp
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=on-failure
+RestartSec=30s
+TimeoutStopSec=60s
+UMask=0077
+NoNewPrivileges=true
+StandardOutput=append:/mnt/efs/zhangguijia/paperfuture/software/local-embedding-cpu/server-systemd.log
+StandardError=append:/mnt/efs/zhangguijia/paperfuture/software/local-embedding-cpu/server-systemd.log
+
+[Install]
+WantedBy=default.target

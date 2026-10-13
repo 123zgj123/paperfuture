@@ -9,7 +9,7 @@ from .config import DOMAINS, credential, load_config
 from .contracts import SCHEMAS
 from .pipeline import run
 from .storage import atomic_json, read_json, unseal
-from .dataset import PLANS, data_root, harvest
+from .dataset import PLANS, data_root, harvest, load_corpus, publish_source, update_corpus
 
 
 def main(argv=None):
@@ -32,6 +32,23 @@ def main(argv=None):
     collection.add_argument("--cutoff",required=True)
     collection.add_argument("--fulltext-limit",type=int,default=100)
     collection.add_argument("--replay",action="store_true")
+    publish=commands.add_parser('corpus-publish',help='freeze existing local papers into an immutable corpus release; no network')
+    publish.add_argument('--data-root',type=Path)
+    publish.add_argument('--domain',choices=list(PLANS),required=True)
+    publish.add_argument('--cutoff',required=True)
+    publish.add_argument('--input',type=Path,required=True,help='papers.jsonl or a sealed snapshot.json')
+    update=commands.add_parser('corpus-update',help='incrementally acquire a new corpus release outside research runs')
+    update.add_argument('--data-root',type=Path)
+    update.add_argument('--manifest',type=Path,required=True)
+    update.add_argument('--cutoff',required=True)
+    update.add_argument('--overlap-days',type=int,default=7)
+    update.add_argument('--fulltext-limit',type=int,default=24)
+    update.add_argument('--paper-id',action='append',default=[])
+    update.add_argument('--replay',action='store_true')
+    maintenance=commands.add_parser('corpus-maintain',help='weekly acquisition, local vector warming and future-profile activation; no chat calls')
+    maintenance.add_argument('--config',type=Path,required=True)
+    maintenance.add_argument('--cutoff')
+    maintenance.add_argument('--check-only',action='store_true',help='validate profiles and releases without network or changes')
     bench = commands.add_parser("bench")
     bench.add_argument("--cases", type=Path, required=True)
     bench.add_argument("--output", type=Path, required=True)
@@ -45,6 +62,18 @@ def main(argv=None):
             for domain in PLANS if args.domain=="all" else [args.domain]:
                 result=harvest(domain,args.data_root or data_root(),args.cutoff,fulltext_limit=args.fulltext_limit,replay=args.replay)
                 print(json.dumps({k:result[k] for k in ("domain","papers","fulltext_papers","by_year","data_directory")},ensure_ascii=False))
+        elif args.command == 'corpus-maintain':
+            from .maintenance import maintain
+            result=maintain(args.config,cutoff=args.cutoff,check_only=args.check_only)
+            print(json.dumps(result,ensure_ascii=False,indent=2))
+            return 1 if result['status']=='partial_failure' else 0
+        elif args.command in ('corpus-publish','corpus-update'):
+            if args.command=='corpus-publish':
+                result=publish_source(args.domain,args.data_root or data_root(),args.cutoff,args.input)
+            else:
+                result=update_corpus(args.manifest,args.data_root or data_root(),args.cutoff,
+                    overlap_days=args.overlap_days,fulltext_limit=args.fulltext_limit,extra_ids=args.paper_id,replay=args.replay)
+            print(json.dumps({k:result[k] for k in ('domain','release_id','papers','fulltext_papers','manifest_path')},ensure_ascii=False))
         elif args.command == "domains":
             print(json.dumps(DOMAINS, ensure_ascii=False, indent=2))
         elif args.command == "schemas":
@@ -71,6 +100,9 @@ def main(argv=None):
                 for source in config["sources"]:
                     if source["type"] == "jsonl" and not Path(source["path"]).is_file():
                         raise ValueError(f"missing literature file: {source['path']}")
+                    if source['type']=='corpus':
+                        manifest,_=load_corpus(Path(source['manifest']))
+                        if manifest['domain']!=config['domain']:raise ValueError('corpus domain mismatch')
                 print(json.dumps({"ready": True, "models": checks, "network_tested": False}, indent=2))
             else:
                 args.workspace=args.workspace or data_root()

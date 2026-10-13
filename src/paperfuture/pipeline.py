@@ -205,14 +205,20 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                 save_state(directory, state)
             snapshot_path = directory / "snapshot.json"
             if not snapshot_path.exists():
-                report("1/6 collecting immutable paper versions and freezing the cutoff")
+                report("1/6 loading the fixed literature release and freezing the cutoff" if config["literature_mode"] == "frozen"
+                       else "1/6 collecting immutable paper versions and freezing the cutoff")
                 store = LiteratureStore(workspace / "literature.sqlite")
                 try:
                     keys = collect(config, store, workspace / "collection_cache")
                     snapshot = store.freeze(keys, config["cutoff"])
-                    report("1/6 archiving full-text evidence for temporally balanced retrieval candidates")
-                    snapshot, failures=hydrate_snapshot(snapshot,config,workspace/"cache"/"arxiv",gateway)
-                    atomic_json(directory/"fulltext_acquisition.json",{"failures":failures})
+                    if config["literature_mode"] == "acquire":
+                        report("1/6 archiving full-text evidence for temporally balanced retrieval candidates")
+                        snapshot, failures=hydrate_snapshot(snapshot,config,workspace/"cache"/"arxiv",gateway)
+                        atomic_json(directory/"fulltext_acquisition.json",{"failures":failures})
+                    else:
+                        atomic_json(directory/"fulltext_acquisition.json",{
+                            "mode":"frozen", "network_acquisition":False, "failures":[],
+                            "policy":"full-text and missing references are supplemented only during an independent corpus update"})
                 finally:
                     store.close()
                 seal(snapshot_path, snapshot.payload)
@@ -225,6 +231,12 @@ def run(config: dict, workspace: Path, *, prepare_only=False, gateway_factory=Mo
                 report("1/6 retrieving, reranking, extracting and selecting trajectory coverage")
                 seal(selected_path, select_corpus(snapshot, config, gateway))
             selected = unseal(selected_path)
+            atomic_json(directory/"literature_update_requests.json",{
+                "snapshot_id":snapshot.id, "domain":config["domain"],
+                "uncollected_references":selected.get("recall_audit",{}).get("uncollected_references",{}),
+                "uncollected_history_seeds":selected.get("recall_audit",{}).get("uncollected_history_seeds",[]),
+                "coverage_gaps":selected.get("coverage_gaps",[]),
+                "policy":"diagnostic queue for a future corpus release; does not mutate this run"})
             if len(selected["selected_keys"])<2:
                 raise ValueError("fewer than two relevant evidence-bearing papers; inspect selected.json funnel before broadening collection")
             graph_path = directory / "trajectory.json"
